@@ -9,5 +9,10 @@ CORS(app)
 def hello():
 	return jsonify({'text':'Hello World!'})
 
+@app.route("/login")
+def login():
+	print("GOt")
+
+
 if __name__ == '__main__':
 	app.run(port=4200)
