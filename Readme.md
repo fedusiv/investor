@@ -12,3 +12,11 @@ cd game-prject && sudo npm link
 
 ## To run web
 ng serve
+
+
+## python modules.
+
+In future better to make dependecies for virtual env. venv
+
+tornado
+pyqt
