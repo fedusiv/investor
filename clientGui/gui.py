@@ -9,9 +9,9 @@ from client import ClientQObject
 
 class Gui(QWidget):
 
-	def __init__(self,queue: Queue):
+	def __init__(self,queue_read: Queue,queue_sent: Queue):
 		super().__init__()
-		self.client = ClientQObject(queue)
+		self.client = ClientQObject(queue_read,queue_sent)
 
 		self.initUI()
 		self.connectWindow()
@@ -56,8 +56,8 @@ class Gui(QWidget):
 		self.client.transfer_login_auth(self.qlineedit_connect_nickname.text(), self.qlineedit_connect_password.text())
 
 
-def gui_run(queue : Queue):
+def gui_run(queue_receive : Queue, queue_sent : Queue):
 	app = QApplication(sys.argv)
-	gui = Gui(queue)
+	gui = Gui(queue_receive,queue_sent)
 	app.exec_()
 	return gui
