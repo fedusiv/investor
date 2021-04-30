@@ -33,7 +33,6 @@ class ClientQObject(QObject):
 		msg = CommunicationProtocol.create_login_msg(login,password)
 		# sent message to websocket queue
 		self.queue_sent.put(msg)
-	
 
 
 class Client():
@@ -70,6 +69,7 @@ class Client():
 			msg = self.queue_sent.get()
 			self.ws.write_message(msg)
 
+	# async loop, which triggers in 100 ms
 	async def on_sent_loop(self):
 		while True:
 			await self.sent_message()
