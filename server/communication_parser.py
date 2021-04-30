@@ -3,16 +3,21 @@ from communication_protocol import MessageType
 from enum import Enum
 
 
-class CommunitcationParserReturnCode(Enum):
-	ERROR = -1
-	OK = 0
+class CommunitcationParserResult():
+
+	result_type : MessageType
+
+	def __init__ (self, result_type = MessageType.NONE, success = True):
+		self.err = success
+		self.result_type = result_type
+
 
 class CommunitcationParser():
 
 	@staticmethod
 	def login_request(msg):
-		print(CommunitcationParser.login_request.__name__)
-		return True
+		result = CommunitcationParserResult(MessageType.LOGIN)
+		return result
 
 	@staticmethod
 	def registration_request(msg):
@@ -25,12 +30,13 @@ class CommunitcationParser():
 		msg = CommunicationProtocol.verify_msg(msg)
 		if msg is None:
 			# end function is message is none
-			return CommunitcationParserReturnCode.ERROR
+			return CommunitcationParserResult(False)
 
 		switcher = {
 			MessageType.LOGIN.value : CommunitcationParser.login_request,
 			MessageType.REGISTRATION.value : CommunitcationParser.registration_request
 		}
 		func = switcher.get(int(msg["type"]))
-		func(msg)
-		return CommunitcationParserReturnCode.OK
+		result = func(msg)
+		return result
+

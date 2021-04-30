@@ -27,6 +27,7 @@ class ClientQObject(QObject):
 		if self.queue_read.qsize() > 0:
 			# get message from websocket and parse it
 			msg = self.queue_read.get()
+			print(msg)
 
 	def transfer_login_auth(self, login, password):
 		# prepare message
