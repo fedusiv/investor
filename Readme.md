@@ -2,21 +2,24 @@
 
 ## Dependencies
 python3<br>
-pip3 install flask flask-jsonpify flask-sqlalchemy flask-restful<br>
-sudo apt install npm
-sudo npm install -g @angular/cli
-sudo npm install --save-dev @angular/compiler-cli
-sudo npm install --save-dev @angular/compiler
-cd game-prject && sudo npm link
+sudo apt install npm<br>
+sudo npm install -g @angular/cli<br>
+sudo npm install --save-dev @angular/compiler-cli<br>
+sudo npm install --save-dev @angular/compiler<br>
+cd game-prject && sudo npm link<br>
 
 
 ## To run web
-ng serve
+ng serve<br>
 
 
 ## python modules.
 
-In future better to make dependecies for virtual env. venv
+In future better to make dependecies for virtual env. venv<br>
 
-tornado
-pyqt
+tornado<br>
+pyqt<br>
+boto3<br>
+
+
+

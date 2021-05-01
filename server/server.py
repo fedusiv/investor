@@ -53,6 +53,10 @@ class ClientHandler(tornado.websocket.WebSocketHandler):
 		# When connection happen get clientHandlers instance
 		self.client_handlers = ClientHandlers.Instance()
 
+	# Required this field for web gui
+	def check_origin(self, origin):
+		return True
+	
 	def on_close(self):
 		print("A client disconnected")
 		self.client_handlers.remove_connected_client(self)
@@ -76,6 +80,7 @@ class ClientHandler(tornado.websocket.WebSocketHandler):
 
 	def on_logged(self):
 		self.client_handlers.store_connected_client(self)
+		print("client logged in")
 		# send message to client
 		msg = CommunicationProtocol.create_login_result_msg(True)
 		self.write_message(msg)
@@ -142,4 +147,5 @@ def ServerStart():
 	
 	# After this line nothing will act, because it starts infinite priority loop
 	io_loop_instance.start()
+
 

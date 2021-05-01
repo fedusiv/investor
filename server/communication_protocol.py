@@ -30,7 +30,8 @@ class CommunicationProtocol():
 	# To server
 	@staticmethod
 	def create_login_msg(login,password):
-		body = [login,password]
+		body = {"login" : login,
+				"password" : password}
 		msg_json = CommunicationProtocol.formulate_message(body, MessageType.LOGIN.value)
 		return msg_json
 
