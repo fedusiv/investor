@@ -5,9 +5,11 @@ class MessageType(Enum):
 	NONE = 0
 	LOGIN = 1
 	REGISTRATION = 2
+	KEEP_ALIVE = 3
 
 
 # Class to parse and create required messages
+# This class used for server and client as well
 class CommunicationProtocol():
 
 	# Convert received message from json to required type and return in
@@ -18,13 +20,18 @@ class CommunicationProtocol():
 		message = json.loads(msg)
 		return message
 
+	@staticmethod
+	def formulate_message(body,msg_type):
+		msg = {"type" : msg_type,
+			"body" : body}
+		msg_json = json.dumps(msg)
+		return msg_json
+
 	# To server
 	@staticmethod
 	def create_login_msg(login,password):
 		body = [login,password]
-		msg = {"type" : MessageType.LOGIN.value,
-				"body" : body}
-		msg_json = json.dumps(msg)
+		msg_json = CommunicationProtocol.formulate_message(body, MessageType.LOGIN.value)
 		return msg_json
 
 	# To client
@@ -34,9 +41,11 @@ class CommunicationProtocol():
 			"result" : result,
 			"message" : msg
 		}
-		msg = {"type" : MessageType.LOGIN.value,
-				"body" : body}
-		msg_json = json.dumps(msg)
+		msg_json = CommunicationProtocol.formulate_message(body, MessageType.LOGIN.value)
 		return msg_json
 
-
+	@staticmethod
+	def create_keep_alive_msg():
+		body = {}
+		msg_json = CommunicationProtocol.formulate_message(body, MessageType.KEEP_ALIVE.value)
+		return msg_json

@@ -63,7 +63,13 @@ class Client():
 			print ("connected")
 	
 	def on_message(self,message):
-		self.queue_read.put(message)
+		if message is None:
+			# server disconnected client
+			# TODO make reconnect mechanism, self.ws does not exist anymore
+			self.connect()
+			return
+		else:
+			self.queue_read.put(message)
 
 	async def sent_message(self):
 		if self.queue_sent.qsize() > 0:
