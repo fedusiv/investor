@@ -66,7 +66,10 @@ class ClientHandler(tornado.websocket.WebSocketHandler):
 			# end execution, wrong message
 			return
 		# messages related to connection should be proceed here, other need to be sent to separate command executtion module
-		if result.result_type == MessageType.LOGIN:
+		if result.result_type == MessageType.KEEP_ALIVE:
+			# do nothing. This is just keep alive. Server now knows, that client is alive
+			return
+		elif result.result_type == MessageType.LOGIN:
 			self.on_logged()
 		else:
 			self.command_execution()
@@ -102,6 +105,9 @@ class ClientHandlers():
 	# Functionality part
 	__client_storage = []
 	def store_connected_client(self, client: ClientHandler):
+		if client in self.__client_storage:
+			# do nothing it's already there
+			return
 		self.__client_storage.append(client)
 	
 	def remove_connected_client(self, client: ClientHandler):

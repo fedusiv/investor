@@ -15,6 +15,11 @@ class CommunitcationParserResult():
 class CommunitcationParser():
 
 	@staticmethod
+	def keep_alive_respond(msg):
+		result = CommunitcationParserResult(MessageType.KEEP_ALIVE)
+		return result
+
+	@staticmethod
 	def login_request(msg):
 		result = CommunitcationParserResult(MessageType.LOGIN)
 		return result
@@ -34,7 +39,8 @@ class CommunitcationParser():
 
 		switcher = {
 			MessageType.LOGIN.value : CommunitcationParser.login_request,
-			MessageType.REGISTRATION.value : CommunitcationParser.registration_request
+			MessageType.REGISTRATION.value : CommunitcationParser.registration_request,
+			MessageType.KEEP_ALIVE.value : CommunitcationParser.keep_alive_respond
 		}
 		func = switcher.get(int(msg["type"]))
 		result = func(msg)

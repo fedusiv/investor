@@ -10,6 +10,8 @@ from PyQt5.QtCore import QObject, pyqtSignal, QTimer
 import os, sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from server.communication_protocol import CommunicationProtocol
+from server.communication_protocol import MessageType
+
 
 # Logic part of connection based on qt for gui object.
 class ClientQObject(QObject):
@@ -17,9 +19,11 @@ class ClientQObject(QObject):
 		super().__init__()
 		self.queue_read = queue_read
 		self.queue_sent = queue_sent
+		
+		# queue_read Timer initialization
 		self.queue_timer = QTimer(self)
 		self.queue_timer.timeout.connect(self.queueChecker)
-		# zaebalsya to play with asyncio, better to use gui/qt for timer functionality to operate with qt inside qt
+		# Better to use gui/qt for timer functionality to operate with qt inside qt
 		self.queue_timer.setInterval(10)	# each 10ms call func to check queue messages from websocket
 		self.queue_timer.start()
 
@@ -27,7 +31,39 @@ class ClientQObject(QObject):
 		if self.queue_read.qsize() > 0:
 			# get message from websocket and parse it
 			msg = self.queue_read.get()
-			print(msg)
+			self.parse_server_message(msg)
+	
+	def none_message_reaction(self):
+		print(self.none_message_reaction.__name__)
+
+	def parse_server_message(self,msg):
+		# message should be json
+		msg = CommunicationProtocol.verify_msg(msg)
+		if msg is None:
+			return
+
+		# In current realization parsing and execution proccess realized in client module. If you want please spearate it
+		switcher = {
+			MessageType.LOGIN.value : self.on_login_request_answer,
+			MessageType.KEEP_ALIVE.value : self.on_keep_alive_request
+		}
+		func = switcher.get(int(msg["type"]), self.none_message_reaction)
+		func(msg)
+
+	def on_keep_alive_request(self,msg):
+		# server wants keep alive. Just send him to inform, that client is alive
+		msg_json = CommunicationProtocol.create_keep_alive_msg()
+		# put to sent queue
+		self.queue_sent.put(msg_json)
+
+	def on_login_request_answer(self,msg):
+		body = msg["body"]
+		if body["result"] is True:
+			# successfully logged
+			print("logged")
+		else:
+			# error in login
+			return
 
 	def transfer_login_auth(self, login, password):
 		# prepare message
@@ -35,7 +71,7 @@ class ClientQObject(QObject):
 		# sent message to websocket queue
 		self.queue_sent.put(msg)
 
-
+# Connection part of client
 class Client():
 	def __init__(self, url,queue_read: Queue,queue_sent: Queue):
 		self.url = url
