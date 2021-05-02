@@ -30,6 +30,11 @@ class CommunitcationParser():
 		return True
 
 	@staticmethod
+	def companies_all_list_request(msg):
+		result = CommunitcationParserResult(MessageType.COMPANIES_LIST_ALL)
+		return result
+
+	@staticmethod
 	def parse_clinet_message(msg):
 		# message should be json
 		msg = CommunicationProtocol.verify_msg(msg)

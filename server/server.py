@@ -28,8 +28,8 @@ class Server(tornado.web.Application):
 		# Rise invinite loop for keep alive checker
 		self.io_loop.spawn_callback(self.keep_alive_loop)
 
-                # Logic part
-		self.logic_handler = LogicHandler()
+		# Logic part
+		self.logic_handler = LogicHandler.Instance()
 		self.io_loop.spawn_callback(self.logic_handler.logic_loop)
 
 
@@ -59,6 +59,12 @@ class ClientHandler(tornado.websocket.WebSocketHandler):
 		print("A client connected to server. ", self.request.remote_ip)
 		# When connection happen get clientHandlers instance
 		self.client_handlers = ClientHandlers.Instance()
+		# Get logic handler
+		self.logic_handler = LogicHandler.Instance()
+
+		c_list = self.logic_handler.companies_all_list_client()
+		c_list_msg = CommunicationProtocol.create_companies_all_list(c_list)
+		self.write_message(c_list_msg)
 
 	# Required this field for web gui
 	def check_origin(self, origin):
@@ -83,7 +89,7 @@ class ClientHandler(tornado.websocket.WebSocketHandler):
 		elif result.result_type == MessageType.LOGIN:
 			self.on_logged()
 		else:
-			self.command_execution()
+			self.command_execution(result)
 
 	def on_logged(self):
 		self.client_handlers.store_connected_client(self)
@@ -96,8 +102,12 @@ class ClientHandler(tornado.websocket.WebSocketHandler):
 		msg = CommunicationProtocol.create_keep_alive_msg()
 		self.write_message(msg)
 
-	def command_execution(self):
-		print("command execution")
+	def command_execution(self,result_msg):
+		# TODO : make proper command execution module. This is temproray solution
+		if result_msg.result_type == MessageType.COMPANIES_LIST_ALL:
+			c_list = self.logic_handler.companies_all_list_client()
+			c_list_msg = CommunicationProtocol.create_companies_all_list(c_list)
+			self.write_message(c_list_msg)
 
 # Singleton to store all handlers
 # And manipulate them
@@ -153,6 +163,7 @@ def ServerStart():
 	server.listen(PORT)
 	
 	# After this line nothing will act, because it starts infinite priority loop
+	print("Server is starting")
 	io_loop_instance.start()
 
 

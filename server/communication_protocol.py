@@ -6,6 +6,7 @@ class MessageType(Enum):
 	LOGIN = 1
 	REGISTRATION = 2
 	KEEP_ALIVE = 3
+	COMPANIES_LIST_ALL = 4
 
 
 # Class to parse and create required messages
@@ -50,3 +51,21 @@ class CommunicationProtocol():
 		body = {}
 		msg_json = CommunicationProtocol.formulate_message(body, MessageType.KEEP_ALIVE.value)
 		return msg_json
+
+	# To server. Client requets list of all companies avalibale
+	@staticmethod
+	def request_companies_list():
+		body = {}
+		msg_json = CommunicationProtocol.formulate_message(body, MessageType.COMPANIES_LIST_ALL.value)
+		return msg_json
+
+	# To client send list with all companies
+	@staticmethod 
+	def create_companies_all_list(c_list):
+		body = {
+			"amount" : len(c_list),
+			"list" : c_list
+		}
+		msg_json = CommunicationProtocol.formulate_message(body, MessageType.COMPANIES_LIST_ALL.value)
+		return msg_json
+

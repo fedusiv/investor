@@ -43,6 +43,7 @@ class ClientQObject(QObject):
 			return
 
 		# In current realization parsing and execution proccess realized in client module. If you want please spearate it
+		# TODO: separate parsing to different module, not in client
 		switcher = {
 			MessageType.LOGIN.value : self.on_login_request_answer,
 			MessageType.KEEP_ALIVE.value : self.on_keep_alive_request
