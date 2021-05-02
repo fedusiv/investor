@@ -1,3 +1,5 @@
+import os, sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import tornado.web
 import tornado.websocket
 import tornado.ioloop
@@ -9,6 +11,7 @@ from communication_parser import CommunitcationParserResult
 from communication_protocol import MessageType
 from communication_protocol import CommunicationProtocol
 import time
+from logic_handler import LogicHandler
 
 PORT = 3002
 KEEP_ALIVE_TIME = 2
@@ -24,6 +27,10 @@ class Server(tornado.web.Application):
 		self.io_loop = io_loop
 		# Rise invinite loop for keep alive checker
 		self.io_loop.spawn_callback(self.keep_alive_loop)
+
+                # Logic part
+		self.logic_handler = LogicHandler()
+		self.io_loop.spawn_callback(self.logic_handler.logic_loop)
 
 
 	# go through all clients to check if need to send keep alive
