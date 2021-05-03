@@ -49,6 +49,7 @@ class CompaniesHandler():
 		companies_desc_list = []
 		for company in self.__companies_storage:
 			c_desc = {
+				"uuid" : company.uuid,
 				"name" : company.name,
 				"cost" : company.cost
 			}

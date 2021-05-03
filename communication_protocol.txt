@@ -1,0 +1,66 @@
+All communication presented in json.
+Here is logic and protocol description of communication.
+
+
+MessageType:
+LOGIN = 1
+Request server to login
+
+To server:
+{
+	"type" : 1,
+	"body" : 
+	{
+		"login" : login_string,
+		"password" : password_string
+	}
+}
+
+To client:
+{
+	"type" : 1,
+	"body" : 
+	{
+		"result" : result_bool,
+		"message" : message_string ( if result True, message empty, because authorization is ok, if result False there is a error messsage)
+	}
+}
+
+
+MessageType:
+KEEP_ALIVE = 3
+Ping pong client with server to validate, that connection still alive. Just logic mechanism of keep_alive
+To client and to server there is  identical message type:
+{
+	"type" : 3,
+	"body" : {} 
+}
+
+
+MessageType:
+COMPANIES_LIST_ALL = 4
+client requests a list of all available companies
+
+To server:
+{
+	"type" : 4,
+	"body" : {} 
+}
+
+To client:
+{
+	"type" : 4,
+	"body" : 
+	{
+		"amount" : int ( amount of companies which are in the list)
+		"list":	(array of companies)
+		[
+			"uuid" : string_uniq_id,
+			"name" : string_name,
+			"cost" : float ( cost of stock on a market)
+		]
+	} 
+}
+
+
+
