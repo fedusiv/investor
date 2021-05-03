@@ -12,6 +12,7 @@ from communication_protocol import MessageType
 from communication_protocol import CommunicationProtocol
 import time
 from logic_handler import LogicHandler
+from client_operation_module import ClientOperation
 
 PORT = 3002
 KEEP_ALIVE_TIME = 2
@@ -61,10 +62,8 @@ class ClientHandler(tornado.websocket.WebSocketHandler):
 		self.client_handlers = ClientHandlers.Instance()
 		# Get logic handler
 		self.logic_handler = LogicHandler.Instance()
-
-		c_list = self.logic_handler.companies_all_list_client()
-		c_list_msg = CommunicationProtocol.create_companies_all_list(c_list)
-		self.write_message(c_list_msg)
+		# Create client operations module
+		self.client_operation = ClientOperation(self, self.logic_handler)
 
 	# Required this field for web gui
 	def check_origin(self, origin):
@@ -87,11 +86,11 @@ class ClientHandler(tornado.websocket.WebSocketHandler):
 			# do nothing. This is just keep alive. Server now knows, that client is alive
 			return
 		elif result.result_type == MessageType.LOGIN:
-			self.on_logged()
+			self.on_logged(result)
 		else:
 			self.command_execution(result)
 
-	def on_logged(self):
+	def on_logged(self, result: CommunitcationParserResult):
 		self.client_handlers.store_connected_client(self)
 		print("client logged in")
 		# send message to client
@@ -103,11 +102,8 @@ class ClientHandler(tornado.websocket.WebSocketHandler):
 		self.write_message(msg)
 
 	def command_execution(self,result_msg):
-		# TODO : make proper command execution module. This is temproray solution
-		if result_msg.result_type == MessageType.COMPANIES_LIST_ALL:
-			c_list = self.logic_handler.companies_all_list_client()
-			c_list_msg = CommunicationProtocol.create_companies_all_list(c_list)
-			self.write_message(c_list_msg)
+		# Send for further actions for client request
+		self.client_operation.parse_command(result_msg)
 
 # Singleton to store all handlers
 # And manipulate them

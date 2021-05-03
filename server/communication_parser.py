@@ -1,6 +1,7 @@
 from communication_protocol import CommunicationProtocol
 from communication_protocol import MessageType
 from enum import Enum
+from client_data import ClientData
 
 
 class CommunitcationParserResult():
@@ -10,6 +11,9 @@ class CommunitcationParserResult():
 	def __init__ (self, result_type = MessageType.NONE, success = True):
 		self.err = success
 		self.result_type = result_type
+
+	def init_client_data(self, msg):
+		self.client_data = ClientData(msg["body"]["login"])
 
 
 class CommunitcationParser():
@@ -22,6 +26,8 @@ class CommunitcationParser():
 	@staticmethod
 	def login_request(msg):
 		result = CommunitcationParserResult(MessageType.LOGIN)
+		result.init_client_data(msg)
+		print(result.client_data.name)
 		return result
 
 	@staticmethod
