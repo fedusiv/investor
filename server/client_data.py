@@ -1,7 +1,8 @@
 # Operate with client data.
+# Playe data is other part
 
 class ClientData():
 
-	def __init__(self, name):
+	def __init__(self, name, password):
 		self.name = name
-		self.money = 1000
+		self.password = password

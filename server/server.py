@@ -91,8 +91,9 @@ class ClientHandler(tornado.websocket.WebSocketHandler):
 			self.command_execution(result)
 
 	def on_logged(self, result: CommunitcationParserResult):
+		# TODO : when data base appear need to implement here validation of user from data base and put all information inside ClientData
 		self.client_handlers.store_connected_client(self)
-		print("client logged in")
+		print("client connected. Login : ", result.client_data.name)
 		# send message to client
 		msg = CommunicationProtocol.create_login_result_msg(True)
 		self.write_message(msg)
