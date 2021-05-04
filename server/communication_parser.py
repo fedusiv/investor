@@ -12,8 +12,10 @@ class CommunitcationParserResult():
 		self.err = success
 		self.result_type = result_type
 
+	# For initialization client data
+	# On login request it should store credentials, for futher parsing and validating
 	def init_client_data(self, msg):
-		self.client_data = ClientData(msg["body"]["login"])
+		self.client_data = ClientData(msg["body"]["login"],msg["body"]["password"])
 
 
 class CommunitcationParser():
@@ -27,7 +29,6 @@ class CommunitcationParser():
 	def login_request(msg):
 		result = CommunitcationParserResult(MessageType.LOGIN)
 		result.init_client_data(msg)
-		print(result.client_data.name)
 		return result
 
 	@staticmethod
@@ -51,7 +52,8 @@ class CommunitcationParser():
 		switcher = {
 			MessageType.LOGIN.value : CommunitcationParser.login_request,
 			MessageType.REGISTRATION.value : CommunitcationParser.registration_request,
-			MessageType.KEEP_ALIVE.value : CommunitcationParser.keep_alive_respond
+			MessageType.KEEP_ALIVE.value : CommunitcationParser.keep_alive_respond,
+			MessageType.COMPANIES_LIST_ALL.value : CommunitcationParser.companies_all_list_request
 		}
 		func = switcher.get(int(msg["type"]))
 		result = func(msg)
