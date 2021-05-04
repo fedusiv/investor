@@ -3,6 +3,9 @@
 import tornado.websocket
 from communication_parser import CommunitcationParserResult
 from logic_handler import LogicHandler
+from communication_protocol import MessageType
+from communication_protocol import CommunicationProtocol
+
 
 class ClientOperation():
 
@@ -16,4 +19,6 @@ class ClientOperation():
 		if cmd.result_type == MessageType.COMPANIES_LIST_ALL:
 			c_list = self.logic_handler.companies_all_list_client()
 			c_list_msg = CommunicationProtocol.create_companies_all_list(c_list)
-			self.write_message(c_list_msg)
+			self.ws.write_message(c_list_msg)
+
+
