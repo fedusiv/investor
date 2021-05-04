@@ -13,7 +13,7 @@ class ClientOperation():
 
 	def parse_command(self,cmd : CommunitcationParserResult):
 
-		if result_msg.result_type == MessageType.COMPANIES_LIST_ALL:
+		if cmd.result_type == MessageType.COMPANIES_LIST_ALL:
 			c_list = self.logic_handler.companies_all_list_client()
 			c_list_msg = CommunicationProtocol.create_companies_all_list(c_list)
 			self.write_message(c_list_msg)
