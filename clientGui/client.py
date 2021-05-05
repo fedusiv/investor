@@ -12,9 +12,15 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from server.communication_protocol import CommunicationProtocol
 from server.communication_protocol import MessageType
 
+from command_parser import CommandParser
+
 
 # Logic part of connection based on qt for gui object.
 class ClientQObject(QObject):
+
+	# Flag of login state
+	is_logged = False
+
 	def __init__(self,queue_read: Queue,queue_sent: Queue):
 		super().__init__()
 		self.queue_read = queue_read
@@ -27,15 +33,23 @@ class ClientQObject(QObject):
 		self.queue_timer.setInterval(10)	# each 10ms call func to check queue messages from websocket
 		self.queue_timer.start()
 
+		# Init command parse
+		self.cmd_parser = CommandParser()
+
+
+	# Signals
+	login_received = pyqtSignal(bool)
+
 	def queueChecker(self):
 		if self.queue_read.qsize() > 0:
 			# get message from websocket and parse it
 			msg = self.queue_read.get()
 			self.parse_server_message(msg)
 	
-	def none_message_reaction(self):
-		print(self.none_message_reaction.__name__)
-
+	def none_connection_messages(self):
+		if self.is_logged is False:
+			return
+		
 	def parse_server_message(self,msg):
 		# message should be json
 		msg = CommunicationProtocol.verify_msg(msg)
@@ -48,7 +62,7 @@ class ClientQObject(QObject):
 			MessageType.LOGIN.value : self.on_login_request_answer,
 			MessageType.KEEP_ALIVE.value : self.on_keep_alive_request
 		}
-		func = switcher.get(int(msg["type"]), self.none_message_reaction)
+		func = switcher.get(int(msg["type"]), self.none_connection_messages)
 		func(msg)
 
 	def on_keep_alive_request(self,msg):
@@ -58,13 +72,13 @@ class ClientQObject(QObject):
 		self.queue_sent.put(msg_json)
 
 	def on_login_request_answer(self,msg):
-		body = msg["body"]
-		if body["result"] is True:
-			# successfully logged
-			print("logged")
-		else:
-			# error in login
+		if self.is_logged:
+			# This functionality can be used only player is not logged into system
 			return
+		body = msg["body"]
+		self.is_logged = body["result"]
+		self.login_received.emit(self.is_logged)
+
 
 	def transfer_login_auth(self, login, password):
 		# prepare message

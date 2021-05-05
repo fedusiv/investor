@@ -54,7 +54,8 @@ class ClientHandler(tornado.websocket.WebSocketHandler):
 	alive_error = 0
 	# Store value, when keep_alive message was sent last time
 	alive_last_msg_time = 0.0
-	
+	# Display if client if logged in to server, server knows who is client, and allow to work with him
+	logged_in = False
 
 	def open(self):
 		print("A client connected to server. ", self.request.remote_ip)
@@ -87,13 +88,15 @@ class ClientHandler(tornado.websocket.WebSocketHandler):
 			return
 		elif result.result_type == MessageType.LOGIN:
 			self.on_logged(result)
-		else:
+		elif self.logged_in is True:
+			# Make all operation if only client is logged in.
 			self.command_execution(result)
 
 	def on_logged(self, result: CommunitcationParserResult):
 		# TODO : when data base appear need to implement here validation of user from data base and put all information inside ClientData
 		self.client_handlers.store_connected_client(self)
 		print("client connected. Login : ", result.client_data.name)
+		self.logged_in = True
 		# send message to client
 		msg = CommunicationProtocol.create_login_result_msg(True)
 		self.write_message(msg)
