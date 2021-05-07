@@ -13,14 +13,26 @@ class CommandParser():
 		pass
 
 	def companies_list_all(self,msg):
-		print(msg)
+		# create list of companies and proceed to gui
+		body = msg["body"]
+		c_list = body["list"]
+		cmp_list = []
+		for i in range(body["amount"]):
+			cur = c_list[i]
+			c = CompanyData(cur["name"],cur["uuid"], float(cur["cost"]))
+			cmp_list.append(c)
+		# send it futher
+		return cmp_list
+
+
 
 	def parse(self, msg):
 		switcher = {
 			MessageType.COMPANIES_LIST_ALL.value : self.companies_list_all
 		}
 		func = switcher.get(int(msg["type"]), self.none_cmd_func)
-		func(msg)
+		res = func(msg)
+		return res
 
 	def none_cmd_func(self, msg):
 		print(" Wrong cmd", msg["type"])

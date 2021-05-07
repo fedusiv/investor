@@ -27,7 +27,8 @@ class Gui(QWidget):
 		self.show()
 	
 	def connetsInit(self):
-		self.client.login_received.connect(self.on_login_result_received)
+		self.client.login_received.connect(self.on_login_result_received)	# receive login request answer
+		self.client.companies_list_received.connect(self.on_company_list_received)	# receive list of companies
 
 	def on_login_button_pressed(self):
 		self.client.transfer_login_auth(self.qlineedit_connect_nickname.text(), self.qlineedit_connect_password.text())
@@ -51,6 +52,11 @@ class Gui(QWidget):
 	def on_buy_company_request(self, cmp_id):
 		print("Request to buy company : ", cmp_id)
 
+	# When received list of companies
+	@pyqtSlot(list)
+	def on_company_list_received(self,c_list):
+		self.tab_ose.update_companies_list(c_list)
+
 
 	# UI description part
 
@@ -69,6 +75,8 @@ class Gui(QWidget):
 
 		# Open stock Exchage calls to update list of companies
 		self.tab_ose.companies_request_timer.timeout.connect(self.on_companies_list_request)
+		# And if it mainwindow open need to open it already with data
+		self.on_companies_list_request()
 
 	def loginWindow(self):
 		self.qlabel_connect_nickname = QLabel(parent=self)

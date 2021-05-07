@@ -38,8 +38,10 @@ class ClientQObject(QObject):
 
 
 	# Signals
-	login_received = pyqtSignal(bool)
+	login_received = pyqtSignal(bool)	# when received login result
+	companies_list_received = pyqtSignal(list)	# received list of companies
 
+	# Check reading queue
 	def queueChecker(self):
 		if self.queue_read.qsize() > 0:
 			# get message from websocket and parse it
@@ -50,7 +52,8 @@ class ClientQObject(QObject):
 	def not_connection_messages(self, msg):
 		if self.is_logged is False:
 			return
-		self.cmd_parser.parse(msg)
+		res = self.cmd_parser.parse(msg)
+		return res
 
 	def parse_server_message(self,msg):
 		# message should be json
@@ -63,7 +66,13 @@ class ClientQObject(QObject):
 			MessageType.KEEP_ALIVE.value : self.on_keep_alive_request
 		}
 		func = switcher.get(int(msg["type"]), self.not_connection_messages)
-		func(msg)
+		res = func(msg)
+		# After parsing need to make some stuff with received and parsed information
+		# TODO : make it more clearly and optimized
+		if res is not None:
+			if int(msg["type"]) == MessageType.COMPANIES_LIST_ALL.value:
+				self.companies_list_received.emit(res)
+
 
 	def on_keep_alive_request(self,msg):
 		# server wants keep alive. Just send him to inform, that client is alive

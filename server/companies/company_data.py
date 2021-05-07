@@ -6,4 +6,4 @@ class CompanyData():
 	def __init__(self, name = "", uuid = "", cost = 0.0):
 		self.name = name
 		self.uuid = uuid
-		self.cost = 0.0
+		self.cost = cost

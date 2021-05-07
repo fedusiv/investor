@@ -1,7 +1,7 @@
 from companies.company import Company
 import time
 
-MAX_COMPANIES_AMOUNT = 10
+MAX_COMPANIES_AMOUNT = 20
 
 # Singleton respond for all companies movement and operations
 class CompaniesHandler():
