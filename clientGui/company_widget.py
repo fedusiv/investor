@@ -1,18 +1,33 @@
 from PyQt5.QtWidgets import (QWidget, QLabel, QPushButton, QLineEdit, QMessageBox,
 								QHBoxLayout, QVBoxLayout, QGroupBox, QTabWidget)
+from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
 
 class CompanyWidget(QWidget):
-	def __init__(self):
+
+	def __init__(self, name : str, cost: str, cmp_id : int):
 		super().__init__()
+		self.id = cmp_id
 		self.resize(580,60)
-		self.group_box = QGroupBox("No name", parent = self)
+		self.group_box = QGroupBox(name, parent = self)
 		self.group_box.resize(580,60)
+		layout = QHBoxLayout()
+		self.group_box.setLayout(layout)
 
 		self.cost_label = QLabel(parent=self.group_box)
-		self.cost_label.text = "10.3"
-		#self.group_box.addWidget(self.cost_label)
+		self.cost_label.setText(cost)
+		layout.addWidget(self.cost_label)
 		self.buy_button = QPushButton(parent = self.group_box)
+		self.buy_button.setText("Buy")
 		self.buy_button.setFixedSize(80,28)
 		self.buy_button.move(490,27)
-		pass
+		self.buy_button.clicked.connect(self.on_buy_button_clicked)
+
+	# Send the id of company widget
+	company_buy_request = pyqtSignal(int)
+
+	# Emit button pressed request
+	def on_buy_button_clicked():
+		self.company_buy_request.emit(self.id)
+
+
 

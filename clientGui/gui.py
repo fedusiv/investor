@@ -1,12 +1,14 @@
 import os, sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from PyQt5.QtWidgets import (QApplication, QWidget, QLabel, QPushButton, QLineEdit, QMessageBox,
 								QHBoxLayout, QVBoxLayout, QGroupBox, QTabWidget)
 from PyQt5.QtCore import QObject, pyqtSignal, QTimer, pyqtSlot
-import sys
+
 from queue import Queue
 from client import ClientQObject
 from company_widget import CompanyWidget
+from ose_widget import OseWidget
 
 class Gui(QWidget):
 
@@ -16,8 +18,7 @@ class Gui(QWidget):
 
 		self.initUI()
 		self.connetsInit()
-		#self.loginWindow()
-		self.mainWindow()
+		self.loginWindow()
 
 	# Logic part
 	def initUI(self):
@@ -26,7 +27,6 @@ class Gui(QWidget):
 		self.show()
 	
 	def connetsInit(self):
-		#self.connect(self, self.client.login_received, self.on_login_result_received )
 		self.client.login_received.connect(self.on_login_result_received)
 
 	def on_login_button_pressed(self):
@@ -42,30 +42,33 @@ class Gui(QWidget):
 		else:
 			self.qbutton_login.setEnabled(True)
 
+	# Gui want to update companies list
+	def on_companies_list_request(self):
+		self.client.send_companies_list_request()
+
+	# When on open stock Exchange user request to buy company
+	@pyqtSlot(int)
+	def on_buy_company_request(self, cmp_id):
+		print("Request to buy company : ", cmp_id)
+
 
 	# UI description part
-
-	# Open stock Exchange window
-	def ose_tab_window(self):
-		widget = QWidget()
-		widget.layout = QVBoxLayout(widget)
-		layout = widget.layout
-		cp = CompanyWidget()
-		layout.addWidget(cp)
-		return widget
 
 	def mainWindow(self):
 		self.layout = QVBoxLayout(self)
 		self.setFixedSize(640,480)
 		# Initialize tab screen
 		self.tabs = QTabWidget()
-		self.tab1 = self.ose_tab_window()
+		self.tab_ose = OseWidget()
 		self.tab2 = QWidget()
 		# Add tabs
-		self.tabs.addTab(self.tab1,"Open Stock Exchange")
+		self.tabs.addTab(self.tab_ose,"Open Stock Exchange")
 		self.tabs.addTab(self.tab2,"Market Place")
 
 		self.layout.addWidget(self.tabs)
+
+		# Open stock Exchage calls to update list of companies
+		self.tab_ose.companies_request_timer.timeout.connect(self.on_companies_list_request)
 
 	def loginWindow(self):
 		self.qlabel_connect_nickname = QLabel(parent=self)

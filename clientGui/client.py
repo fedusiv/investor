@@ -45,24 +45,24 @@ class ClientQObject(QObject):
 			# get message from websocket and parse it
 			msg = self.queue_read.get()
 			self.parse_server_message(msg)
-	
-	def none_connection_messages(self):
+
+	# Parse everything, that is not related to communication
+	def not_connection_messages(self, msg):
 		if self.is_logged is False:
 			return
-		
+		self.cmd_parser.parse(msg)
+
 	def parse_server_message(self,msg):
 		# message should be json
 		msg = CommunicationProtocol.verify_msg(msg)
 		if msg is None:
 			return
 
-		# In current realization parsing and execution proccess realized in client module. If you want please spearate it
-		# TODO: separate parsing to different module, not in client
 		switcher = {
 			MessageType.LOGIN.value : self.on_login_request_answer,
 			MessageType.KEEP_ALIVE.value : self.on_keep_alive_request
 		}
-		func = switcher.get(int(msg["type"]), self.none_connection_messages)
+		func = switcher.get(int(msg["type"]), self.not_connection_messages)
 		func(msg)
 
 	def on_keep_alive_request(self,msg):
@@ -85,6 +85,11 @@ class ClientQObject(QObject):
 		msg = CommunicationProtocol.create_login_msg(login,password)
 		# sent message to websocket queue
 		self.queue_sent.put(msg)
+
+	def send_companies_list_request(self):
+		msg_json = CommunicationProtocol.request_companies_list()
+		self.queue_sent.put(msg_json)
+
 
 # Connection part of client
 class Client():
