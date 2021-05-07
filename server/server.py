@@ -1,18 +1,23 @@
 import os, sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import time
+import copy
+
 import tornado.web
 import tornado.websocket
 import tornado.ioloop
 import tornado.options
 from tornado import gen
 from tornado.options import define, options
+
 from communication_parser import CommunitcationParser
 from communication_parser import CommunitcationParserResult
 from communication_protocol import MessageType
 from communication_protocol import CommunicationProtocol
-import time
 from logic_handler import LogicHandler
 from client_operation_module import ClientOperation
+from client_data import ClientData
+
 
 PORT = 3002
 KEEP_ALIVE_TIME = 2
@@ -95,7 +100,8 @@ class ClientHandler(tornado.websocket.WebSocketHandler):
 	def on_logged(self, result: CommunitcationParserResult):
 		# TODO : when data base appear need to implement here validation of user from data base and put all information inside ClientData
 		self.client_handlers.store_connected_client(self)
-		print("client connected. Login : ", result.client_data.name)
+		self.client_data = copy.deepcopy(result.client_data)	# Copy and create new object of Client data
+		print("client connected. Login : ", self.client_data.name)
 		self.logged_in = True
 		# send message to client
 		msg = CommunicationProtocol.create_login_result_msg(True)

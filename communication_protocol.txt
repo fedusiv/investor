@@ -65,4 +65,31 @@ Example:
 {'type': 4, 'body': {'amount': 10, 'list': [{'uuid': 'b3cd9db0-68de-4ab8-8d17-a0f56879c650', 'name': 'Jewellery of Shrierpuld Fihlusols', 'cost': 39.32}, {'uuid': '0bc8052b-4dac-4887-a303-09f28dc4419c', 'name': 'Forge of Shrierpuld Fihlusols', 'cost': 43.29999999999999}, {'uuid': '0288e931-be09-476e-a70d-957b5eceb954', 'name': 'Alchemistry of Linbak Denma', 'cost': 34.17999999999999}, {'uuid': 'dd4fec11-294a-41b9-8300-af0d75e678b9', 'name': 'Jewellery of Krelul Keva', 'cost': 31.720000000000006}, {'uuid': 'b8b66d5e-f6ec-466f-88e1-2bd79511e84b', 'name': 'Quarry of Leidron Endas', 'cost': 34.659999999999975}, {'uuid': '3a34eb04-7ea5-42ba-a56c-c9a656618c84', 'name': 'Jewellery of Shrierpuld Fihlusols', 'cost': 32.849999999999994}, {'uuid': 'b0e7d454-32f3-440e-bfa7-caf28c43adcb', 'name': 'Mill of Dudrik Steinlich', 'cost': 33.31}, {'uuid': 'beff50ba-e28d-4b34-b6cb-a7127db03260', 'name': 'Alchemistry of Dudrik Steinlich', 'cost': 22.22}, {'uuid': '10058bd3-1fca-4c02-aef1-e81614ff3aa1', 'name': 'Sawmill of Dudrik Steinlich', 'cost': 33.039999999999985}, {'uuid': '4bb7e77b-ecd2-46a2-868b-77b2af37f8b4', 'name': 'Alchemistry of Linbak Denma', 'cost': 25.540000000000003}]}}
 
 
+MessageType:
+BUY_STOCK = 5
+client requests to buy stock of company
 
+To server:
+{
+	"type" : 5,
+	"body" :
+	{
+		"uuid" : str ( uuid of company )
+		"amount" : int ( amount of stocks)
+		"cost"	: float (cost of one stock)
+	}
+}
+
+To client:
+{
+	"type": 5,
+	"body":
+	{
+		"result" : bool (operation pass of failed)
+		"message" : str (of fail, so send reason of fault)
+		"player_data" : (send current player data)
+		{
+			... (in process)
+		}
+	}
+}

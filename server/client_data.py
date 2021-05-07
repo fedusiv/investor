@@ -1,5 +1,5 @@
 # Operate with client data.
-# Playe data is other part
+# Player data is other part
 
 class ClientData():
 
