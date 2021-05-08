@@ -15,7 +15,8 @@ class CommunitcationParserResult():
 	# For initialization client data
 	# On login request it should store credentials, for futher parsing and validating
 	def init_client_data(self, msg):
-		self.client_data = ClientData(msg["body"]["login"],msg["body"]["password"])
+		self.login = msg["body"]["login"]
+		self.password = msg["body"]["password"]
 
 	# To buy requested stock
 	def form_stock_buy_request(self,msg):

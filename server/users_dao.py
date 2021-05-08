@@ -4,38 +4,44 @@ import boto3
 from client_data import ClientData
 from communication_protocol import MessageType
 
-
+# User Data Access Object
 class UsersDao:
 
-    __instance = None
+	__instance = None
 
-    @staticmethod
-    def instance():
-        if UsersDao.__instance is None:
-            UsersDao()
-        return UsersDao.__instance
+	@staticmethod
+	def Instance():
+		if UsersDao.__instance is None:
+			UsersDao()
+		return UsersDao.__instance
 
-    def __init__(self):
-        UsersDao.__instance = self
-        dynamodb = boto3.resource('dynamodb')
-        self.table = dynamodb.Table('users')
+	def __init__(self):
+		UsersDao.__instance = self
+		dynamodb = boto3.resource('dynamodb')
+		self.table = dynamodb.Table('users')
 
-    def add_user(self, credentials):
-        self.table.put_item(
-            Item={
-                'login': credentials["body"]["login"],
-                'password': credentials["body"]["password"]
-            }
-        )
-        return ClientData(credentials["body"]["login"], credentials["body"]["password"])
+	def add_user(self, credentials):
+		self.table.put_item(
+			Item={
+				'login': credentials["body"]["login"],
+				'password': credentials["body"]["password"]
+			}
+		)
+		return ClientData(credentials["body"]["login"], credentials["body"]["password"])
 
-    def get_user_by_login(self, credentials):
-        table_credentials = self.table.get_item(
-            Key={
-                'login': credentials["body"]["login"]
-            }
-        )
-        if table_credentials["Item"]["password"] == credentials["body"]["password"]:
-            return ClientData(credentials["body"]["login"], credentials["body"]["password"])
-        else:
-            return MessageType.NONE
+	def get_user_by_login(self, login : str, password):
+		table_credentials = self.table.get_item(
+			Key={
+				'login': login
+			}
+		)
+
+		try:
+			if table_credentials["Item"]["password"] == password:
+				return ClientData(login, password)
+			else:
+				return None
+		except:
+			return None
+
+

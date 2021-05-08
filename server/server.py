@@ -17,7 +17,7 @@ from communication_protocol import CommunicationProtocol
 from logic_handler import LogicHandler
 from client_operation_module import ClientOperation
 from client_data import ClientData
-
+from users_dao import UsersDao
 
 PORT = 3002
 KEEP_ALIVE_TIME = 2
@@ -33,6 +33,9 @@ class Server(tornado.web.Application):
 		self.io_loop = io_loop
 		# Rise invinite loop for keep alive checker
 		self.io_loop.spawn_callback(self.keep_alive_loop)
+
+		# Init data base
+		self.users_dao = UsersDao.Instance()
 
 		# Logic part
 		self.logic_handler = LogicHandler.Instance()
@@ -70,6 +73,8 @@ class ClientHandler(tornado.websocket.WebSocketHandler):
 		self.logic_handler = LogicHandler.Instance()
 		# Create client operations module
 		self.client_operation = ClientOperation(self, self.logic_handler)
+		# Get access to users dao
+		self.users_dao = UsersDao.Instance()
 
 	# Required this field for web gui
 	def check_origin(self, origin):
@@ -98,10 +103,13 @@ class ClientHandler(tornado.websocket.WebSocketHandler):
 			self.command_execution(result)
 
 	def on_logged(self, result: CommunitcationParserResult):
-		# TODO : when data base appear need to implement here validation of user from data base and put all information inside ClientData
+		client_data = self.users_dao.get_user_by_login(result.login, result.password)
+		if client_data is None:
+			return
+		
 		self.client_handlers.store_connected_client(self)
 		# Client data should be obtain from data base
-		self.client_data = copy.deepcopy(result.client_data)	# Copy and create new object of Client data
+		self.client_data = copy.deepcopy(client_data)	# Copy and create new object of Client data
 		# Give to operation module client data
 		self.client_operation.client_data = self.client_data
 		print("client connected. Login : ", self.client_data.login)
