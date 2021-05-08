@@ -100,11 +100,14 @@ class ClientHandler(tornado.websocket.WebSocketHandler):
 	def on_logged(self, result: CommunitcationParserResult):
 		# TODO : when data base appear need to implement here validation of user from data base and put all information inside ClientData
 		self.client_handlers.store_connected_client(self)
+		# Client data should be obtain from data base
 		self.client_data = copy.deepcopy(result.client_data)	# Copy and create new object of Client data
-		print("client connected. Login : ", self.client_data.name)
+		# Give to operation module client data
+		self.client_operation.client_data = self.client_data
+		print("client connected. Login : ", self.client_data.login)
 		self.logged_in = True
 		# send message to client
-		msg = CommunicationProtocol.create_login_result_msg(True)
+		msg = CommunicationProtocol.create_login_result_msg(True,self.client_data.uuid)
 		self.write_message(msg)
 
 	def send_keep_alive(self):
@@ -112,6 +115,9 @@ class ClientHandler(tornado.websocket.WebSocketHandler):
 		self.write_message(msg)
 
 	def command_execution(self,result_msg):
+		# Verification, that message received form required client. Checking uuid of sender
+		if self.client_data.uuid != result_msg.uuid:
+			return	# If not equal do not go further
 		# Send for further actions for client request
 		self.client_operation.parse_command(result_msg)
 

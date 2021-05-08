@@ -33,3 +33,7 @@ class LogicHandler():
 	# Client request information about companies. Server return it
 	def companies_all_list_client(self):
 		return self.companies_handler.get_all_companies_to_list()
+
+	# Client request to buy stock
+	def request_to_buy_stock(self,uuid:str, amount : int, cost : float, player_money : float):
+		return self.companies_handler.purchase_stock_of_comany(uuid,amount,cost,player_money)

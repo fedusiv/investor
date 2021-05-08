@@ -22,7 +22,10 @@ class Company():
 	@property
 	def cost(self):
 		return self.data.cost
-	
+
+	# Array of cost history.
+	# TODO: make it with end amount
+	cost_history = []
 
 	def __init__(self):
 		# Create data object
@@ -40,6 +43,7 @@ class Company():
 		random.seed(time.time())
 		random_cost = random.uniform(10.0, 30.0)
 		self.data.cost = round(random_cost,2)
+		self.cost_history.append(self.data.cost)
 
 		# Set next cost update time
 		self.cost_last_update_time = time.time()
@@ -59,6 +63,13 @@ class Company():
 		diff = random.uniform(-0.5, 1.0)
 		diff = round(diff,2)
 		self.data.cost += diff
+		self.cost_history.append(self.data.cost)
 		self.cost_last_update_time  = current_time
 
+	# Verify, that this cost was recently
+	def verify_in_cost_history(self,cost : float):
+		if cost in self.cost_history:
+			return True
+		else:
+			return False
 

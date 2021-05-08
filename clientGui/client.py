@@ -9,7 +9,7 @@ from PyQt5.QtCore import QObject, pyqtSignal, QTimer
 
 import os, sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from server.communication_protocol import CommunicationProtocol
+from client_protocol import ClientProtocol
 from server.communication_protocol import MessageType
 
 from command_parser import CommandParser
@@ -35,11 +35,14 @@ class ClientQObject(QObject):
 
 		# Init command parse
 		self.cmd_parser = CommandParser()
+		# Create communication protocol
+		self.protocol = ClientProtocol()
 
 
 	# Signals
 	login_received = pyqtSignal(bool)	# when received login result
 	companies_list_received = pyqtSignal(list)	# received list of companies
+	cliend_data_received = pyqtSignal(dict)	# recived data with client information
 
 	# Check reading queue
 	def queueChecker(self):
@@ -57,7 +60,7 @@ class ClientQObject(QObject):
 
 	def parse_server_message(self,msg):
 		# message should be json
-		msg = CommunicationProtocol.verify_msg(msg)
+		msg = self.protocol.verify_msg(msg)
 		if msg is None:
 			return
 
@@ -72,11 +75,14 @@ class ClientQObject(QObject):
 		if res is not None:
 			if int(msg["type"]) == MessageType.COMPANIES_LIST_ALL.value:
 				self.companies_list_received.emit(res)
+			elif int(msg["type"]) == MessageType.CLIENT_DATA.value:
+				self.cliend_data_received.emit(res)
+			
 
 
 	def on_keep_alive_request(self,msg):
 		# server wants keep alive. Just send him to inform, that client is alive
-		msg_json = CommunicationProtocol.create_keep_alive_msg()
+		msg_json = self.protocol.create_keep_alive_msg()
 		# put to sent queue
 		self.queue_sent.put(msg_json)
 
@@ -86,17 +92,22 @@ class ClientQObject(QObject):
 			return
 		body = msg["body"]
 		self.is_logged = body["result"]
+		self.protocol.uuid = body["uuid"]	# Store uuid. Client will use it in communication with server for better indentification
 		self.login_received.emit(self.is_logged)
 
 
 	def transfer_login_auth(self, login, password):
 		# prepare message
-		msg = CommunicationProtocol.create_login_msg(login,password)
+		msg = self.protocol.create_login_msg(login,password)
 		# sent message to websocket queue
 		self.queue_sent.put(msg)
 
 	def send_companies_list_request(self):
-		msg_json = CommunicationProtocol.request_companies_list()
+		msg_json = self.protocol.request_companies_list()
+		self.queue_sent.put(msg_json)
+
+	def send_client_data_request(self):
+		msg_json = self.protocol.request_client_data()
 		self.queue_sent.put(msg_json)
 
 

@@ -7,6 +7,8 @@ class MessageType(Enum):
 	REGISTRATION = 2
 	KEEP_ALIVE = 3
 	COMPANIES_LIST_ALL = 4
+	BUY_STOCK = 5
+	CLIENT_DATA = 6
 
 
 # Class to parse and create required messages
@@ -28,20 +30,13 @@ class CommunicationProtocol():
 		msg_json = json.dumps(msg)
 		return msg_json
 
-	# To server
+	# To client.
 	@staticmethod
-	def create_login_msg(login,password):
-		body = {"login" : login,
-				"password" : password}
-		msg_json = CommunicationProtocol.formulate_message(body, MessageType.LOGIN.value)
-		return msg_json
-
-	# To client
-	@staticmethod
-	def create_login_result_msg(result, msg = ""):
+	def create_login_result_msg(result,uuid:str, msg = ""):
 		body = {
 			"result" : result,
-			"message" : msg
+			"message" : msg,
+			"uuid" : uuid
 		}
 		msg_json = CommunicationProtocol.formulate_message(body, MessageType.LOGIN.value)
 		return msg_json
@@ -50,13 +45,6 @@ class CommunicationProtocol():
 	def create_keep_alive_msg():
 		body = {}
 		msg_json = CommunicationProtocol.formulate_message(body, MessageType.KEEP_ALIVE.value)
-		return msg_json
-
-	# To server. Client requets list of all companies avalibale
-	@staticmethod
-	def request_companies_list():
-		body = {}
-		msg_json = CommunicationProtocol.formulate_message(body, MessageType.COMPANIES_LIST_ALL.value)
 		return msg_json
 
 	# To client send list with all companies
@@ -69,3 +57,43 @@ class CommunicationProtocol():
 		msg_json = CommunicationProtocol.formulate_message(body, MessageType.COMPANIES_LIST_ALL.value)
 		return msg_json
 
+	# To client, send client's data
+	@staticmethod
+	def create_client_data_msg(login : str, money : float, stock_list):
+		s_list = {}
+		if stock_list is not None:
+			s_list = stock_list
+		
+		body = {
+			"login" : login,
+			"player_data":
+			{
+				"money" : money,
+				"stocks" :
+				{
+					"amount" : len(s_list),
+					"list" : s_list
+				}
+			}
+		}
+		msg_json = CommunicationProtocol.formulate_message(body, MessageType.CLIENT_DATA.value)
+		return msg_json
+
+	# To client, send result of perchase
+	@staticmethod
+	def create_purchase_result(result : bool, money : float, stock_list):
+		body = {
+			"result" : result,
+			"message" : "...emppty...",	# This is temporary solution. In future it should be change to real message
+			"player_data":
+			{
+				"money" : money,
+				"stocks" :
+				{
+					"amount" : len(stock_list),
+					"list" : stock_list
+				}
+			}
+		}
+		msg_json = CommunicationProtocol.formulate_message(body, MessageType.BUY_STOCK.value)
+		return msg_json

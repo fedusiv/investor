@@ -8,6 +8,7 @@ from server.companies.company_data import CompanyData
 
 # Open stock Exchange widget
 class OseWidget(QWidget):
+
 	def __init__(self):
 		super().__init__()
 
@@ -17,23 +18,22 @@ class OseWidget(QWidget):
 		self.companies_request_timer.setInterval(5000)
 		self.companies_request_timer.start()
 		# Create layout for ose widget
-		ose_layout = QVBoxLayout()
+		ose_layout = QHBoxLayout()
 		self.setLayout(ose_layout)
 		# Create area for companeis list
 		self.scroll_widget = QWidget()	# Create container widget, which will be scrollable
 		layout = QVBoxLayout()	# add layout to it
 		self.scroll_widget.setLayout(layout)
 		self.scroll_area = QScrollArea()	# Create scroll area
+		#self.scroll_area.setFixedSize(640,600)
 		self.scroll_area.setWidgetResizable(True)
 		self.scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
 		self.scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 		self.scroll_area.setWidget(self.scroll_widget)
 		ose_layout.addWidget(self.scroll_area)
 
-		#cp = CompanyWidget("name", "cost", 1)
-		#self.scroll_widget.layout().addWidget(cp)
 
-	# Store companies objects
+	# Store companies widget objects
 	company_storage = []
 
 	# When need to update companies list. Nice description I understand

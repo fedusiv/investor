@@ -1,8 +1,21 @@
 # Operate with client data.
 # Player data is other part
 
+from player.player_data import PlayerData
+
 class ClientData():
 
-	def __init__(self, name, password):
-		self.name = name
-		self.password = password
+	@property
+	def password(self):
+		return self.__password
+
+	@property
+	def uuid(self):
+		self.__uuid
+
+	def __init__(self, login, password):
+		self.login = login
+		self.__password = password
+		# TODO: !!! Change it to database functionality
+		self.__uuid = "16af-54fg"
+		self.player_data = PlayerData()

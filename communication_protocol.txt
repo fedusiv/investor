@@ -21,8 +21,9 @@ To client:
 	"type" : 1,
 	"body" : 
 	{
-		"result" : result_bool,
+		"result" : result_bool
 		"message" : message_string ( if result True, message empty, because authorization is ok, if result False there is a error messsage)
+		"uuid" : str (unique id of player)
 	}
 }
 
@@ -32,8 +33,8 @@ KEEP_ALIVE = 3
 Ping pong client with server to validate, that connection still alive. Just logic mechanism of keep_alive
 To client and to server there is  identical message type:
 {
-	"type" : 3,
-	"body" : {} 
+	"type" : 3
+	"body" : {}
 }
 
 
@@ -44,7 +45,8 @@ client requests a list of all available companies
 To server:
 {
 	"type" : 4,
-	"body" : {} 
+	"body" : {}
+	"uuid" : str (unique id of client) 
 }
 
 To client:
@@ -89,7 +91,49 @@ To client:
 		"message" : str (of fail, so send reason of fault)
 		"player_data" : (send current player data)
 		{
-			... (in process)
+			"money" : float (current amount of money)
+			"stocks" :
+			{
+				"amount" : int (amount of stocks in list)
+				"list : (list of stocks)
+				[
+					"uuid" : str (id of company)
+					"amount" : int ( amount of stocks of one company)
+				]
+			}
+		}
+	}
+}
+
+MessageType:
+CLIENT_DATA = 6
+client request from server all information, which client should know
+
+To server:
+{
+	"type" : 6,
+	"body" : {}
+	"uuid" : str ( unique id of player )
+}
+
+To client:
+{
+	"type": 6,
+	"body":
+	{
+		"login" : str (login name)
+		"player_data" : (send current player data)
+		{
+			"money" : float (current amount of money)
+			"stocks" :
+			{
+				"amount" : int (amount of stocks in list)
+				"list : (list of stocks)
+				[
+					"uuid" : str (id of company)
+					"amount" : int ( amount of stocks of one company)
+				]
+			}
 		}
 	}
 }

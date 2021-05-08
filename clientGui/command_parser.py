@@ -3,7 +3,6 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from PyQt5.QtCore import pyqtSignal
 
-from server.communication_protocol import CommunicationProtocol
 from server.communication_protocol import MessageType
 from server.companies.company_data import CompanyData
 
@@ -24,11 +23,17 @@ class CommandParser():
 		# send it futher
 		return cmp_list
 
-
+	def client_data(self,msg):
+		i_list = {}
+		body = msg["body"]
+		i_list["login"] = body["login"]
+		i_list["money"] = body["player_data"]["money"]
+		return i_list
 
 	def parse(self, msg):
 		switcher = {
-			MessageType.COMPANIES_LIST_ALL.value : self.companies_list_all
+			MessageType.COMPANIES_LIST_ALL.value : self.companies_list_all,
+			MessageType.CLIENT_DATA.value: self.client_data
 		}
 		func = switcher.get(int(msg["type"]), self.none_cmd_func)
 		res = func(msg)
