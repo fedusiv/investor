@@ -1,7 +1,7 @@
+from client_data import ClientData
 from communication_protocol import CommunicationProtocol
 from communication_protocol import MessageType
-from enum import Enum
-from client_data import ClientData
+from users_repository import UsersRepository
 
 
 class CommunitcationParserResult():
@@ -15,7 +15,19 @@ class CommunitcationParserResult():
 	# For initialization client data
 	# On login request it should store credentials, for futher parsing and validating
 	def init_client_data(self, msg):
-		self.client_data = ClientData(msg["body"]["login"],msg["body"]["password"])
+		switcher = {
+			MessageType.LOGIN.value: UsersRepository.add_user,
+			MessageType.REGISTRATION.value: UsersRepository.get_user_by_login,
+		}
+
+		action = switcher.get(int(msg["type"]))
+		try:
+			self.client_data = action(msg)
+			return self
+		except Exception:
+			print("wrong password")
+
+
 
 
 class CommunitcationParser():
@@ -34,7 +46,9 @@ class CommunitcationParser():
 	@staticmethod
 	def registration_request(msg):
 		print(CommunitcationParser.registration_request.__name__)
-		return True
+		result = CommunitcationParserResult(MessageType.REGISTRATION)
+		result.init_client_data(msg)
+		return result
 
 	@staticmethod
 	def companies_all_list_request(msg):
@@ -55,6 +69,7 @@ class CommunitcationParser():
 			MessageType.KEEP_ALIVE.value : CommunitcationParser.keep_alive_respond,
 			MessageType.COMPANIES_LIST_ALL.value : CommunitcationParser.companies_all_list_request
 		}
+
 		func = switcher.get(int(msg["type"]))
 		result = func(msg)
 		return result
