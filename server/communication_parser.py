@@ -1,7 +1,6 @@
+from client_data import ClientData
 from communication_protocol import CommunicationProtocol
 from communication_protocol import MessageType
-from enum import Enum
-from client_data import ClientData
 
 
 class CommunitcationParserResult():
@@ -26,6 +25,8 @@ class CommunitcationParserResult():
 		self.stock_cost = 	body["cost"]	# what price of one stock was
 
 
+
+
 class CommunitcationParser():
 
 	@staticmethod
@@ -42,7 +43,9 @@ class CommunitcationParser():
 	@staticmethod
 	def registration_request(msg):
 		print(CommunitcationParser.registration_request.__name__)
-		return True
+		result = CommunitcationParserResult(MessageType.REGISTRATION)
+		result.init_client_data(msg)
+		return result
 
 	@staticmethod
 	def companies_all_list_request(msg):
@@ -75,6 +78,7 @@ class CommunitcationParser():
 			MessageType.COMPANIES_LIST_ALL.value : CommunitcationParser.companies_all_list_request,
 			MessageType.CLIENT_DATA.value : CommunitcationParser.client_data_request
 		}
+
 		func = switcher.get(int(msg["type"]))
 		result = func(msg)
 		return result
