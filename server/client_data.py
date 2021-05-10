@@ -11,7 +11,7 @@ class ClientData():
 
 	@property
 	def uuid(self):
-		self.__uuid
+		return self.__uuid
 
 	def __init__(self, login, password):
 		self.login = login
