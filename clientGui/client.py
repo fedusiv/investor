@@ -1,17 +1,17 @@
+import os, sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import asyncio
+from queue import Queue
+
 from tornado.ioloop import IOLoop
 from tornado import gen
 from tornado.platform.asyncio import AnyThreadEventLoopPolicy
 from tornado.websocket import websocket_connect
 from tornado.websocket import WebSocketClientConnection
-import asyncio
-from queue import Queue
 from PyQt5.QtCore import QObject, pyqtSignal, QTimer
 
-import os, sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from client_protocol import ClientProtocol
 from server.communication_protocol import MessageType
-
 from command_parser import CommandParser
 
 
