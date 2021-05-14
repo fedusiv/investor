@@ -5,12 +5,12 @@ from communication_protocol import MessageType
 
 class CommunitcationParserResult():
 
-	result_type : MessageType
 
 	def __init__ (self, result_type = MessageType.NONE, success = True, uuid = ""):
 		self.err = success
 		self.result_type = result_type
 		self.uuid = uuid
+		self.result_type : MessageType
 
 	# For initialization client data
 	# On login request it should store credentials, for futher parsing and validating
@@ -50,7 +50,7 @@ class CommunitcationParser():
 
 	@staticmethod
 	def companies_all_list_request(msg):
-		result = CommunitcationParserResult(MessageType.COMPANIES_LIST_ALL, uuid=msg["uuid"])
+		result = CommunitcationParserResult(MessageType.COMPANIES_OPEN_LIST, uuid=msg["uuid"])
 		return result
 
 	@staticmethod
@@ -76,7 +76,7 @@ class CommunitcationParser():
 			MessageType.LOGIN.value : CommunitcationParser.login_request,
 			MessageType.REGISTRATION.value : CommunitcationParser.registration_request,
 			MessageType.KEEP_ALIVE.value : CommunitcationParser.keep_alive_respond,
-			MessageType.COMPANIES_LIST_ALL.value : CommunitcationParser.companies_all_list_request,
+			MessageType.COMPANIES_OPEN_LIST.value : CommunitcationParser.companies_all_list_request,
 			MessageType.CLIENT_DATA.value : CommunitcationParser.client_data_request
 		}
 

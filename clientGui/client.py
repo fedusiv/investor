@@ -73,7 +73,7 @@ class ClientQObject(QObject):
 		# After parsing need to make some stuff with received and parsed information
 		# TODO : make it more clearly and optimized
 		if res is not None:
-			if int(msg["type"]) == MessageType.COMPANIES_LIST_ALL.value:
+			if int(msg["type"]) == MessageType.COMPANIES_OPEN_LIST.value:
 				self.companies_list_received.emit(res)
 			elif int(msg["type"]) == MessageType.CLIENT_DATA.value:
 				self.cliend_data_received.emit(res)

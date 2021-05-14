@@ -1,5 +1,4 @@
-
-from companies.stock import Stock
+from stock.stock import Stock
 
 # Handle player data.
 class PlayerData():

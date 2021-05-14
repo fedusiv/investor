@@ -11,15 +11,14 @@ from client_data import ClientData
 
 class ClientOperation():
 
-	client_data : ClientData
-
 	def __init__(self, ws : tornado.websocket.WebSocketHandler, logic_handler : LogicHandler):
 		self.ws = ws
 		self.logic_handler = logic_handler
+		self.client_data : ClientData
 
 	def parse_command(self,cmd : CommunitcationParserResult):
 		switcher = {
-			MessageType.COMPANIES_LIST_ALL : self.request_companies_list,
+			MessageType.COMPANIES_OPEN_LIST : self.request_open_companies_list,
 			MessageType.CLIENT_DATA : self.request_client_data,
 			MessageType.BUY_STOCK : self.request_to_buy_stock
 		}
@@ -29,9 +28,9 @@ class ClientOperation():
 	def wrong_command(self,cmd):
 		print("Wrong type")
 
-	def request_companies_list(self,cmd):
-		c_list = self.logic_handler.companies_all_list_client()
-		c_list_msg = CommunicationProtocol.create_companies_all_list(c_list)
+	def request_open_companies_list(self,cmd):
+		c_list = self.logic_handler.companies_open_list_client()
+		c_list_msg = CommunicationProtocol.create_companies_open_list(c_list)
 		self.ws.write_message(c_list_msg)
 
 	# Send to client, client's data

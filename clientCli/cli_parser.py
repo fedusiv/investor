@@ -35,7 +35,31 @@ class Gui(QWidget):
 		if self.queue_read.qsize() > 0:
 			# get message from websocket and parse it
 			msg = self.queue_read.get()
-			self.print_cmd_tb("> "+ msg)
+			# Verification of message and decode json
+			msg = self.cli_protocol.verify_msg(msg)
+			if msg is None:
+				return
+
+			# Parse Messages related to connection
+			# TODO : Make some improvments
+			# If this is keep alive, so just send back
+			if msg["type"] == 3:
+				msg_json = self.cli_protocol.create_keep_alive_msg()
+				self.queue_sent.put(msg_json)
+				return
+			if msg["type"] == 1:
+				# login received
+				body = msg["body"]
+				if body["result"]:
+					# result okay
+					self.print_cmd_tb("Logged! uuid: " + body["uuid"])
+					self.cli_protocol.uuid = body["uuid"]
+				else:
+					self.print_cmd_tb("Login Error! Msg: " + body["message"])
+				return
+
+			# Otherwise print data to cli
+			self.print_ws_tb(str(msg))
 	
 	def keyPressEvent(self, event):
 		if event.key() == Qt.Key_Return :
@@ -70,6 +94,10 @@ class Gui(QWidget):
 	# Print cmd to text browser
 	def print_cmd_tb(self,cmd : str):
 		self.tb.insertPlainText("$ " + cmd + "\n")
+
+	# Print websocket message to text browser
+	def print_ws_tb(self, msg):
+		self.tb.insertPlainText("ws>  " + msg + "\n")
 	
 	def store_cmd(self,cmd: str):
 		pass
@@ -82,7 +110,8 @@ class Gui(QWidget):
 		cmd_list = cmd.split(' ')
 		switcher = {
 			"login" : self.cmd_login,
-			"exit" : self.cmd_exit
+			"exit" : self.cmd_exit,
+			"oem" : self.open_companies_list_request
 		}
 		func = switcher.get(cmd_list[0],self.wrong_cmd)
 		func(cmd_list)
@@ -94,9 +123,12 @@ class Gui(QWidget):
 		msg_json = self.cli_protocol.create_login_msg(cmd_list[1],cmd_list[2])
 		self.queue_sent.put(msg_json)
 
-
 	def cmd_exit(self, cmd_list):
 		sys.exit(0)
+
+	def open_companies_list_request(self,cmd_list):
+		msg_json = self.cli_protocol.request_open_companies_list()
+		self.queue_sent.put(msg_json)
 
 def gui_run(queue_receive : Queue, queue_sent : Queue):
 	app = QApplication(sys.argv)

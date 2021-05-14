@@ -6,7 +6,7 @@ class MessageType(Enum):
 	LOGIN = 1
 	REGISTRATION = 2
 	KEEP_ALIVE = 3
-	COMPANIES_LIST_ALL = 4
+	COMPANIES_OPEN_LIST = 4
 	BUY_STOCK = 5
 	CLIENT_DATA = 6
 
@@ -47,14 +47,14 @@ class CommunicationProtocol():
 		msg_json = CommunicationProtocol.formulate_message(body, MessageType.KEEP_ALIVE.value)
 		return msg_json
 
-	# To client send list with all companies
+	# To client send list with all available open companies
 	@staticmethod 
-	def create_companies_all_list(c_list):
+	def create_companies_open_list(c_list):
 		body = {
 			"amount" : len(c_list),
 			"list" : c_list
 		}
-		msg_json = CommunicationProtocol.formulate_message(body, MessageType.COMPANIES_LIST_ALL.value)
+		msg_json = CommunicationProtocol.formulate_message(body, MessageType.COMPANIES_OPEN_LIST.value)
 		return msg_json
 
 	# To client, send client's data

@@ -45,12 +45,12 @@ class WebSocClient():
 			msg = self.queue_sent.get()
 			self.ws.write_message(msg)
 
-	# async loop, which triggers in 100 ms
+	# async loop, which triggers in 50 ms
 	async def on_sent_loop(self):
 		while True:
 			await self.sent_message()
 			# sleep 100 msec and check if it is possible to send message again
-			await gen.sleep(0.1)
+			await gen.sleep(0.05)
 
 def start_client(client):
 	# important method allows to use asyncio with any thread we want. Basically we need just one for websocket

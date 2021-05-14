@@ -5,10 +5,8 @@ from server.communication_protocol import MessageType
 # Unlike server communication protocal, this object is not static.
 class CliProtocol():
 
-	uuid = ""
-
 	def __init__(self):
-		pass
+		self.uuid = ""
 
 	# Convert received message from json to required type and return in
 	# if error return None
@@ -33,9 +31,9 @@ class CliProtocol():
 		return msg_json
 
 	# To server. Client requets list of all companies avalibale
-	def request_companies_list(self):
+	def request_open_companies_list(self):
 		body = {}
-		msg_json = self.formulate_message(body, MessageType.COMPANIES_LIST_ALL.value)
+		msg_json = self.formulate_message(body, MessageType.COMPANIES_OPEN_LIST.value)
 		return msg_json
 
 	# Keep alive. It's and in the Afrika keep alive

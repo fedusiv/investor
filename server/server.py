@@ -112,7 +112,7 @@ class ClientHandler(tornado.websocket.WebSocketHandler):
 		self.client_data = copy.deepcopy(client_data)	# Copy and create new object of Client data
 		# Give to operation module client data
 		self.client_operation.client_data = self.client_data
-		print("client connected. login : ", self.client_data.login, "uuid: " ,self.client_data.uuid)
+		print("client connected. login : ", self.client_data.login, "\tuuid: " ,self.client_data.uuid)
 		self.logged_in = True
 		# send message to client
 		msg = CommunicationProtocol.create_login_result_msg(True,self.client_data.uuid)
@@ -122,7 +122,7 @@ class ClientHandler(tornado.websocket.WebSocketHandler):
 		msg = CommunicationProtocol.create_keep_alive_msg()
 		self.write_message(msg)
 
-	def command_execution(self,result_msg):
+	def command_execution(self,result_msg : CommunitcationParserResult):
 		# Verification, that message received form required client. Checking uuid of sender
 		if self.client_data.uuid != result_msg.uuid:
 			return	# If not equal do not go further

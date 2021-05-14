@@ -25,14 +25,13 @@ class LogicHandler():
 
 	async def logic_loop(self):
 		while True:
-			self.companies_handler.update_companies_amount()
-			self.companies_handler.update_companies_cost()
+			self.companies_handler.update_companies()	# Call companies main handler
 			await gen.sleep(LOOP_UPDATE_TIME)
 
 
 	# Client request information about companies. Server return it
-	def companies_all_list_client(self):
-		return self.companies_handler.get_all_companies_to_list()
+	def companies_open_list_client(self) -> list:
+		return self.companies_handler.get_open_companies_to_list()
 
 	# Client request to buy stock
 	def request_to_buy_stock(self,uuid:str, amount : int, cost : float, player_money : float):

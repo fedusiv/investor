@@ -39,7 +39,7 @@ To client and to server there is  identical message type:
 
 
 MessageType:
-COMPANIES_LIST_ALL = 4
+COMPANIES_OPEN_LIST = 4
 client requests a list of all available companies
 
 To server:

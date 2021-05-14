@@ -34,7 +34,7 @@ class ClientProtocol():
 	# To server. Client requets list of all companies avalibale
 	def request_companies_list(self):
 		body = {}
-		msg_json = self.formulate_message(body, MessageType.COMPANIES_LIST_ALL.value)
+		msg_json = self.formulate_message(body, MessageType.COMPANIES_OPEN_LIST.value)
 		return msg_json
 
 	# Keep alive. It's and in the Afrika keep alive

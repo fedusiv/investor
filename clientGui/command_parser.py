@@ -11,7 +11,7 @@ class CommandParser():
 	def __init__(self):
 		pass
 
-	def companies_list_all(self,msg):
+	def companies_open_list_all(self,msg):
 		# create list of companies and proceed to gui
 		body = msg["body"]
 		c_list = body["list"]
@@ -32,7 +32,7 @@ class CommandParser():
 
 	def parse(self, msg):
 		switcher = {
-			MessageType.COMPANIES_LIST_ALL.value : self.companies_list_all,
+			MessageType.COMPANIES_OPEN_LIST.value : self.companies_open_list_all,
 			MessageType.CLIENT_DATA.value: self.client_data
 		}
 		func = switcher.get(int(msg["type"]), self.none_cmd_func)
