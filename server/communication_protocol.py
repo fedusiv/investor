@@ -81,19 +81,9 @@ class CommunicationProtocol():
 
 	# To client, send result of perchase
 	@staticmethod
-	def create_purchase_result(result : bool, money : float, stock_list):
+	def create_purchase_result(result : int):
 		body = {
-			"result" : result,
-			"message" : "...emppty...",	# This is temporary solution. In future it should be change to real message
-			"player_data":
-			{
-				"money" : money,
-				"stocks" :
-				{
-					"amount" : len(stock_list),
-					"list" : stock_list
-				}
-			}
+			"result" : result
 		}
 		msg_json = CommunicationProtocol.formulate_message(body, MessageType.BUY_STOCK.value)
 		return msg_json

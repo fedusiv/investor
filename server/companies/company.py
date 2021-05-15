@@ -42,6 +42,14 @@ class Company():
 			# itarate loop until we received first Silver stock
 			return stock.cost
 
+	@property
+	def silver_full_amount(self):
+		return self.__silver_amount_full
+	
+	@property
+	def silver_available_amount(self):
+		return self.__silver_amount_full - self.__silver_amount_bought
+
 
 	# Init generates default random Company 
 	def __init__(self):
@@ -69,6 +77,10 @@ class Company():
 		# Assume that type will be changed further
 		self.company_type = CompanyType.NONE
 
+		self.__silver_amount_full = 0 # Amount of stocks
+		self.__silver_amount_bought = 0 # Amount of stocks which are bought
+
+
 	# Probably temporaty method
 	# Generate 1 gold stock with 51% of value. And other of 49% with given amount
 	# So full amount is 1 GOLD + amount of SILVER
@@ -83,6 +95,7 @@ class Company():
 		for i in range(0,amount):
 			stock = Stock(self.uuid, StockType.SILVER, value)
 			self.stocks[stock.uuid] = stock
+			self.__silver_amount_full += 1
 		# After generation need to calculate stock cost
 		self.recalculate_stocks_cost()
 
@@ -90,6 +103,28 @@ class Company():
 	def recalculate_stocks_cost(self):
 		for stock in self.stocks.values():
 			stock.calculate_cost(self.value)
+
+	# Companies handler calls this method.
+	# Company return list of stock, that will be bought
+	def purchase_silver_stock(self, amount: int, client_uuid : str) -> list:
+		stock_list = []
+		counter = amount
+		for stock in self.stocks.values():
+			stock : Stock
+			if stock.type == StockType.GOLD:
+				continue	# not silver go next
+			if stock.bought:
+				continue	# already bought go next
+			counter -= 1
+			stock_list.append(stock)
+			stock.buy_stock(client_uuid)
+			self.__silver_amount_bought += 1
+
+			if counter <= 0:
+				break
+
+		return stock_list
+
 
 	# prepare dict of open company data
 	# Open company should return information about silver stocks

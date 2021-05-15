@@ -1,6 +1,8 @@
-from tornado import gen
-from companies.companies_handler import CompaniesHandler
 import time
+
+from tornado import gen
+
+from companies.companies_handler import CompaniesHandler
 
 # logic loop will work 50 times in second
 LOOP_UPDATE_TIME = 0.02

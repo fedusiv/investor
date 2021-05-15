@@ -87,21 +87,11 @@ To client:
 	"type": 5,
 	"body":
 	{
-		"result" : bool (operation pass of failed)
-		"message" : str (of fail, so send reason of fault)
-		"player_data" : (send current player data)
-		{
-			"money" : float (current amount of money)
-			"stocks" :
-			{
-				"amount" : int (amount of stocks in list)
-				"list : (list of stocks)
-				[
-					"uuid" : str (id of company)
-					"amount" : int ( amount of stocks of one company)
-				]
-			}
-		}
+		"result" : int (class StockPurchaseResult, code number of result)
+					SUCCESS = 1
+					NO_SUCH_COMPANY = 2
+					NO_MORE_STOCKS = 3
+					NOT_ENOUGH_MONEY = 4
 	}
 }
 

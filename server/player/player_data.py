@@ -1,4 +1,9 @@
+from typing import TypedDict
 from stock.stock import Stock
+
+class StockStorageElement(TypedDict):
+	company_uuid : str	# company uuid
+	stock : Stock
 
 # Handle player data.
 class PlayerData():
@@ -6,10 +11,6 @@ class PlayerData():
 	@property
 	def money(self):
 		return self.__money
-
-	@property
-	def amount(self):
-		return self.__stocks
 
 	# Support method
 	def contains(list, filter):
@@ -20,7 +21,7 @@ class PlayerData():
 
 	def __init__(self):
 		self.__money = 1000
-		self.__stocks = []
+		self.__stocks : StockStorageElement = []
 
 
 	def get_all_stocks_to_list(self):
@@ -37,17 +38,12 @@ class PlayerData():
 		return stocks_list
 
 	# Be aware, this method should be called only after you have confirmation from comnapies handler or logic handler
-	# This method apply purchase to player
-	def purchase_stock(self, uuid: str, amout: int, cost: float):
-		# Remove the price from player money amount
-		self.__money -= amout * cost
-		# Add to the stock storage
-		cmp =  self.contains(self.__stocks, lambda x : x.uuid == uuid)
-		if cmp is not None:
-			# if player already has stock of this company
-			cmp.amount += amout
-		else:
-			# If this is new company for player in stock list, need to add this
-			stock = Stock(uuid,amout)
-			self.__stocks.append(stock)
+	def purchase_stock_confirm(self, company_uuid : str, stock_list : list, cost: float):
+		# decrease amount of money
+		self.__money -= cost
+		for stock in stock_list:
+			stock : Stock
+			new_element = StockStorageElement(company_uuid=company_uuid, stock= stock)
+			self.__stocks.append(new_element)
+		
 

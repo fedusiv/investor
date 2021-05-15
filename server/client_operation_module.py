@@ -8,6 +8,7 @@ from logic_handler import LogicHandler
 from communication_protocol import MessageType
 from communication_protocol import CommunicationProtocol
 from client_data import ClientData
+from companies.companies_handler import StockPurchaseResult
 
 class ClientOperation():
 
@@ -41,11 +42,8 @@ class ClientOperation():
 
 	# Client send request to buy a stock
 	def request_to_buy_stock(self,cmd : CommunitcationParserResult):
-		res = self.logic_handler.request_to_buy_stock(cmd.company_uuid,cmd.stock_amount, cmd.stock_cost, self.client_data.player_data.money)
-		if res is True:
-			# Purchase can be done
-			self.client_data.player_data.purchase_stock(cmd.company_uuid, cmd.stock_amount, cmd.stock_cost)
-		s_list = self.client_data.player_data.get_all_stocks_to_list()
-		result_msg = CommunicationProtocol.create_purchase_result(res, self.client_data.player_data.money, s_list)
+		result : StockPurchaseResult
+		result = self.logic_handler.request_to_buy_stock(cmd.company_uuid,cmd.stock_amount, cmd.stock_cost, self.client_data.player_data.money)
+		result_msg = CommunicationProtocol.create_purchase_result(result.value)
 		self.ws.write_message(result_msg)
 

@@ -1,16 +1,25 @@
+from enum import Enum
 import time
 from typing import List, TypedDict
 
 from companies.company import Company, CompanyType
+from player.player_data import PlayerData
+from client_data import ClientData
 
 MAX_COMPANIES_AMOUNT = 5
+
+# To report result about stock purchase
+class StockPurchaseResult(Enum):
+	SUCCESS = 1
+	NO_SUCH_COMPANY = 2
+	NO_MORE_STOCKS = 3
+	NOT_ENOUGH_MONEY = 4
 
 # Storage class. I hope this will make some improvement to storage mechanism
 # At least autocompletion works fine
 class CompanyStorageElement(TypedDict):
 	uuid : str
 	company : Company
-
 
 # Singleton respond for all companies movement and operations
 class CompaniesHandler():
@@ -32,6 +41,11 @@ class CompaniesHandler():
 	#---------------------#
 	#Logic part
 	#---------------------#
+
+	# Get company by it's uuid
+	def company_by_uuid(self, uuid: str):
+		company =  self.contains(self.__companies_storage, lambda x : x['uuid'] == uuid)
+		return company
 
 
 	# Main loop of companies handler. It is called from logic handler
@@ -63,9 +77,31 @@ class CompaniesHandler():
 		
 		return c_open_list
 
-	# Client tries to buy stock(s) of company
-	def purchase_stock_of_comany(self, uuid:str, amount : int, cost : float, player_money : float):
-		pass
+	# Client tries to buy silver stock(s) of company
+	# uuid is company uuid, amount is amount of stock, cost is a cost of one stock, client data is client data
+	def purchase_stock_of_comany(self, uuid:str, amount : int, cost : float, client_data : ClientData) -> StockPurchaseResult:
+		# First let's find a company
+		company : Company
+		company = self.company_by_uuid(uuid)
+		if company == None:
+			return StockPurchaseResult.NO_SUCH_COMPANY
+		
+		if company.silver_available_amount == 0:
+			return StockPurchaseResult.NO_MORE_STOCKS
 
+		if company.silver_available_amount < amount:
+			# Can't buy requested amount of stocks. Set amount to available
+			amount = company.silver_available_amount
+		
+		# Calculate cost
+		full_cost = amount * company.silver_cost
+		if client_data.player_data.money < full_cost:
+			return StockPurchaseResult.NOT_ENOUGH_MONEY
+
+		# Buy stock for user (client), get list of stocks, which will be attached to client
+		stock_list = company.purchase_silver_stock(amount,client_data.uuid)
+		# Attach stocks to client, and decrease amount of money
+		client_data.player_data.purchase_stock_confirm(uuid, stock_list, full_cost)
+		return StockPurchaseResult.SUCCESS
 
 
