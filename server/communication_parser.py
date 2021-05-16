@@ -60,7 +60,7 @@ class CommunitcationParser():
 
 	@staticmethod
 	def stock_buy_request(msg):
-		result = CommunitcationParserResult(MessageType.CLIENT_DATA, uuid=msg["uuid"])
+		result = CommunitcationParserResult(MessageType.BUY_STOCK, uuid=msg["uuid"])
 		result.form_stock_buy_request(msg)
 		return result
 
@@ -77,7 +77,8 @@ class CommunitcationParser():
 			MessageType.REGISTRATION.value : CommunitcationParser.registration_request,
 			MessageType.KEEP_ALIVE.value : CommunitcationParser.keep_alive_respond,
 			MessageType.COMPANIES_OPEN_LIST.value : CommunitcationParser.companies_all_list_request,
-			MessageType.CLIENT_DATA.value : CommunitcationParser.client_data_request
+			MessageType.CLIENT_DATA.value : CommunitcationParser.client_data_request,
+			MessageType.BUY_STOCK.value : CommunitcationParser.stock_buy_request
 		}
 
 		func = switcher.get(int(msg["type"]))

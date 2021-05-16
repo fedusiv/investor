@@ -48,3 +48,11 @@ class CliProtocol():
 		msg_json = self.formulate_message(body, MessageType.CLIENT_DATA.value)
 		return msg_json
 
+	def request_stock_purchase(self, company_uuid: str, amount: int, cost: float):
+		body = {
+			'uuid' : company_uuid,
+			'amount' : amount,
+			'cost' : cost
+		}
+		msg_json = self.formulate_message(body, MessageType.BUY_STOCK.value)
+		return msg_json

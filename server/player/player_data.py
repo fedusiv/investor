@@ -1,9 +1,11 @@
 from typing import TypedDict
-from stock.stock import Stock
+from stock.stock import Stock, StockType
 
-class StockStorageElement(TypedDict):
-	company_uuid : str	# company uuid
-	stock : Stock
+# Store stocks by it affiliance to company
+class StockStorageElement():
+	def __init__(self, company_uuid : str):
+		self.company_uuid = company_uuid
+		self.stock_list : Stock = []
 
 # Handle player data.
 class PlayerData():
@@ -24,26 +26,55 @@ class PlayerData():
 		self.__stocks : StockStorageElement = []
 
 
-	def get_all_stocks_to_list(self):
-		if len(self.__stocks) < 1:
-			return 
-		
+	def get_all_silver_stocks_to_list(self) -> list:
 		stocks_list = []
-		for stock in self.__stocks:
-			s_desc = {
-				"uuid" : stock.uuid,
-				"amount" : stock.amount,
+		if len(self.__stocks) < 1:
+			return stocks_list
+
+		for element in self.__stocks:
+			element: StockStorageElement
+			amount = len(element.stock_list)
+
+			# TODO: Optimize it please!
+			stocks_cost = []
+			stocks_value = []
+			for stock in element.stock_list:
+				stocks_cost.append(stock.cost)
+				stocks_value.append(stock.value)
+			stock_cost_sum = sum(stocks_cost)
+			stocks_value_sum = sum(stocks_value)
+			company_info = {
+				'uuid' : element.company_uuid,
+				'amount': amount,
+				'cost' : stock_cost_sum,
+				'value': stocks_value_sum
 			}
-			stocks_list.append(s_desc)
+			stocks_list.append(company_info)
+
 		return stocks_list
+
 
 	# Be aware, this method should be called only after you have confirmation from comnapies handler or logic handler
 	def purchase_stock_confirm(self, company_uuid : str, stock_list : list, cost: float):
 		# decrease amount of money
 		self.__money -= cost
+
+		element = self.get_storage_element_by_uuid(company_uuid)
+		if element is None:
+				element = StockStorageElement(company_uuid)
+				self.__stocks.append(element)
+		
 		for stock in stock_list:
 			stock : Stock
-			new_element = StockStorageElement(company_uuid=company_uuid, stock= stock)
-			self.__stocks.append(new_element)
-		
+			element.stock_list.append(stock)
+
+
+	def get_storage_element_by_uuid(self, company_uuid: str):
+		el = None
+		for element in self.__stocks:
+			element : StockStorageElement
+			if element.company_uuid == company_uuid:
+				el = element
+				break
+		return el
 

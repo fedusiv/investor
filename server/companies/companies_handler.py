@@ -1,6 +1,7 @@
 from enum import Enum
 import time
 from typing import List, TypedDict
+from communication_parser import CommunitcationParser
 
 from companies.company import Company, CompanyType
 from player.player_data import PlayerData
@@ -44,7 +45,12 @@ class CompaniesHandler():
 
 	# Get company by it's uuid
 	def company_by_uuid(self, uuid: str):
-		company =  self.contains(self.__companies_storage, lambda x : x['uuid'] == uuid)
+		company = None
+		for element in self.__companies_storage:
+			element : CompanyStorageElement
+			if element['uuid'] == uuid:
+				company = element['company']
+				break
 		return company
 
 
@@ -60,7 +66,7 @@ class CompaniesHandler():
 			new_company = Company()
 			# Generate default set of stocks
 			new_company.generate_stocks51(15)
-			element : CompanyStorageElement = {'uuid' : new_company.uuid, 'company' : new_company}
+			element = CompanyStorageElement(uuid=new_company.uuid,company=new_company)
 			self.__companies_storage.append(element)
 
 	# Return open companies in list for Open Exhange Market

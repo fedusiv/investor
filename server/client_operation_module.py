@@ -36,14 +36,14 @@ class ClientOperation():
 
 	# Send to client, client's data
 	def request_client_data(self,cmd):
-		s_list = self.client_data.player_data.get_all_stocks_to_list()
+		s_list = self.client_data.player_data.get_all_silver_stocks_to_list()
 		client_data_msg = CommunicationProtocol.create_client_data_msg(login= self.client_data.login, money=self.client_data.player_data.money, stock_list=s_list)
 		self.ws.write_message(client_data_msg)
 
 	# Client send request to buy a stock
 	def request_to_buy_stock(self,cmd : CommunitcationParserResult):
 		result : StockPurchaseResult
-		result = self.logic_handler.request_to_buy_stock(cmd.company_uuid,cmd.stock_amount, cmd.stock_cost, self.client_data.player_data.money)
+		result = self.logic_handler.request_to_buy_stock(cmd.company_uuid,cmd.stock_amount, cmd.stock_cost, self.client_data)
 		result_msg = CommunicationProtocol.create_purchase_result(result.value)
 		self.ws.write_message(result_msg)
 

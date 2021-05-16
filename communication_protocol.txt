@@ -115,13 +115,15 @@ To client:
 		"player_data" : (send current player data)
 		{
 			"money" : float (current amount of money)
-			"stocks" :
+			"stocks_silver" :
 			{
 				"amount" : int (amount of stocks in list)
 				"list : (list of stocks)
 				[
 					"uuid" : str (id of company)
-					"amount" : int ( amount of stocks of one company)
+					"amount" : int (amount of silver sotkcs of one company)
+					"cost" : float (cost of all stocks!)
+					"value" : float (what part of all stocks it is. 0.012 means 1.2%, information is sum of all stocks)
 				]
 			}
 		}

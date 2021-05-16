@@ -28,6 +28,8 @@ class Gui(QWidget):
 
 		self.cli_protocol = CliProtocol()
 
+		# Options
+		self.ws_echo = True
 
 	
 	# Check reading queue
@@ -97,7 +99,8 @@ class Gui(QWidget):
 
 	# Print websocket message to text browser
 	def print_ws_tb(self, msg):
-		self.tb.insertPlainText("ws>  " + msg + "\n")
+		if self.ws_echo:
+			self.tb.insertPlainText("ws>  " + msg + "\n")
 	
 	def store_cmd(self,cmd: str):
 		pass
@@ -111,7 +114,11 @@ class Gui(QWidget):
 		switcher = {
 			"login" : self.cmd_login,
 			"exit" : self.cmd_exit,
-			"oem" : self.open_companies_list_request
+			"oem" : self.open_companies_list_request,
+			"client": self.client_data_request,
+			"buy" : self.request_purchase,
+			"ws" : self.websocket_parameter_change,
+			"clear" : self.clear_console
 		}
 		func = switcher.get(cmd_list[0],self.wrong_cmd)
 		func(cmd_list)
@@ -129,6 +136,25 @@ class Gui(QWidget):
 	def open_companies_list_request(self,cmd_list):
 		msg_json = self.cli_protocol.request_open_companies_list()
 		self.queue_sent.put(msg_json)
+
+	def client_data_request(self, cmd_list):
+		msg_json = self.cli_protocol.request_client_data()
+		self.queue_sent.put(msg_json)
+
+	def request_purchase(self, cmd_list):
+		msg_json = self.cli_protocol.request_stock_purchase(cmd_list[1],int(cmd_list[2]),float(cmd_list[3]))
+		self.queue_sent.put(msg_json)
+
+	def websocket_parameter_change(self,cmd_list):
+		# Toggle to display ws raw message
+		if cmd_list[1] == "echo":
+			self.ws_echo = not self.ws_echo
+			return
+
+	def clear_console(self,cmd_list):
+		self.tb.clear()
+
+
 
 def gui_run(queue_receive : Queue, queue_sent : Queue):
 	app = QApplication(sys.argv)
