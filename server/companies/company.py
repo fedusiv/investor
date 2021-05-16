@@ -3,22 +3,13 @@ import time
 from uuid import uuid4
 from enum import Enum
 
+from companies.companies_types import CompanyType
+from companies.companies_types import CompanyBusinessType
 from companies.company_data import CompanyData
+from companies.company_name_generation import CompanyNameGenerator
 from stock.stock import Stock
 from stock.stock import StockType
 
-
-company_type=("Forge","Quarry","Sawmill", "Mill", "Farm", "Alchemistry", "Pharmacy", "Jewellery")
-owner_name=('Leidron Endas','Shrierpuld Fihlusols','Zhanreir Talmirnord', 'Krelul Keva', 'Linbak Denma', "Samneld Grunholz", "Kircard Bamberg", "Dudrik Steinlich")
-
-# This type represent in what stage company is now
-# None means, company is not initialized properly or it has no stocks
-# Open means, that everyone can buy stocks
-# Closed means, that company is kind on investing process, and only few users can buy it
-class CompanyType(Enum):
-	NONE = 0
-	OPEN = 1
-	CLOSED = 2
 
 # Operate with company
 class Company():
@@ -60,9 +51,11 @@ class Company():
 		# Create data object
 		self.data = CompanyData()
 
-		# Generate name
+		# Generate type
 		random.seed(time.time())
-		self.data.name = random.choice(company_type) + " of " + random.choice(owner_name)
+		self.business_type : CompanyBusinessType = random.choice(list(CompanyBusinessType))
+		# Generate name
+		self.data.name = CompanyNameGenerator.name_generate(self.business_type)
 
 		# Generate uniq id.
 		# TODO : verify, that this is right solution

@@ -3,7 +3,8 @@ import time
 from typing import List, TypedDict
 from communication_parser import CommunitcationParser
 
-from companies.company import Company, CompanyType
+from companies.company import Company
+from companies.companies_types import CompanyType
 from player.player_data import PlayerData
 from client_data import ClientData
 
@@ -56,9 +57,9 @@ class CompaniesHandler():
 
 	# Main loop of companies handler. It is called from logic handler
 	def update_companies(self):
+		# Update companies amount. If some company disappeared need to replace it
 		self.update_companies_amount()
-		self.get_open_companies_to_list()
-
+		
 	# Check current companies amount, if less create new
 	def update_companies_amount(self):
 		while len(self.__companies_storage) < MAX_COMPANIES_AMOUNT:
