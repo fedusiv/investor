@@ -8,8 +8,7 @@ from companies.companies_types import CompanyType
 from player.player_data import PlayerData
 from client_data import ClientData
 from news.world_situation_data import WorldSituationData
-
-MAX_COMPANIES_AMOUNT = 5
+import config
 
 # To report result about stock purchase
 class StockPurchaseResult(Enum):
@@ -64,7 +63,7 @@ class CompaniesHandler():
 		
 	# Check current companies amount, if less create new
 	def update_companies_amount(self):
-		while len(self.__companies_storage) < MAX_COMPANIES_AMOUNT:
+		while len(self.__companies_storage) < config.MAX_COMPANIES_AMOUNT:
 			# Create companies
 			new_company = Company()
 			# Generate default set of stocks
@@ -114,7 +113,7 @@ class CompaniesHandler():
 		if company.silver_available_amount < amount:
 			# Can't buy requested amount of stocks. Set amount to available
 			amount = company.silver_available_amount
-		
+
 		if cost != company.silver_cost:
 			return StockPurchaseResult.STOCK_COST_ERROR
 
@@ -126,7 +125,7 @@ class CompaniesHandler():
 		# Buy stock for user (client), get list of stocks, which will be attached to client
 		stock_list = company.purchase_silver_stock(amount,client_data.uuid)
 		# Attach stocks to client, and decrease amount of money
-		client_data.player_data.purchase_stock_confirm(uuid, stock_list, full_cost)
+		client_data.player_data.purchase_stock_confirm(uuid,company.name ,stock_list, full_cost)
 
 		# Increase company value by investoring money
 		company.increase_value(full_cost)

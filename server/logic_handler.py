@@ -4,13 +4,8 @@ from tornado import gen
 
 from companies.companies_handler import CompaniesHandler
 from news.news_handler import NewsHandler
+import config
 
-# logic loop will work 50 times in second
-LOOP_UPDATE_TIME = 0.02
-# Companies news Applies
-COMPANY_NEWS_UPDATE = 12
-# Recalculate cost due to value changing, not related to news
-COMPANY_COST_UPDATE = 6
 
 class LogicHandler():
 	# Singleton part
@@ -52,16 +47,16 @@ class LogicHandler():
 			self.news_handler.update_news(self.server_time)	# Call news main handler.
 			self.companies_handler.update_companies()	# Call companies main handler
 			self.companies_changing(self.news_handler.world_situation.data)	# Call changes of companies due to external affect
-			await gen.sleep(LOOP_UPDATE_TIME)
+			await gen.sleep(config.LOOP_UPDATE_TIME)
 
 	def companies_changing(self, world_situation_data):
 		cur_time = time.time()
-		if cur_time- self.last_company_news_update >= COMPANY_NEWS_UPDATE:
+		if cur_time- self.last_company_news_update >= config.COMPANY_NEWS_UPDATE:
 			self.last_company_news_update = cur_time
 			self.companies_handler.commit_company_progress(world_situation_data)
 			return
 		
-		if cur_time - self.last_company_cost_update >= COMPANY_COST_UPDATE:
+		if cur_time - self.last_company_cost_update >= config.COMPANY_COST_UPDATE:
 			self.last_company_cost_update = cur_time
 			self.companies_handler.recalculate_companies_stock_cost()
 			return

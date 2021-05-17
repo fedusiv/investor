@@ -85,7 +85,39 @@
 			"theme" : "New church will be build near Central Square",
 			"source" : "Kingdom's prophet",
 			"military" : 0,
-			"scince" : -1,
+			"scince" : -2,
+			"mining" : 0,
+			"food" : 0
+		},
+		{
+			"theme" : "King forgets about road situation between villages",
+			"source" : "Kalmar's truth",
+			"military" : 0,
+			"scince" : 0,
+			"mining" : 0,
+			"food" : -1
+		},
+		{
+			"theme" : "Real situation with army. It's in a bad state",
+			"source" : "Kalmar's truth",
+			"military" : 0,
+			"scince" : 1,
+			"mining" : 0,
+			"food" : 0
+		},
+		{
+			"theme" : "There is delay in salary for miners",
+			"source" : "Kalmar's truth",
+			"military" : 0,
+			"scince" : 0,
+			"mining" : -1,
+			"food" : 0
+		},
+		{
+			"theme" : "Majority does not see future in self-development. Better to make easy money",
+			"source" : "Kalmar's truth",
+			"military" : 0,
+			"scince" : 0,
 			"mining" : 0,
 			"food" : 0
 		}

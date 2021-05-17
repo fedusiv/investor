@@ -6,6 +6,7 @@ from typing import TypedDict
 
 from news.world_situation import WorldSituation
 from news.news_element import NewsElement
+import config
 
 class NewsStorageElement(TypedDict):
 	server_time : float
@@ -41,7 +42,6 @@ class NewsHandler():
 		if cur_time - self.last_news_generation_time > self.next_news_generation_interval:
 			#Generate news
 			event = NewsElement(server_time)
-			self.print_new_event(event)
 			self.world_situation.change_situation(event.world_situation_data)
 			self.last_news_generation_time = cur_time
 			self.generate_next_news_time_interval()
@@ -52,7 +52,7 @@ class NewsHandler():
 
 	def generate_next_news_time_interval(self):
 		random.seed(time.time())
-		random_interval = random.uniform(3.0, 7.0)
+		random_interval = random.uniform(config.NEWS_GENERATION_TIME_DISPERSION[0], config.NEWS_GENERATION_TIME_DISPERSION[1])
 		self.next_news_generation_interval = round(random_interval,2)
 
 	# Prepare list of news from given time
