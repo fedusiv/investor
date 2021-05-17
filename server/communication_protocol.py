@@ -94,6 +94,7 @@ class CommunicationProtocol():
 	@staticmethod
 	def create_news_last_bytime_list(news_list):
 		body = {
+			"amount" : len(news_list),
 			"news" : news_list
 		}
 		msg_json = CommunicationProtocol.formulate_message(body, MessageType.NEWS_BY_TIME.value)

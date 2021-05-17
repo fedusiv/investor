@@ -151,6 +151,7 @@ To client:
 	"type": 7,
 	"body":
 	{
+		"amount" : int (amount of elements in list)
 		"news" :
 		[
 			"theme" : str (String description of something, that happend),
