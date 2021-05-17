@@ -21,7 +21,8 @@ class ClientOperation():
 		switcher = {
 			MessageType.COMPANIES_OPEN_LIST : self.request_open_companies_list,
 			MessageType.CLIENT_DATA : self.request_client_data,
-			MessageType.BUY_STOCK : self.request_to_buy_stock
+			MessageType.BUY_STOCK : self.request_to_buy_stock,
+			MessageType.NEWS_BY_TIME : self.request_for_news_list_bytime
 		}
 		func = switcher.get(cmd.result_type)
 		func(cmd)
@@ -37,7 +38,10 @@ class ClientOperation():
 	# Send to client, client's data
 	def request_client_data(self,cmd):
 		s_list = self.client_data.player_data.get_all_silver_stocks_to_list()
-		client_data_msg = CommunicationProtocol.create_client_data_msg(login= self.client_data.login, money=self.client_data.player_data.money, stock_list=s_list)
+		client_data_msg = CommunicationProtocol.create_client_data_msg(login= self.client_data.login,
+																		money=self.client_data.player_data.money,
+																		stock_list=s_list,
+																		server_time=self.logic_handler.server_time)
 		self.ws.write_message(client_data_msg)
 
 	# Client send request to buy a stock
@@ -47,3 +51,7 @@ class ClientOperation():
 		result_msg = CommunicationProtocol.create_purchase_result(result.value)
 		self.ws.write_message(result_msg)
 
+	def request_for_news_list_bytime(self, cmd : CommunitcationParserResult):
+		news_list = self.logic_handler.request_news_list_bytime(cmd.news_time)
+		news_list_msg = CommunicationProtocol.create_news_last_bytime_list(news_list)
+		self.ws.write_message(news_list_msg)

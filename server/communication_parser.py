@@ -25,7 +25,8 @@ class CommunitcationParserResult():
 		self.stock_amount = body["amount"]	# amount of stocks want to buy
 		self.stock_cost = 	body["cost"]	# what price of one stock was
 
-
+	def news_by_time(self,msg):
+		self.news_time = msg["body"]["time"]
 
 
 class CommunitcationParser():
@@ -65,6 +66,12 @@ class CommunitcationParser():
 		return result
 
 	@staticmethod
+	def news_bytime_request(msg):
+		result = CommunitcationParserResult(MessageType.NEWS_BY_TIME, uuid=msg["uuid"])
+		result.news_by_time(msg)
+		return result
+
+	@staticmethod
 	def parse_clinet_message(msg):
 		# message should be json
 		msg = CommunicationProtocol.verify_msg(msg)
@@ -78,7 +85,8 @@ class CommunitcationParser():
 			MessageType.KEEP_ALIVE.value : CommunitcationParser.keep_alive_respond,
 			MessageType.COMPANIES_OPEN_LIST.value : CommunitcationParser.companies_all_list_request,
 			MessageType.CLIENT_DATA.value : CommunitcationParser.client_data_request,
-			MessageType.BUY_STOCK.value : CommunitcationParser.stock_buy_request
+			MessageType.BUY_STOCK.value : CommunitcationParser.stock_buy_request,
+			MessageType.NEWS_BY_TIME.value : CommunitcationParser.news_bytime_request
 		}
 
 		func = switcher.get(int(msg["type"]))

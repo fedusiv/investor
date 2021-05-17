@@ -6,7 +6,8 @@ from news.world_situation import WorldSituation
 from news.world_situation_data import WorldSituationData
 
 class NewsElement():
-	def __init__(self):
+	def __init__(self, server_time: float):
+		self.time = server_time
 		with open("news/NewsList.json") as type_names:
 			data = json.load(type_names)
 			news_list = data["news"]

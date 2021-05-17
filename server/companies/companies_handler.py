@@ -84,7 +84,6 @@ class CompaniesHandler():
 			element : CompanyStorageElement
 			element['company'].change_value_due_worldsituation(data)
 			element['company'].recalculate_stocks_cost()
-			element['company'].print_company_values()
 
 	# Return open companies in list for Open Exhange Market
 	def get_open_companies_to_list(self):

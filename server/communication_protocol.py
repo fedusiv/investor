@@ -9,6 +9,7 @@ class MessageType(Enum):
 	COMPANIES_OPEN_LIST = 4
 	BUY_STOCK = 5
 	CLIENT_DATA = 6
+	NEWS_BY_TIME = 7
 
 
 # Class to parse and create required messages
@@ -59,7 +60,7 @@ class CommunicationProtocol():
 
 	# To client, send client's data
 	@staticmethod
-	def create_client_data_msg(login : str, money : float, stock_list):
+	def create_client_data_msg(login : str, money : float, stock_list, server_time: float):
 		s_list = {}
 		if stock_list is not None:
 			s_list = stock_list
@@ -74,7 +75,8 @@ class CommunicationProtocol():
 					"amount" : len(s_list),
 					"list" : s_list
 				}
-			}
+			},
+			"server_time" : server_time
 		}
 		msg_json = CommunicationProtocol.formulate_message(body, MessageType.CLIENT_DATA.value)
 		return msg_json
@@ -86,4 +88,13 @@ class CommunicationProtocol():
 			"result" : result
 		}
 		msg_json = CommunicationProtocol.formulate_message(body, MessageType.BUY_STOCK.value)
+		return msg_json
+
+	# To client. create list of news. Happend from inserted amount of time
+	@staticmethod
+	def create_news_last_bytime_list(news_list):
+		body = {
+			"news" : news_list
+		}
+		msg_json = CommunicationProtocol.formulate_message(body, MessageType.NEWS_BY_TIME.value)
 		return msg_json

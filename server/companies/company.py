@@ -124,7 +124,6 @@ class Company():
 			CompanyBusinessType.MINING : data.mining_points
 		}
 		value = switcher.get(self.business_type) / 100
-		print(value)
 		self.update_value(value)
 
 	# Companies handler calls this method.

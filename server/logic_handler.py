@@ -32,13 +32,24 @@ class LogicHandler():
 		self.last_company_cost_update = time.time()
 
 	#---------------------#
+	#Properties part
+	#---------------------#
+	@property
+	def server_time(self):
+		return self.__server_time
+
+	#---------------------#
 	#Logic part
 	#---------------------#
 
 	# Main loop of logic handler!
 	async def logic_loop(self):
+		self.__server_start_time = time.time()
 		while True:
-			self.news_handler.update_news()	# Call news main handler.
+			# Calculate time
+			self.__server_time = time.time() - self.__server_start_time
+
+			self.news_handler.update_news(self.server_time)	# Call news main handler.
 			self.companies_handler.update_companies()	# Call companies main handler
 			self.companies_changing(self.news_handler.world_situation.data)	# Call changes of companies due to external affect
 			await gen.sleep(LOOP_UPDATE_TIME)
@@ -62,3 +73,6 @@ class LogicHandler():
 	# Client request to buy stock
 	def request_to_buy_stock(self,uuid:str, amount : int, cost : float, client_data):
 		return self.companies_handler.purchase_stock_of_comany(uuid,amount,cost,client_data)
+
+	def request_news_list_bytime(self, time: float):
+		return self.news_handler.get_news_list_bytime(time)

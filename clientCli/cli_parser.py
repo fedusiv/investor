@@ -118,7 +118,8 @@ class Gui(QWidget):
 			"client": self.client_data_request,
 			"buy" : self.request_purchase,
 			"ws" : self.websocket_parameter_change,
-			"clear" : self.clear_console
+			"clear" : self.clear_console,
+			"news" : self.request_news_list
 		}
 		func = switcher.get(cmd_list[0],self.wrong_cmd)
 		func(cmd_list)
@@ -144,6 +145,12 @@ class Gui(QWidget):
 	def request_purchase(self, cmd_list):
 		msg_json = self.cli_protocol.request_stock_purchase(cmd_list[1],int(cmd_list[2]),float(cmd_list[3]))
 		self.queue_sent.put(msg_json)
+
+	def request_news_list(self,cmd_list):
+		if cmd_list[1] != "":
+			time = float(cmd_list[1])
+			msg_json = self.cli_protocol.request_news_bytime(time)
+			self.queue_sent.put(msg_json)
 
 	def websocket_parameter_change(self,cmd_list):
 		# Toggle to display ws raw message
