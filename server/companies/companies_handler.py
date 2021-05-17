@@ -7,7 +7,7 @@ from companies.company import Company
 from companies.companies_types import CompanyType
 from player.player_data import PlayerData
 from client_data import ClientData
-from news.world_situation import WorldSituation
+from news.world_situation_data import WorldSituationData
 
 MAX_COMPANIES_AMOUNT = 5
 
@@ -79,10 +79,10 @@ class CompaniesHandler():
 			element['company'].recalculate_stocks_cost()
 
 	# Make analysis of situation and provide value changes
-	def commit_company_progress(self,world_situation: WorldSituation):
+	def commit_company_progress(self,data: WorldSituationData):
 		for element in self.__companies_storage:
 			element : CompanyStorageElement
-			element['company'].change_value_due_worldsituation(world_situation)
+			element['company'].change_value_due_worldsituation(data)
 			element['company'].recalculate_stocks_cost()
 			element['company'].print_company_values()
 

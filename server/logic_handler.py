@@ -40,14 +40,14 @@ class LogicHandler():
 		while True:
 			self.news_handler.update_news()	# Call news main handler.
 			self.companies_handler.update_companies()	# Call companies main handler
-			self.companies_changing(self.news_handler.world_situation)	# Call changes of companies due to external affect
+			self.companies_changing(self.news_handler.world_situation.data)	# Call changes of companies due to external affect
 			await gen.sleep(LOOP_UPDATE_TIME)
 
-	def companies_changing(self, world_situation):
+	def companies_changing(self, world_situation_data):
 		cur_time = time.time()
 		if cur_time- self.last_company_news_update >= COMPANY_NEWS_UPDATE:
 			self.last_company_news_update = cur_time
-			self.companies_handler.commit_company_progress(world_situation)
+			self.companies_handler.commit_company_progress(world_situation_data)
 			return
 		
 		if cur_time - self.last_company_cost_update >= COMPANY_COST_UPDATE:

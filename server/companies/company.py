@@ -7,9 +7,10 @@ from companies.companies_types import CompanyType
 from companies.companies_types import CompanyBusinessType
 from companies.company_data import CompanyData
 from companies.company_name_generation import CompanyNameGenerator
+from news.world_situation_data import WorldSituationData
 from stock.stock import Stock
 from stock.stock import StockType
-from news.world_situation import WorldSituation
+from news.world_situation_data import WorldSituationData
 
 # Operate with company
 class Company():
@@ -114,13 +115,13 @@ class Company():
 			stock.calculate_cost(self.value)
 
 	# Changing value rate of company based on world situation
-	def change_value_due_worldsituation(self,world_situation : WorldSituation):
+	def change_value_due_worldsituation(self,data : WorldSituationData):
 		value = 0
 		switcher = {
-			CompanyBusinessType.MILITARY : world_situation.military_points,
-			CompanyBusinessType.FOOD : world_situation.food_points,
-			CompanyBusinessType.SCINCE : world_situation.scince_points,
-			CompanyBusinessType.MINING : world_situation.mining_points
+			CompanyBusinessType.MILITARY : data.military_points,
+			CompanyBusinessType.FOOD : data.food_points,
+			CompanyBusinessType.SCINCE : data.scince_points,
+			CompanyBusinessType.MINING : data.mining_points
 		}
 		value = switcher.get(self.business_type) / 100
 		print(value)

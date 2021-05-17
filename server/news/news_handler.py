@@ -36,7 +36,7 @@ class NewsHandler():
 			#Generate news
 			event = NewsElement()
 			self.print_new_event(event)
-			self.world_situation.change_situation(event.world_situation)
+			self.world_situation.change_situation(event.world_situation_data)
 			self.last_news_generation_time = cur_time
 			self.generate_next_news_time_interval()
 		return event

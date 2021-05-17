@@ -3,6 +3,7 @@ import time
 import random
 
 from news.world_situation import WorldSituation
+from news.world_situation_data import WorldSituationData
 
 class NewsElement():
 	def __init__(self):
@@ -14,12 +15,12 @@ class NewsElement():
 			news_id = random.randint(0,news_amount-1)	# amount-1 because list first index 0
 			# Current event
 			event = news_list[news_id]
-			self.world_situation = WorldSituation()
+			self.world_situation_data = WorldSituationData()
 			# Apply points
-			self.world_situation.military_points = event["military"]
-			self.world_situation.food_points = event["food"]
-			self.world_situation.scince_points = event["scince"]
-			self.world_situation.mining_points = event["mining"]
+			self.world_situation_data.military_points = event["military"]
+			self.world_situation_data.food_points = event["food"]
+			self.world_situation_data.scince_points = event["scince"]
+			self.world_situation_data.mining_points = event["mining"]
 			# Apply description
 			self.theme = event["theme"]
 			self.source = event["source"]

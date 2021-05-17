@@ -1,14 +1,12 @@
-# Describes world's situation. Each parameter affects om companies progress
+from news.world_situation_data import WorldSituationData
+
 class WorldSituation():
 
 	def __init__(self):
-		self.military_points = 0
-		self.food_points = 0
-		self.scince_points = 0
-		self.mining_points = 0
+		self.data = WorldSituationData()
 
-	def change_situation(self, changes):
-		self.military_points += changes.military_points
-		self.food_points += changes.food_points
-		self.scince_points += changes.scince_points
-		self.mining_points += changes.mining_points
+	def change_situation(self, changes:WorldSituationData):
+		self.data.military_points += changes.military_points
+		self.data.food_points += changes.food_points
+		self.data.scince_points += changes.scince_points
+		self.data.mining_points += changes.mining_points
