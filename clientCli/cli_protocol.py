@@ -63,3 +63,10 @@ class CliProtocol():
 		}
 		msg_json = self.formulate_message(body, MessageType.NEWS_BY_TIME.value)
 		return msg_json
+
+	def request_news_byamount(self, amount):
+		body = {
+			'amount' : amount
+		}
+		msg_json = self.formulate_message(body, MessageType.NEWS_BY_AMOUNT.value)
+		return msg_json

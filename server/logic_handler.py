@@ -76,3 +76,6 @@ class LogicHandler():
 
 	def request_news_list_bytime(self, time: float):
 		return self.news_handler.get_news_list_bytime(time)
+
+	def request_news_list_byamount(self, amount: int):
+		return self.news_handler.get_news_list_byamount(amount)

@@ -135,7 +135,7 @@ To client:
 
 MessageType:
 NEWS_BY_TIME = 7
-Client requests from server all news from given amount of server time
+Client requests from server all news from given amount of server time. Information sents in chronological order
 
 To server:
 {
@@ -149,6 +149,34 @@ To server:
 To client:
 {
 	"type": 7,
+	"body":
+	{
+		"amount" : int (amount of elements in list)
+		"news" :
+		[
+			"theme" : str (String description of something, that happend),
+			"source" : str (Name of event source),
+			"server_time" : float ( when this news appeared, in seconds)
+		]
+	}
+}
+
+MessageType:
+NEWS_BY_COUNT = 8
+Client requests from server certain amount of last news. Information sents in chronological order
+
+To server:
+{
+	"type" : 8,
+	"body" : {
+		"amount" : int (amount of last news. If amount -1 will send all news from server)
+	}
+	"uuid" : str ( unique id of player )
+}
+
+To client:
+{
+	"type": 8,
 	"body":
 	{
 		"amount" : int (amount of elements in list)

@@ -55,6 +55,7 @@ class NewsHandler():
 		random_interval = random.uniform(3.0, 7.0)
 		self.next_news_generation_interval = round(random_interval,2)
 
+	# Prepare list of news from given time
 	def get_news_list_bytime(self, time: float):
 		news_list = []
 		for element in self.__news_storage:
@@ -69,6 +70,29 @@ class NewsHandler():
 					"server_time" : event.time
 				}
 				news_list.append(el)
+		return news_list
+
+	# Prepare last n amount of news. If amount -1 it will return all list
+	def get_news_list_byamount(self, amount: int):
+		news_list = []
+		counter = amount
+		for element in reversed(self.__news_storage):
+			element: NewsStorageElement
+			event = element["event"]
+			el = {
+				"theme" : event.theme,
+				"source" : event.source,
+				"server_time" : event.time
+			}
+			news_list.append(el)
+			# If amount is -1 return list with all news
+			if amount > -1:
+				# If amount is determined return determined amount of values
+				counter-=1
+				# Until counter is not equal 0
+				if counter <= 0:
+					break
+		news_list.reverse()	# Reverse list to keep in chronological order
 		return news_list
 
 	# Debug function for server

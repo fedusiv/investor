@@ -22,7 +22,8 @@ class ClientOperation():
 			MessageType.COMPANIES_OPEN_LIST : self.request_open_companies_list,
 			MessageType.CLIENT_DATA : self.request_client_data,
 			MessageType.BUY_STOCK : self.request_to_buy_stock,
-			MessageType.NEWS_BY_TIME : self.request_for_news_list_bytime
+			MessageType.NEWS_BY_TIME : self.request_for_news_list_bytime,
+			MessageType.NEWS_BY_AMOUNT : self.request_for_news_list_byamount
 		}
 		func = switcher.get(cmd.result_type)
 		func(cmd)
@@ -53,5 +54,11 @@ class ClientOperation():
 
 	def request_for_news_list_bytime(self, cmd : CommunitcationParserResult):
 		news_list = self.logic_handler.request_news_list_bytime(cmd.news_time)
-		news_list_msg = CommunicationProtocol.create_news_last_bytime_list(news_list)
+		news_list_msg = CommunicationProtocol.create_news_list(news_list)
 		self.ws.write_message(news_list_msg)
+
+	def request_for_news_list_byamount(self, cmd : CommunitcationParserResult):
+		news_list = self.logic_handler.request_news_list_byamount(cmd.news_amount)
+		news_list_msg = CommunicationProtocol.create_news_list(news_list)
+		self.ws.write_message(news_list_msg)
+

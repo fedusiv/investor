@@ -147,10 +147,17 @@ class Gui(QWidget):
 		self.queue_sent.put(msg_json)
 
 	def request_news_list(self,cmd_list):
-		if cmd_list[1] != "":
-			time = float(cmd_list[1])
+		if cmd_list[1] == "time":
+			if cmd_list[2] == "":
+				return
+			time = float(cmd_list[2])
 			msg_json = self.cli_protocol.request_news_bytime(time)
-			self.queue_sent.put(msg_json)
+		elif cmd_list[1] != "":
+			msg_json = self.cli_protocol.request_news_byamount(int(cmd_list[1]))
+		
+		if msg_json is None:
+			return
+		self.queue_sent.put(msg_json)
 
 	def websocket_parameter_change(self,cmd_list):
 		# Toggle to display ws raw message
