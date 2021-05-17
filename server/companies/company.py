@@ -3,22 +3,14 @@ import time
 from uuid import uuid4
 from enum import Enum
 
+from companies.companies_types import CompanyType
+from companies.companies_types import CompanyBusinessType
 from companies.company_data import CompanyData
+from companies.company_name_generation import CompanyNameGenerator
+from news.world_situation_data import WorldSituationData
 from stock.stock import Stock
 from stock.stock import StockType
-
-
-company_type=("Forge","Quarry","Sawmill", "Mill", "Farm", "Alchemistry", "Pharmacy", "Jewellery")
-owner_name=('Leidron Endas','Shrierpuld Fihlusols','Zhanreir Talmirnord', 'Krelul Keva', 'Linbak Denma', "Samneld Grunholz", "Kircard Bamberg", "Dudrik Steinlich")
-
-# This type represent in what stage company is now
-# None means, company is not initialized properly or it has no stocks
-# Open means, that everyone can buy stocks
-# Closed means, that company is kind on investing process, and only few users can buy it
-class CompanyType(Enum):
-	NONE = 0
-	OPEN = 1
-	CLOSED = 2
+from news.world_situation_data import WorldSituationData
 
 # Operate with company
 class Company():
@@ -50,6 +42,10 @@ class Company():
 	def silver_available_amount(self):
 		return self.__silver_amount_full - self.__silver_amount_bought
 
+	@property
+	def value_rate(self):
+		return self.__value_rate
+
 
 	# Init generates default random Company 
 	def __init__(self):
@@ -60,9 +56,11 @@ class Company():
 		# Create data object
 		self.data = CompanyData()
 
-		# Generate name
+		# Generate type
 		random.seed(time.time())
-		self.data.name = random.choice(company_type) + " of " + random.choice(owner_name)
+		self.business_type : CompanyBusinessType = random.choice(list(CompanyBusinessType))
+		# Generate name
+		self.data.name = CompanyNameGenerator.name_generate(self.business_type)
 
 		# Generate uniq id.
 		# TODO : verify, that this is right solution
@@ -79,6 +77,9 @@ class Company():
 
 		self.__silver_amount_full = 0 # Amount of stocks
 		self.__silver_amount_bought = 0 # Amount of stocks which are bought
+
+		# Rise value, company if works will increase own value
+		self.__value_rate = 1.01
 
 
 	# Probably temporaty method
@@ -99,10 +100,31 @@ class Company():
 		# After generation need to calculate stock cost
 		self.recalculate_stocks_cost()
 
+	# Update company value based
+	def update_value(self, value_rate : float):
+		self.__value_rate += value_rate
+		self.data.value = self.data.value * self.value_rate
+
+	# Increase value of company, when money were invested to it
+	def increase_value(self, money: float):
+		self.data.value += money
+
 	# When company change it's value, better to recalculate stocks cost
 	def recalculate_stocks_cost(self):
 		for stock in self.stocks.values():
 			stock.calculate_cost(self.value)
+
+	# Changing value rate of company based on world situation
+	def change_value_due_worldsituation(self,data : WorldSituationData):
+		value = 0
+		switcher = {
+			CompanyBusinessType.MILITARY : data.military_points,
+			CompanyBusinessType.FOOD : data.food_points,
+			CompanyBusinessType.SCINCE : data.scince_points,
+			CompanyBusinessType.MINING : data.mining_points
+		}
+		value = switcher.get(self.business_type) / 100
+		self.update_value(value)
 
 	# Companies handler calls this method.
 	# Company return list of stock, that will be bought
@@ -125,7 +147,6 @@ class Company():
 
 		return stock_list
 
-
 	# prepare dict of open company data
 	# Open company should return information about silver stocks
 	def prepare_open_company_data(self):
@@ -135,6 +156,7 @@ class Company():
 			'cost' : self.silver_cost
 		}
 		return data
+
 
 	# Server debug method
 	def print_company_data(self):
@@ -146,3 +168,6 @@ class Company():
 			print("\t",end='',flush=True)
 			self.stocks[stockey].print_stock_data()
 
+	# Server debug method
+	def print_company_values(self):
+		print("Company name: ", self.name, "\tvalue: ", self.value, "\tvalue rate: ", self.value_rate, "\tsilver cost: ", self.silver_cost)

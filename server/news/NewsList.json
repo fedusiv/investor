@@ -1,0 +1,93 @@
+{
+	"news":
+	[
+		{
+			"theme" : "Conflict on the Kingdom's borders",
+			"source" : "Kingdom's prophet",
+			"military" : 1,
+			"scince" : 0,
+			"mining" : 0,
+			"food" : -1
+		},
+		{
+			"theme" : "Kingdom's population is increasing",
+			"source" : "Kingdom's prophet",
+			"military" : 0,
+			"scince" : 0,
+			"mining" : 0,
+			"food" : 1
+		},
+		{
+			"theme" : "King said: Out kingdom requires import substitution",
+			"source" : "Kingdom's prophet",
+			"military" : 0,
+			"scince" : 1,
+			"mining" : -1,
+			"food" : 0
+		},
+		{
+			"theme" : "Horrible storm went through neighbour country",
+			"source" : "Kingdom's prophet",
+			"military" : 0,
+			"scince" : 0,
+			"mining" : 1,
+			"food" : 1
+		},
+		{
+			"theme" : "Farmers say, that food is rotten in the storage",
+			"source" : "Kingdom's prophet",
+			"military" : 0,
+			"scince" : 0,
+			"mining" : 0,
+			"food" : -1
+		},
+		{
+			"theme" : "More and more people are moving to the big cities",
+			"source" : "Kingdom's prophet",
+			"military" : 0,
+			"scince" : 1,
+			"mining" : 0,
+			"food" : -1
+		},
+		{
+			"theme" : "Mothers's society: Why our children need to serve King's willing?!",
+			"source" : "Kingdom's prophet",
+			"military" : -1,
+			"scince" : 0,
+			"mining" : -1,
+			"food" : 0
+		},
+		{
+			"theme" : "Ministers say: We need more workers!",
+			"source" : "Kingdom's prophet",
+			"military" : 0,
+			"scince" : 1,
+			"mining" : 1,
+			"food" : 0
+		},
+		{
+			"theme" : "University decreases amount of grants",
+			"source" : "Kingdom's prophet",
+			"military" : 0,
+			"scince" : -1,
+			"mining" : 1,
+			"food" : 0
+		},
+		{
+			"theme" : "People are unhappy of King's politic",
+			"source" : "Kingdom's prophet",
+			"military" : 1,
+			"scince" : -1,
+			"mining" : 0,
+			"food" : -1
+		},
+		{
+			"theme" : "New church will be build near Central Square",
+			"source" : "Kingdom's prophet",
+			"military" : 0,
+			"scince" : -1,
+			"mining" : 0,
+			"food" : 0
+		}
+	]
+}

@@ -3,9 +3,11 @@ import time
 from typing import List, TypedDict
 from communication_parser import CommunitcationParser
 
-from companies.company import Company, CompanyType
+from companies.company import Company
+from companies.companies_types import CompanyType
 from player.player_data import PlayerData
 from client_data import ClientData
+from news.world_situation_data import WorldSituationData
 
 MAX_COMPANIES_AMOUNT = 5
 
@@ -15,6 +17,7 @@ class StockPurchaseResult(Enum):
 	NO_SUCH_COMPANY = 2
 	NO_MORE_STOCKS = 3
 	NOT_ENOUGH_MONEY = 4
+	STOCK_COST_ERROR = 5
 
 # Storage class. I hope this will make some improvement to storage mechanism
 # At least autocompletion works fine
@@ -56,9 +59,9 @@ class CompaniesHandler():
 
 	# Main loop of companies handler. It is called from logic handler
 	def update_companies(self):
+		# Update companies amount. If some company disappeared need to replace it
 		self.update_companies_amount()
-		self.get_open_companies_to_list()
-
+		
 	# Check current companies amount, if less create new
 	def update_companies_amount(self):
 		while len(self.__companies_storage) < MAX_COMPANIES_AMOUNT:
@@ -68,6 +71,19 @@ class CompaniesHandler():
 			new_company.generate_stocks51(15)
 			element = CompanyStorageElement(uuid=new_company.uuid,company=new_company)
 			self.__companies_storage.append(element)
+
+	# Recalculate stock's cost of companies
+	def recalculate_companies_stock_cost(self):
+		for element in self.__companies_storage:
+			element : CompanyStorageElement
+			element['company'].recalculate_stocks_cost()
+
+	# Make analysis of situation and provide value changes
+	def commit_company_progress(self,data: WorldSituationData):
+		for element in self.__companies_storage:
+			element : CompanyStorageElement
+			element['company'].change_value_due_worldsituation(data)
+			element['company'].recalculate_stocks_cost()
 
 	# Return open companies in list for Open Exhange Market
 	def get_open_companies_to_list(self):
@@ -99,6 +115,9 @@ class CompaniesHandler():
 			# Can't buy requested amount of stocks. Set amount to available
 			amount = company.silver_available_amount
 		
+		if cost != company.silver_cost:
+			return StockPurchaseResult.STOCK_COST_ERROR
+
 		# Calculate cost
 		full_cost = amount * company.silver_cost
 		if client_data.player_data.money < full_cost:
@@ -108,6 +127,10 @@ class CompaniesHandler():
 		stock_list = company.purchase_silver_stock(amount,client_data.uuid)
 		# Attach stocks to client, and decrease amount of money
 		client_data.player_data.purchase_stock_confirm(uuid, stock_list, full_cost)
+
+		# Increase company value by investoring money
+		company.increase_value(full_cost)
+
 		return StockPurchaseResult.SUCCESS
 
 

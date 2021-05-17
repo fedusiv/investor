@@ -1,6 +1,7 @@
 All communication presented in json.
 Here is logic and protocol description of communication.
 
+Once client received login approvement, it should store uuid and use it for all to server request
 
 MessageType:
 LOGIN = 1
@@ -79,7 +80,8 @@ To server:
 		"uuid" : str ( uuid of company )
 		"amount" : int ( amount of stocks)
 		"cost"	: float (cost of one stock)
-	}
+	},
+	"uuid" : str ( unique id of player )
 }
 
 To client:
@@ -126,6 +128,63 @@ To client:
 					"value" : float (what part of all stocks it is. 0.012 means 1.2%, information is sum of all stocks)
 				]
 			}
-		}
+		},
+		"server_time" : float (value what time currently on a server)
+	}
+}
+
+MessageType:
+NEWS_BY_TIME = 7
+Client requests from server all news from given amount of server time. Information sents in chronological order
+
+To server:
+{
+	"type" : 7,
+	"body" : {
+		"time" : float ( server float time when were last new update)
+	}
+	"uuid" : str ( unique id of player )
+}
+
+To client:
+{
+	"type": 7,
+	"body":
+	{
+		"amount" : int (amount of elements in list)
+		"news" :
+		[
+			"theme" : str (String description of something, that happend),
+			"source" : str (Name of event source),
+			"server_time" : float ( when this news appeared, in seconds)
+		]
+	}
+}
+
+MessageType:
+NEWS_BY_COUNT = 8
+Client requests from server certain amount of last news. Information sents in chronological order
+
+To server:
+{
+	"type" : 8,
+	"body" : {
+		"amount" : int (amount of last news. If amount -1 will send all news from server)
+	}
+	"uuid" : str ( unique id of player )
+}
+
+To client:
+{
+	"type": 8,
+	"body":
+	{
+		"amount" : int (amount of elements in list)
+		"news" :
+		[
+			"theme" : str (String description of something, that happend),
+			"source" : str (Name of event source),
+			"server_time" : float ( when this news appeared, in seconds)
+		]
 	}
 }
