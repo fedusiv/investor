@@ -7,6 +7,7 @@ from companies.company import Company
 from companies.companies_types import CompanyType
 from player.player_data import PlayerData
 from client_data import ClientData
+from news.world_situation import WorldSituation
 
 MAX_COMPANIES_AMOUNT = 5
 
@@ -16,6 +17,7 @@ class StockPurchaseResult(Enum):
 	NO_SUCH_COMPANY = 2
 	NO_MORE_STOCKS = 3
 	NOT_ENOUGH_MONEY = 4
+	STOCK_COST_ERROR = 5
 
 # Storage class. I hope this will make some improvement to storage mechanism
 # At least autocompletion works fine
@@ -70,6 +72,20 @@ class CompaniesHandler():
 			element = CompanyStorageElement(uuid=new_company.uuid,company=new_company)
 			self.__companies_storage.append(element)
 
+	# Recalculate stock's cost of companies
+	def recalculate_companies_stock_cost(self):
+		for element in self.__companies_storage:
+			element : CompanyStorageElement
+			element['company'].recalculate_stocks_cost()
+
+	# Make analysis of situation and provide value changes
+	def commit_company_progress(self,world_situation: WorldSituation):
+		for element in self.__companies_storage:
+			element : CompanyStorageElement
+			element['company'].change_value_due_worldsituation(world_situation)
+			element['company'].recalculate_stocks_cost()
+			element['company'].print_company_values()
+
 	# Return open companies in list for Open Exhange Market
 	def get_open_companies_to_list(self):
 		c_open_list = []
@@ -100,6 +116,9 @@ class CompaniesHandler():
 			# Can't buy requested amount of stocks. Set amount to available
 			amount = company.silver_available_amount
 		
+		if cost != company.silver_cost:
+			return StockPurchaseResult.STOCK_COST_ERROR
+
 		# Calculate cost
 		full_cost = amount * company.silver_cost
 		if client_data.player_data.money < full_cost:
@@ -109,6 +128,10 @@ class CompaniesHandler():
 		stock_list = company.purchase_silver_stock(amount,client_data.uuid)
 		# Attach stocks to client, and decrease amount of money
 		client_data.player_data.purchase_stock_confirm(uuid, stock_list, full_cost)
+
+		# Increase company value by investoring money
+		company.increase_value(full_cost)
+
 		return StockPurchaseResult.SUCCESS
 
 

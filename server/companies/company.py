@@ -9,7 +9,7 @@ from companies.company_data import CompanyData
 from companies.company_name_generation import CompanyNameGenerator
 from stock.stock import Stock
 from stock.stock import StockType
-
+from news.world_situation import WorldSituation
 
 # Operate with company
 class Company():
@@ -40,6 +40,10 @@ class Company():
 	@property
 	def silver_available_amount(self):
 		return self.__silver_amount_full - self.__silver_amount_bought
+
+	@property
+	def value_rate(self):
+		return self.__value_rate
 
 
 	# Init generates default random Company 
@@ -73,6 +77,9 @@ class Company():
 		self.__silver_amount_full = 0 # Amount of stocks
 		self.__silver_amount_bought = 0 # Amount of stocks which are bought
 
+		# Rise value, company if works will increase own value
+		self.__value_rate = 1.01
+
 
 	# Probably temporaty method
 	# Generate 1 gold stock with 51% of value. And other of 49% with given amount
@@ -92,10 +99,32 @@ class Company():
 		# After generation need to calculate stock cost
 		self.recalculate_stocks_cost()
 
+	# Update company value based
+	def update_value(self, value_rate : float):
+		self.__value_rate += value_rate
+		self.data.value = self.data.value * self.value_rate
+
+	# Increase value of company, when money were invested to it
+	def increase_value(self, money: float):
+		self.data.value += money
+
 	# When company change it's value, better to recalculate stocks cost
 	def recalculate_stocks_cost(self):
 		for stock in self.stocks.values():
 			stock.calculate_cost(self.value)
+
+	# Changing value rate of company based on world situation
+	def change_value_due_worldsituation(self,world_situation : WorldSituation):
+		value = 0
+		switcher = {
+			CompanyBusinessType.MILITARY : world_situation.military_points,
+			CompanyBusinessType.FOOD : world_situation.food_points,
+			CompanyBusinessType.SCINCE : world_situation.scince_points,
+			CompanyBusinessType.MINING : world_situation.mining_points
+		}
+		value = switcher.get(self.business_type) / 100
+		print(value)
+		self.update_value(value)
 
 	# Companies handler calls this method.
 	# Company return list of stock, that will be bought
@@ -118,7 +147,6 @@ class Company():
 
 		return stock_list
 
-
 	# prepare dict of open company data
 	# Open company should return information about silver stocks
 	def prepare_open_company_data(self):
@@ -128,6 +156,7 @@ class Company():
 			'cost' : self.silver_cost
 		}
 		return data
+
 
 	# Server debug method
 	def print_company_data(self):
@@ -139,3 +168,6 @@ class Company():
 			print("\t",end='',flush=True)
 			self.stocks[stockey].print_stock_data()
 
+	# Server debug method
+	def print_company_values(self):
+		print("Company name: ", self.name, "\tvalue: ", self.value, "\tvalue rate: ", self.value_rate, "\tsilver cost: ", self.silver_cost)
