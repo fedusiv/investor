@@ -4,6 +4,7 @@
 import tornado.websocket
 
 from communication_parser import CommunitcationParserResult
+from companies.companies_types import StockSellResult
 from logic_handler import LogicHandler
 from communication_protocol import MessageType
 from communication_protocol import CommunicationProtocol
@@ -23,7 +24,8 @@ class ClientOperation():
 			MessageType.CLIENT_DATA : self.request_client_data,
 			MessageType.BUY_STOCK : self.request_to_buy_stock,
 			MessageType.NEWS_BY_TIME : self.request_for_news_list_bytime,
-			MessageType.NEWS_BY_AMOUNT : self.request_for_news_list_byamount
+			MessageType.NEWS_BY_AMOUNT : self.request_for_news_list_byamount,
+			MessageType.SELL_SILVER_STOCK : self.request_to_sell_stock
 		}
 		func = switcher.get(cmd.result_type)
 		func(cmd)
@@ -50,6 +52,12 @@ class ClientOperation():
 		result : StockPurchaseResult
 		result = self.logic_handler.request_to_buy_stock(cmd.company_uuid,cmd.stock_amount, cmd.stock_cost, self.client_data)
 		result_msg = CommunicationProtocol.create_purchase_result(result.value)
+		self.ws.write_message(result_msg)
+
+	def request_to_sell_stock(self, cmd: CommunitcationParserResult):
+		result : StockSellResult
+		result = self.logic_handler.request_to_sell_stock(cmd.company_uuid, cmd.stock_amount, self.client_data)
+		result_msg = CommunicationProtocol.create_sell_result(result.value)
 		self.ws.write_message(result_msg)
 
 	def request_for_news_list_bytime(self, cmd : CommunitcationParserResult):

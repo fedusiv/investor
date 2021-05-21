@@ -5,19 +5,12 @@ import math
 
 from communication_parser import CommunitcationParser
 from companies.company import Company
-from companies.companies_types import CompanyType
+from companies.companies_types import CompanyType, StockSellResult
+from companies.companies_types import StockPurchaseResult
 from player.player_data import PlayerData
 from client_data import ClientData
 from news.world_situation_data import WorldSituationData
 import config
-
-# To report result about stock purchase
-class StockPurchaseResult(Enum):
-	SUCCESS = 1
-	NO_SUCH_COMPANY = 2
-	NO_MORE_STOCKS = 3
-	NOT_ENOUGH_MONEY = 4
-	STOCK_COST_ERROR = 5
 
 # Storage class. I hope this will make some improvement to storage mechanism
 # At least autocompletion works fine
@@ -135,4 +128,25 @@ class CompaniesHandler():
 
 		return StockPurchaseResult.SUCCESS
 
+	def sell_stock_of_company(self, uuid: str, amount:int, client_data : ClientData) -> StockSellResult:
+		# First let's find a company
+		company : Company
+		company = self.company_by_uuid(uuid)
+		if company == None:
+			return StockSellResult.NO_SUCH_COMPANY
+
+		available_amount = client_data.player_data.get_silver_amount_of_company(uuid)
+		if available_amount == -1:
+			# Player has not this company in his list
+			return StockSellResult.HAS_NO_COMPANY
+		elif available_amount < amount:
+			# Player has not enough amount of stocks which he requested to sell
+			return StockSellResult.NO_ENOUGH_AMOUNT
+
+		# Calculate cost of sale
+		full_cost = amount * company.silver_cost
+
+		# Remove stocks from player and increase money
+		client_data.player_data.sell_silver_stocks(uuid,amount,full_cost)
+		return StockSellResult.SUCCESS
 

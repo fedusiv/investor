@@ -190,3 +190,31 @@ To client:
 		]
 	}
 }
+
+MessageType:
+SELL_SILVER_STOCK = 9
+client requests to sell silver stock of open company
+
+To server:
+{
+	"type" : 9,
+	"body" :
+	{
+		"uuid" : str ( uuid of company )
+		"amount" : int ( amount of stocks)
+	},
+	"uuid" : str ( unique id of player )
+}
+
+To client:
+{
+	"type": 9,
+	"body":
+	{
+		"result" : int (class StockPurchaseResult, code number of result)
+					SUCCESS = 1
+					NO_SUCH_COMPANY = 2	# No such uuid of company on server
+					HAS_NO_COMPANY = 3	# No such uuid of compnay in player data
+					NO_ENOUGH_AMOUNT = 4
+	}
+}

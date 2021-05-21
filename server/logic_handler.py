@@ -69,6 +69,9 @@ class LogicHandler():
 	def request_to_buy_stock(self,uuid:str, amount : int, cost : float, client_data):
 		return self.companies_handler.purchase_stock_of_comany(uuid,amount,cost,client_data)
 
+	def request_to_sell_stock(self,uuid:str, amount: int, client_data):
+		return self.companies_handler.sell_stock_of_company(uuid,amount,client_data)
+
 	def request_news_list_bytime(self, time: float):
 		return self.news_handler.get_news_list_bytime(time)
 

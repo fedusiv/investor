@@ -1,3 +1,4 @@
+from math import e
 from typing import TypedDict
 from stock.stock import Stock, StockType
 
@@ -15,17 +16,9 @@ class PlayerData():
 	def money(self):
 		return self.__money
 
-	# Support method
-	def contains(list, filter):
-		for x in list:
-			if filter(x):
-				return x
-		return None
-
 	def __init__(self):
 		self.__money = 1000
 		self.__stocks : StockStorageElement = []
-
 
 	def get_all_silver_stocks_to_list(self) -> list:
 		stocks_list = []
@@ -56,6 +49,16 @@ class PlayerData():
 
 		return stocks_list
 
+	# Get amount of silver stocks of certain company. Returns amount of stocks
+	# If there is no such company in player data returns -1
+	def get_silver_amount_of_company(self,company_uuid: str) -> int:
+		res = -1
+		for element in self.__stocks:
+			element: StockStorageElement
+			if element.company_uuid == company_uuid:
+				res = len(element.stock_list)
+				break
+		return res
 
 	# Be aware, this method should be called only after you have confirmation from comnapies handler or logic handler
 	def purchase_stock_confirm(self, company_uuid : str, company_name: str, stock_list : list, cost: float):
@@ -80,4 +83,30 @@ class PlayerData():
 				el = element
 				break
 		return el
+
+	# Sell stocks of given company
+	# Be aware this method awaits, that client has required amount of stocks. And even has this company in data
+	def sell_silver_stocks(self, company_uuid: str, amount : int, cost : float):
+		elem = None
+		for element in self.__stocks:
+			element: StockStorageElement
+			if element.company_uuid == company_uuid:
+				elem = element
+				index = self.__stocks.index(elem)
+				break
+		for stock in list(elem.stock_list):
+			stock : Stock
+			if stock.type == StockType.SILVER:
+				stock.sell_stock()	# change stock type. Player stores only references to stocks.
+				elem.stock_list.remove(stock)
+				amount-=1
+				if amount <= 0:
+					# Required amount of stock were removed from data
+					break
+		if len(elem.stock_list) <= 0:
+			# If there is no stock of this company left on player need to remove it from player data
+			del self.__stocks[index]
+
+		# Increase money amount
+		self.__money += amount
 

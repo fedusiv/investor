@@ -11,6 +11,7 @@ class MessageType(Enum):
 	CLIENT_DATA = 6
 	NEWS_BY_TIME = 7
 	NEWS_BY_AMOUNT = 8
+	SELL_SILVER_STOCK = 9
 
 
 # Class to parse and create required messages
@@ -109,4 +110,12 @@ class CommunicationProtocol():
 			"news" : news_list
 		}
 		msg_json = CommunicationProtocol.formulate_message(body, MessageType.NEWS_BY_TIME.value)
+		return msg_json
+
+	@staticmethod
+	def create_sell_result(result: int):
+		body = {
+			"result" : result
+		}
+		msg_json = CommunicationProtocol.formulate_message(body, MessageType.SELL_SILVER_STOCK.value)
 		return msg_json

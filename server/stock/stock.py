@@ -68,6 +68,11 @@ class Stock():
 		self.__bought = True
 		self.__client_uuid = client_uuid
 
+	# Set stock into available state
+	def sell_stock(self):
+		self.__bought = True
+		self.__client_uuid = ""
+
 	# For debug
 	def print_stock_data(self):
 		print("uuid: ", self.uuid, "\tcompany uuid: ", self.company_uuid, "\tvalue: ", self.value, "\ttype", self.type, "\tcost: ", self.cost)

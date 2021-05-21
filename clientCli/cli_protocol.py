@@ -57,6 +57,15 @@ class CliProtocol():
 		msg_json = self.formulate_message(body, MessageType.BUY_STOCK.value)
 		return msg_json
 
+	def request_stock_sell(self, company_uuid: str, amount: int):
+		body = {
+			'uuid' : company_uuid,
+			'amount' : amount
+		}
+		msg_json = self.formulate_message(body, MessageType.SELL_SILVER_STOCK.value)
+		return msg_json
+	
+
 	def request_news_bytime(self, time):
 		body = {
 			'time' : time

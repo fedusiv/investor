@@ -25,12 +25,18 @@ class CommunitcationParserResult():
 		self.stock_amount = body["amount"]	# amount of stocks want to buy
 		self.stock_cost = 	body["cost"]	# what price of one stock was
 
+	# To sell requested stock
+	def form_stock_sell_request(self,msg):
+		body = msg["body"]
+		self.company_uuid = body["uuid"]	# what company want to sell
+		self.stock_amount = body["amount"]	# amount of stocks want to sell
+
+
 	# Parsing parameters of news. by time and by amount
 	def news_by_time(self,msg):
 		self.news_time = msg["body"]["time"]
 	def news_by_amount(self,msg):
 		self.news_amount = msg["body"]["amount"]
-	
 
 
 class CommunitcationParser():
@@ -81,6 +87,11 @@ class CommunitcationParser():
 		result.news_by_amount(msg)
 		return result
 
+	@staticmethod
+	def sell_silver_stock(msg):
+		result = CommunitcationParserResult(MessageType.SELL_SILVER_STOCK, uuid=msg["uuid"])
+		result.form_stock_sell_request(msg)
+		return result
 
 	@staticmethod
 	def parse_clinet_message(msg):
@@ -98,7 +109,8 @@ class CommunitcationParser():
 			MessageType.CLIENT_DATA.value : CommunitcationParser.client_data_request,
 			MessageType.BUY_STOCK.value : CommunitcationParser.stock_buy_request,
 			MessageType.NEWS_BY_TIME.value : CommunitcationParser.news_bytime_request,
-			MessageType.NEWS_BY_AMOUNT.value : CommunitcationParser.news_byamount_request
+			MessageType.NEWS_BY_AMOUNT.value : CommunitcationParser.news_byamount_request,
+			MessageType.SELL_SILVER_STOCK.value : CommunitcationParser.sell_silver_stock
 		}
 
 		func = switcher.get(int(msg["type"]))
