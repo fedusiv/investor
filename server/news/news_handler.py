@@ -55,6 +55,18 @@ class NewsHandler():
 		random_interval = random.uniform(config.NEWS_GENERATION_TIME_DISPERSION[0], config.NEWS_GENERATION_TIME_DISPERSION[1])
 		self.next_news_generation_interval = round(random_interval,2)
 
+
+	# Create list with news for communication
+	def fill_news_list(self, element : NewsStorageElement):
+		# Names is taken from communication protocol txt, be aware of it
+		event = element["event"]
+		el = {
+			"theme" : event.theme,
+			"source" : event.source,
+			"server_time" : event.time
+		}
+		return el
+
 	# Prepare list of news from given time
 	def get_news_list_bytime(self, time: float):
 		news_list = []
@@ -62,13 +74,7 @@ class NewsHandler():
 			element: NewsStorageElement
 			if element["server_time"] >= time:
 				# Okay we need only these news
-				# Names is taken from communication protocol txt, be aware of it
-				event = element["event"]
-				el = {
-					"theme" : event.theme,
-					"source" : event.source,
-					"server_time" : event.time
-				}
+				el = self.fill_news_list(element)
 				news_list.append(el)
 		return news_list
 
@@ -78,12 +84,7 @@ class NewsHandler():
 		counter = amount
 		for element in reversed(self.__news_storage):
 			element: NewsStorageElement
-			event = element["event"]
-			el = {
-				"theme" : event.theme,
-				"source" : event.source,
-				"server_time" : event.time
-			}
+			el = self.fill_news_list(element)
 			news_list.append(el)
 			# If amount is -1 return list with all news
 			if amount > -1:

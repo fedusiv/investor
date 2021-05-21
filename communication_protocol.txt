@@ -178,7 +178,7 @@ To server:
 
 To client:
 {
-	"type": 8,
+	"type": 7,
 	"body":
 	{
 		"amount" : int (amount of elements in list)
