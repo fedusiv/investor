@@ -150,10 +150,12 @@ class Company():
 	# prepare dict of open company data
 	# Open company should return information about silver stocks
 	def prepare_open_company_data(self):
+		# Send float only with 4 digits after comma
+		cost = format(self.silver_cost,'.4f')
 		data = {
 			'uuid' : self.uuid,
 			'name' : self.name,
-			'cost' : self.silver_cost
+			'cost' : cost
 		}
 		return data
 
