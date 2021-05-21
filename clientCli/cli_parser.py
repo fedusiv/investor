@@ -52,10 +52,13 @@ class Gui(QWidget):
 			if msg["type"] == 1:
 				# login received
 				body = msg["body"]
+				print(body)
 				if body["result"]:
 					# result okay
 					self.print_cmd_tb("Logged! uuid: " + body["uuid"])
 					self.cli_protocol.uuid = body["uuid"]
+					if body["admin"] is False:
+						self.print_cmd_tb("You are connected not as ADMIN! Please use other user")
 				else:
 					self.print_cmd_tb("Login Error! Msg: " + body["message"])
 				return

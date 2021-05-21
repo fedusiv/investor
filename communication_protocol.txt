@@ -16,6 +16,19 @@ To server:
 		"password" : password_string
 	}
 }
+// For admin connection:
+// Web client should not has this admin. Only clientCli !
+To server:
+{
+	"type" : 1,
+	"body" : 
+	{
+		"login" : login_string,
+		"password" : password_string
+		"admin" : true
+	}
+}
+
 
 To client:
 {
@@ -25,6 +38,7 @@ To client:
 		"result" : result_bool
 		"message" : message_string ( if result True, message empty, because authorization is ok, if result False there is a error messsage)
 		"uuid" : str (unique id of player)
+		"admin" : if client admin requested to be connected. or from admin console (web gui should not parse it)
 	}
 }
 

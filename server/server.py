@@ -64,6 +64,8 @@ class ClientHandler(tornado.websocket.WebSocketHandler):
 	alive_last_msg_time = 0.0
 	# Display if client if logged in to server, server knows who is client, and allow to work with him
 	logged_in = False
+	# Represent that connected client is admin
+	is_admin = False
 
 	def open(self):
 		print("A client connected to server. ", self.request.remote_ip)
@@ -112,10 +114,16 @@ class ClientHandler(tornado.websocket.WebSocketHandler):
 		self.client_data = copy.deepcopy(client_data)	# Copy and create new object of Client data
 		# Give to operation module client data
 		self.client_operation.client_data = self.client_data
-		print("client connected. login : ", self.client_data.login, "\tuuid: " ,self.client_data.uuid)
 		self.logged_in = True
+		# Admin request sent
+		if result.admin is True:
+			# If client data credentials has admin
+			if client_data.admin is True:
+				# Set connection as admin
+				self.is_admin = True
+		print("client connected. login : ", self.client_data.login, "\tuuid: " ,self.client_data.uuid, "\t as admin: ", self.is_admin)
 		# send message to client
-		msg = CommunicationProtocol.create_login_result_msg(True,self.client_data.uuid)
+		msg = CommunicationProtocol.create_login_result_msg(True,self.client_data.uuid, admin=self.is_admin)
 		self.write_message(msg)
 
 	def send_keep_alive(self):

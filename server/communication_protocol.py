@@ -35,11 +35,12 @@ class CommunicationProtocol():
 
 	# To client.
 	@staticmethod
-	def create_login_result_msg(result,uuid:str, msg = ""):
+	def create_login_result_msg(result,uuid:str, msg = "", admin: bool = False):
 		body = {
 			"result" : result,
 			"message" : msg,
-			"uuid" : uuid
+			"uuid" : uuid,
+			"admin" : admin
 		}
 		msg_json = CommunicationProtocol.formulate_message(body, MessageType.LOGIN.value)
 		return msg_json

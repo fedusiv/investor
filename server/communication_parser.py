@@ -17,6 +17,11 @@ class CommunitcationParserResult():
 	def init_client_data(self, msg):
 		self.login = msg["body"]["login"]
 		self.password = msg["body"]["password"]
+		try:
+			if msg["body"]["admin"] == True:
+				self.admin = True
+		except:
+			self.admin = False
 
 	# To buy requested stock
 	def form_stock_buy_request(self,msg):
@@ -112,6 +117,7 @@ class CommunitcationParser():
 			MessageType.NEWS_BY_AMOUNT.value : CommunitcationParser.news_byamount_request,
 			MessageType.SELL_SILVER_STOCK.value : CommunitcationParser.sell_silver_stock
 		}
+		# Verification is this admin message
 
 		func = switcher.get(int(msg["type"]))
 		result = func(msg)
