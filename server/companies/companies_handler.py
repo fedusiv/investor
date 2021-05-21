@@ -1,8 +1,9 @@
 from enum import Enum
 import time
 from typing import List, TypedDict
-from communication_parser import CommunitcationParser
+import math
 
+from communication_parser import CommunitcationParser
 from companies.company import Company
 from companies.companies_types import CompanyType
 from player.player_data import PlayerData
@@ -114,7 +115,9 @@ class CompaniesHandler():
 			# Can't buy requested amount of stocks. Set amount to available
 			amount = company.silver_available_amount
 
-		if cost != company.silver_cost:
+		# Better to compare a closed value to cost. Because no problem in error in 2 digits after comma.
+		close =  math.isclose(cost, company.silver_cost,rel_tol=1e-2)
+		if close is not True:
 			return StockPurchaseResult.STOCK_COST_ERROR
 
 		# Calculate cost
