@@ -1,7 +1,7 @@
 import server
 
 def main():
-	server.ServerStart()
+    server.ServerStart()
 
 if __name__ == "__main__":
-	main()
+    main()

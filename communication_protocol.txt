@@ -9,37 +9,37 @@ Request server to login
 
 To server:
 {
-	"type" : 1,
-	"body" : 
-	{
-		"login" : login_string,
-		"password" : password_string
-	}
+    "type" : 1,
+    "body" : 
+    {
+        "login" : login_string,
+        "password" : password_string
+    }
 }
 // For admin connection:
 // Web client should not has this admin. Only clientCli !
 To server:
 {
-	"type" : 1,
-	"body" : 
-	{
-		"login" : login_string,
-		"password" : password_string
-		"admin" : true
-	}
+    "type" : 1,
+    "body" : 
+    {
+        "login" : login_string,
+        "password" : password_string
+        "admin" : true
+    }
 }
 
 
 To client:
 {
-	"type" : 1,
-	"body" : 
-	{
-		"result" : result_bool
-		"message" : message_string ( if result True, message empty, because authorization is ok, if result False there is a error messsage)
-		"uuid" : str (unique id of player)
-		"admin" : if client admin requested to be connected. or from admin console (web gui should not parse it)
-	}
+    "type" : 1,
+    "body" : 
+    {
+        "result" : result_bool
+        "message" : message_string ( if result True, message empty, because authorization is ok, if result False there is a error messsage)
+        "uuid" : str (unique id of player)
+        "admin" : if client admin requested to be connected. or from admin console (web gui should not parse it)
+    }
 }
 
 
@@ -48,8 +48,8 @@ KEEP_ALIVE = 3
 Ping pong client with server to validate, that connection still alive. Just logic mechanism of keep_alive
 To client and to server there is  identical message type:
 {
-	"type" : 3
-	"body" : {}
+    "type" : 3
+    "body" : {}
 }
 
 
@@ -59,24 +59,24 @@ client requests a list of all available companies
 
 To server:
 {
-	"type" : 4,
-	"body" : {}
-	"uuid" : str (unique id of client) 
+    "type" : 4,
+    "body" : {}
+    "uuid" : str (unique id of client) 
 }
 
 To client:
 {
-	"type" : 4,
-	"body" : 
-	{
-		"amount" : int ( amount of companies which are in the list)
-		"list":	(array of companies)
-		[
-			"uuid" : string_uniq_id,
-			"name" : string_name,
-			"cost" : float ( cost of stock on a market)
-		]
-	} 
+    "type" : 4,
+    "body" : 
+    {
+        "amount" : int ( amount of companies which are in the list)
+        "list":	(array of companies)
+        [
+            "uuid" : string_uniq_id,
+            "name" : string_name,
+            "cost" : float ( cost of stock on a market)
+        ]
+    } 
 }
 Example:
 {'type': 4, 'body': {'amount': 10, 'list': [{'uuid': 'b3cd9db0-68de-4ab8-8d17-a0f56879c650', 'name': 'Jewellery of Shrierpuld Fihlusols', 'cost': 39.32}, {'uuid': '0bc8052b-4dac-4887-a303-09f28dc4419c', 'name': 'Forge of Shrierpuld Fihlusols', 'cost': 43.29999999999999}, {'uuid': '0288e931-be09-476e-a70d-957b5eceb954', 'name': 'Alchemistry of Linbak Denma', 'cost': 34.17999999999999}, {'uuid': 'dd4fec11-294a-41b9-8300-af0d75e678b9', 'name': 'Jewellery of Krelul Keva', 'cost': 31.720000000000006}, {'uuid': 'b8b66d5e-f6ec-466f-88e1-2bd79511e84b', 'name': 'Quarry of Leidron Endas', 'cost': 34.659999999999975}, {'uuid': '3a34eb04-7ea5-42ba-a56c-c9a656618c84', 'name': 'Jewellery of Shrierpuld Fihlusols', 'cost': 32.849999999999994}, {'uuid': 'b0e7d454-32f3-440e-bfa7-caf28c43adcb', 'name': 'Mill of Dudrik Steinlich', 'cost': 33.31}, {'uuid': 'beff50ba-e28d-4b34-b6cb-a7127db03260', 'name': 'Alchemistry of Dudrik Steinlich', 'cost': 22.22}, {'uuid': '10058bd3-1fca-4c02-aef1-e81614ff3aa1', 'name': 'Sawmill of Dudrik Steinlich', 'cost': 33.039999999999985}, {'uuid': '4bb7e77b-ecd2-46a2-868b-77b2af37f8b4', 'name': 'Alchemistry of Linbak Denma', 'cost': 25.540000000000003}]}}
@@ -88,28 +88,28 @@ client requests to buy stock of company
 
 To server:
 {
-	"type" : 5,
-	"body" :
-	{
-		"uuid" : str ( uuid of company )
-		"amount" : int ( amount of stocks)
-		"cost"	: float (cost of one stock)
-	},
-	"uuid" : str ( unique id of player )
+    "type" : 5,
+    "body" :
+    {
+        "uuid" : str ( uuid of company )
+        "amount" : int ( amount of stocks)
+        "cost"	: float (cost of one stock)
+    },
+    "uuid" : str ( unique id of player )
 }
 
 To client:
 {
-	"type": 5,
-	"body":
-	{
-		"result" : int (class StockPurchaseResult, code number of result)
-					SUCCESS = 1
-					NO_SUCH_COMPANY = 2
-					NO_MORE_STOCKS = 3
-					NOT_ENOUGH_MONEY = 4
-					STOCK_COST_ERROR = 5
-	}
+    "type": 5,
+    "body":
+    {
+        "result" : int (class StockPurchaseResult, code number of result)
+                    SUCCESS = 1
+                    NO_SUCH_COMPANY = 2
+                    NO_MORE_STOCKS = 3
+                    NOT_ENOUGH_MONEY = 4
+                    STOCK_COST_ERROR = 5
+    }
 }
 
 MessageType:
@@ -118,35 +118,35 @@ client request from server all information, which client should know
 
 To server:
 {
-	"type" : 6,
-	"body" : {}
-	"uuid" : str ( unique id of player )
+    "type" : 6,
+    "body" : {}
+    "uuid" : str ( unique id of player )
 }
 
 To client:
 {
-	"type": 6,
-	"body":
-	{
-		"login" : str (login name)
-		"player_data" : (send current player data)
-		{
-			"money" : float (current amount of money)
-			"stocks_silver" :
-			{
-				"amount" : int (amount of stocks in list)
-				"list : (list of stocks)
-				[
-					"uuid" : str (id of company)
-					"name" : str (name of company)
-					"amount" : int (amount of silver sotkcs of one company)
-					"cost" : float (cost of all stocks!)
-					"value" : float (what part of all stocks it is. 0.012 means 1.2%, information is sum of all stocks)
-				]
-			}
-		},
-		"server_time" : float (value what time currently on a server)
-	}
+    "type": 6,
+    "body":
+    {
+        "login" : str (login name)
+        "player_data" : (send current player data)
+        {
+            "money" : float (current amount of money)
+            "stocks_silver" :
+            {
+                "amount" : int (amount of stocks in list)
+                "list : (list of stocks)
+                [
+                    "uuid" : str (id of company)
+                    "name" : str (name of company)
+                    "amount" : int (amount of silver sotkcs of one company)
+                    "cost" : float (cost of all stocks!)
+                    "value" : float (what part of all stocks it is. 0.012 means 1.2%, information is sum of all stocks)
+                ]
+            }
+        },
+        "server_time" : float (value what time currently on a server)
+    }
 }
 
 MessageType:
@@ -155,26 +155,26 @@ Client requests from server all news from given amount of server time. Informati
 
 To server:
 {
-	"type" : 7,
-	"body" : {
-		"time" : float ( server float time when were last new update)
-	}
-	"uuid" : str ( unique id of player )
+    "type" : 7,
+    "body" : {
+        "time" : float ( server float time when were last new update)
+    }
+    "uuid" : str ( unique id of player )
 }
 
 To client:
 {
-	"type": 7,
-	"body":
-	{
-		"amount" : int (amount of elements in list)
-		"news" :
-		[
-			"theme" : str (String description of something, that happend),
-			"source" : str (Name of event source),
-			"server_time" : float ( when this news appeared, in seconds)
-		]
-	}
+    "type": 7,
+    "body":
+    {
+        "amount" : int (amount of elements in list)
+        "news" :
+        [
+            "theme" : str (String description of something, that happend),
+            "source" : str (Name of event source),
+            "server_time" : float ( when this news appeared, in seconds)
+        ]
+    }
 }
 
 MessageType:
@@ -183,26 +183,26 @@ Client requests from server certain amount of last news. Information sents in ch
 
 To server:
 {
-	"type" : 8,
-	"body" : {
-		"amount" : int (amount of last news. If amount -1 will send all news from server)
-	}
-	"uuid" : str ( unique id of player )
+    "type" : 8,
+    "body" : {
+        "amount" : int (amount of last news. If amount -1 will send all news from server)
+    }
+    "uuid" : str ( unique id of player )
 }
 
 To client:
 {
-	"type": 7,
-	"body":
-	{
-		"amount" : int (amount of elements in list)
-		"news" :
-		[
-			"theme" : str (String description of something, that happend),
-			"source" : str (Name of event source),
-			"server_time" : float ( when this news appeared, in seconds)
-		]
-	}
+    "type": 7,
+    "body":
+    {
+        "amount" : int (amount of elements in list)
+        "news" :
+        [
+            "theme" : str (String description of something, that happend),
+            "source" : str (Name of event source),
+            "server_time" : float ( when this news appeared, in seconds)
+        ]
+    }
 }
 
 MessageType:
@@ -211,24 +211,24 @@ client requests to sell silver stock of open company
 
 To server:
 {
-	"type" : 9,
-	"body" :
-	{
-		"uuid" : str ( uuid of company )
-		"amount" : int ( amount of stocks)
-	},
-	"uuid" : str ( unique id of player )
+    "type" : 9,
+    "body" :
+    {
+        "uuid" : str ( uuid of company )
+        "amount" : int ( amount of stocks)
+    },
+    "uuid" : str ( unique id of player )
 }
 
 To client:
 {
-	"type": 9,
-	"body":
-	{
-		"result" : int (class StockPurchaseResult, code number of result)
-					SUCCESS = 1
-					NO_SUCH_COMPANY = 2	# No such uuid of company on server
-					HAS_NO_COMPANY = 3	# No such uuid of compnay in player data
-					NO_ENOUGH_AMOUNT = 4
-	}
+    "type": 9,
+    "body":
+    {
+        "result" : int (class StockPurchaseResult, code number of result)
+                    SUCCESS = 1
+                    NO_SUCH_COMPANY = 2	# No such uuid of company on server
+                    HAS_NO_COMPANY = 3	# No such uuid of compnay in player data
+                    NO_ENOUGH_AMOUNT = 4
+    }
 }

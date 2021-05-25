@@ -1,6 +1,6 @@
 {
-	"MILITARY" : ["Forge", "Archery", "Mercenaries"],
-	"FOOD" : ["Farm", "Plantation", "hennery", "Winerry"],
-	"SCINCE" : ["Bureau", "Labaratory", "Research center"],
-	"MINING" : ["Mine", "Artel", "Sawmill", "Quarry"]
+    "MILITARY" : ["Forge", "Archery", "Mercenaries"],
+    "FOOD" : ["Farm", "Plantation", "hennery", "Winerry"],
+    "SCINCE" : ["Bureau", "Labaratory", "Research center"],
+    "MINING" : ["Mine", "Artel", "Sawmill", "Quarry"]
 }
