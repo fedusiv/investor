@@ -28,19 +28,19 @@ class CompaniesHandler():
         if CompaniesHandler.__instance == None:
             CompaniesHandler()
         return CompaniesHandler.__instance
-    
+
     def __init__(self):
         CompaniesHandler.__instance = self
         # Company storage. List of CompanyStorageElement. Probably in the future maybe need to implement a custom class for storage
-        # 	for easier operations with it
-        self.__companies_storage : CompanyStorageElement = []
+        # for easier operations with it
+        self.__companies_storage = []
 
     #---------------------#
     #Logic part
     #---------------------#
 
     # Get company by it's uuid
-    def company_by_uuid(self, uuid: str):
+    def company_by_uuid(self, uuid: str)-> Company:
         company = None
         for element in self.__companies_storage:
             element : CompanyStorageElement
@@ -54,16 +54,30 @@ class CompaniesHandler():
     def update_companies(self):
         # Update companies amount. If some company disappeared need to replace it
         self.update_companies_amount()
-        
+
     # Check current companies amount, if less create new
     def update_companies_amount(self):
-        while len(self.__companies_storage) < config.MAX_COMPANIES_AMOUNT:
-            # Create companies
-            new_company = Company()
-            # Generate default set of stocks
-            new_company.generate_stocks51(15)
-            element = CompanyStorageElement(uuid=new_company.uuid,company=new_company)
-            self.__companies_storage.append(element)
+        while len(self.__companies_storage) < config.MAX_OPEN_COMPANIES_AMOUNT:
+            self.generate_open_company()
+
+    def generate_open_company(self):
+        # Create companies
+        new_company = Company()
+        # Generate default set of stocks for open company
+        new_company.generate_stocks51(15)
+        new_company.generate_open_company_random_value()
+        element = CompanyStorageElement(uuid=new_company.uuid,company=new_company)
+        self.__companies_storage.append(element)
+
+
+    def generate_closed_company(self):
+        # Create companies
+        new_company = Company()
+        # Generate default set of stocks for closed company
+        new_company.generate_closed_stocks()
+        new_company.generate_closed_company_random_value()
+        element = CompanyStorageElement(uuid=new_company.uuid,company=new_company)
+        self.__companies_storage.append(element)
 
     # Recalculate stock's cost of companies
     def recalculate_companies_stock_cost(self):
@@ -75,8 +89,13 @@ class CompaniesHandler():
     def commit_company_progress(self,data: WorldSituationData):
         for element in self.__companies_storage:
             element : CompanyStorageElement
-            element['company'].change_value_due_worldsituation(data)
-            element['company'].recalculate_stocks_cost()
+            if element['company'].company_type is CompanyType.OPEN:
+                # Open companies depend on news and nothing more
+                element['company'].change_value_due_worldsituation(data)
+                element['company'].recalculate_stocks_cost()
+            elif element['company'].company_type is CompanyType.CLOSED:
+                # TODO: Closed companies should be analyzed by different. They mostly depend on invested money
+                pass
 
     # Return open companies in list for Open Exhange Market
     def get_open_companies_to_list(self):
@@ -89,7 +108,7 @@ class CompaniesHandler():
             if element['company'].company_type != CompanyType.OPEN:
                 continue
             c_open_list.append(element['company'].prepare_open_company_data())
-        
+
         return c_open_list
 
     # Client tries to buy silver stock(s) of company
@@ -100,7 +119,7 @@ class CompaniesHandler():
         company = self.company_by_uuid(uuid)
         if company == None:
             return StockPurchaseResult.NO_SUCH_COMPANY
-        
+
         if company.silver_available_amount == 0:
             return StockPurchaseResult.NO_MORE_STOCKS
 

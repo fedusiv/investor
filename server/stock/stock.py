@@ -41,6 +41,10 @@ class Stock():
     def client_uuid(self):
         return self.__client_uuid
 
+    @property
+    def is_main(self):
+        return self.__main
+
     # When inits it should return uuid of stock
     # c_uuid - company id, wwhich stock belongs to
     # type - type of stock
@@ -58,8 +62,14 @@ class Stock():
         self.__bought = False
         # When player bought it, also better to store id of owner
         self.__client_uuid = ""
+        # By default stock is not main
+        self.__main = False
 
-    # Calculate stock cost based on company value
+    # Main stock means, that player who owns it, he owns company
+    def set_as_main(self):
+        self.__main = True
+
+        # Calculate stock cost based on company value
     def calculate_cost(self, company_value : float):
         self.__cost = company_value * self.value
 

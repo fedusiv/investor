@@ -25,13 +25,18 @@ class Company():
         return self.data.value
 
     @property
-    def silver_cost(self):
+    def silver_cost(self) -> float:
         for stock in self.stocks.values():
             stock : Stock
             if stock.type != StockType.SILVER:
                 continue
             # itarate loop until we received first Silver stock
-            return stock.cost
+            if stock.cost <= 0:
+                continue
+            else:
+                return stock.cost
+        # Something can happend and return value will be nothing need to return 0
+        return 0.0
 
     @property
     def silver_full_amount(self):
@@ -40,6 +45,10 @@ class Company():
     @property
     def silver_available_amount(self):
         return self.__silver_amount_full - self.__silver_amount_bought
+
+    @property
+    def gold_full_amount(self):
+        return self.__gold_amount_full
 
     @property
     def value_rate(self):
@@ -64,12 +73,6 @@ class Company():
         # Generate uniq id.
         # TODO : verify, that this is right solution
         self.data.uuid = str(uuid4())
-
-        # Generate default random value
-        random.seed(time.time())
-        random_cost = random.uniform(1000.0, 5000.0)
-        self.data.value = round(random_cost,2)
-
         # On init stage company has none type and can't participate on marketing operations
         # Assume that type will be changed further
         self.company_type = CompanyType.NONE
@@ -77,9 +80,20 @@ class Company():
         self.__silver_amount_full = 0 # Amount of stocks
         self.__silver_amount_bought = 0 # Amount of stocks which are bought
 
+        self.__gold_amount_full = 0 # Amount of gold stocks
         # Rise value, company if works will increase own value
-        self.__value_rate = 1.01
+        self.__value_rate = 1.0
 
+    def generate_open_company_random_value(self):
+        random.seed(time.time())
+        random_cost = random.uniform(15000.0, 50000.0)
+        self.data.value = round(random_cost,2)
+
+
+    def generate_closed_company_random_value(self):
+        random.seed(time.time())
+        random_cost = random.uniform(2000.0, 6000.0)
+        self.data.value = round(random_cost,2)
 
     # Probably temporaty method
     # Generate 1 gold stock with 51% of value. And other of 49% with given amount
@@ -89,14 +103,47 @@ class Company():
         self.company_type = CompanyType.OPEN
         # Create stocks
         main_stock = Stock(self.uuid, StockType.GOLD, 0.51)
+        main_stock.set_as_main()
         self.stocks[main_stock.uuid] = main_stock
+        self.__gold_amount_full += 1
         # Generate others
         value = (49 / amount) / 100
-        for i in range(0,amount):
+        for _unused in range(0,amount):
             stock = Stock(self.uuid, StockType.SILVER, value)
             self.stocks[stock.uuid] = stock
             self.__silver_amount_full += 1
         # After generation need to calculate stock cost
+        self.recalculate_stocks_cost()
+
+    # Default generator stocks for closed type companies
+    def generate_closed_stocks(self):
+        # Set type to closed
+        self.company_type = CompanyType.CLOSED
+        # Generate main stock
+        main_stock = Stock(self.uuid, StockType.GOLD, 0.51)
+        main_stock.set_as_main()
+        self.stocks[main_stock.uuid] = main_stock
+        self.__gold_amount_full +=1
+        # Next decided, what amount of all generated stocks
+        amount = random.randint(3,7)
+        # Available stock percentage
+        persentage = 0.49
+        for i in range(0,amount-1):
+            random.seed(time.time())
+            limit_a = round(persentage/(amount - i),2)
+            limit_b = round(persentage/2,2) # maximum it can be a half of available persentage
+            cur_persentage = round(random.uniform(limit_a,limit_b))
+            # Create stock
+            persentage -= cur_persentage
+            stock = Stock(self.uuid, StockType.GOLD, cur_persentage) # Create stock
+            self.stocks[stock.uuid] = stock # Store
+            self.__gold_amount_full +=1
+
+        # Loop goes amount-1, that means one left to store all persentage that left
+        stock = Stock(self.uuid, StockType.GOLD, persentage) # Create stock
+        self.stocks[stock.uuid] = stock
+        self.__gold_amount_full +=1
+        # Recalculation after generation
         self.recalculate_stocks_cost()
 
     # Update company value based
