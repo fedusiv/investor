@@ -63,9 +63,9 @@ class CompaniesHandler():
     def generate_open_company(self):
         # Create companies
         new_company = Company()
+        new_company.generate_open_company_random_value()
         # Generate default set of stocks for open company
         new_company.generate_stocks51(15)
-        new_company.generate_open_company_random_value()
         element = CompanyStorageElement(uuid=new_company.uuid,company=new_company)
         self.__companies_storage.append(element)
 
@@ -73,9 +73,9 @@ class CompaniesHandler():
     def generate_closed_company(self):
         # Create companies
         new_company = Company()
+        new_company.generate_closed_company_random_value()
         # Generate default set of stocks for closed company
         new_company.generate_closed_stocks()
-        new_company.generate_closed_company_random_value()
         element = CompanyStorageElement(uuid=new_company.uuid,company=new_company)
         self.__companies_storage.append(element)
 
