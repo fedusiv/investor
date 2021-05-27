@@ -147,6 +147,7 @@ class CompaniesHandler():
 
         return StockPurchaseResult.SUCCESS
 
+    # Player tries to sell stock of open company
     def sell_stock_of_company(self, uuid: str, amount:int, client_data : ClientData) -> StockSellResult:
         # First let's find a company
         company : Company

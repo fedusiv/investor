@@ -7,7 +7,7 @@ class StockStorageElement():
     def __init__(self, company_uuid : str, company_name = "This is Error message"):
         self.company_uuid = company_uuid
         self.company_name = company_name
-        self.stock_list : Stock = []
+        self.stock_list = []
 
 # Handle player data.
 class PlayerData():
@@ -18,7 +18,7 @@ class PlayerData():
 
     def __init__(self):
         self.__money = 1000
-        self.__stocks : StockStorageElement = []
+        self.__stocks  = []
 
     def get_all_silver_stocks_to_list(self) -> list:
         stocks_list = []
@@ -108,5 +108,5 @@ class PlayerData():
             del self.__stocks[index]
 
         # Increase money amount
-        self.__money += amount
+        self.__money += cost
 
