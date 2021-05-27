@@ -1,6 +1,7 @@
 from math import e
 from typing import TypedDict
 from stock.stock import Stock, StockType
+import config
 
 # Store stocks by it affiliance to company
 class StockStorageElement():
@@ -17,7 +18,7 @@ class PlayerData():
         return self.__money
 
     def __init__(self):
-        self.__money = 1000
+        self.__money = config.PLAYER_DEFAULT_MONEY_AMOUNT
         self.__stocks  = []
 
     def get_all_silver_stocks_to_list(self) -> list:
@@ -69,7 +70,7 @@ class PlayerData():
         if element is None:
                 element = StockStorageElement(company_uuid,company_name)
                 self.__stocks.append(element)
-        
+
         for stock in stock_list:
             stock : Stock
             element.stock_list.append(stock)
