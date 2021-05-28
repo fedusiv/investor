@@ -1,16 +1,13 @@
 from enum import Enum
-import time
 from typing import List, TypedDict
 import math
 
-from communication_parser import CommunitcationParser
 from companies.company import Company
 from companies.companies_types import CompanyType, StockSellResult
 from companies.companies_types import StockPurchaseResult
-from player.player_data import PlayerData
 from client_data import ClientData
-from news.world_situation_data import WorldSituationData
 import config
+from news.world_situation import WorldSituation
 
 # Storage class. I hope this will make some improvement to storage mechanism
 # At least autocompletion works fine
@@ -86,7 +83,7 @@ class CompaniesHandler():
             element['company'].recalculate_stocks_cost()
 
     # Make analysis of situation and provide value changes
-    def commit_company_progress(self,data: WorldSituationData):
+    def commit_company_progress(self,data: WorldSituation):
         for element in self.__companies_storage:
             element : CompanyStorageElement
             if element['company'].company_type is CompanyType.OPEN:

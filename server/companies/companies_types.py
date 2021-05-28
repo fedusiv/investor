@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import Enum, unique
 
 # This type represent in what stage company is now
 # None means, company is not initialized properly or it has no stocks
@@ -9,11 +9,12 @@ class CompanyType(Enum):
     OPEN = 1
     CLOSED = 2
 
+@unique
 class CompanyBusinessType(Enum):
     MILITARY = 1
-    FOOD = 2
+    ENTERTAINMENT = 2
     SCINCE = 3
-    MINING = 4
+    SOCIAL = 4
 
 # To report result about stock purchase
 class StockPurchaseResult(Enum):

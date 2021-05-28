@@ -16,7 +16,7 @@ class LogicHandler():
         if LogicHandler.__instance == None:
             LogicHandler()
         return LogicHandler.__instance
-    
+
     def __init__(self):
         LogicHandler.__instance = self
         self.companies_handler = CompaniesHandler.Instance()
