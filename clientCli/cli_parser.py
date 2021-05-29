@@ -123,7 +123,8 @@ class Gui(QWidget):
 			"ws" : self.websocket_parameter_change,
 			"clear" : self.clear_console,
 			"news" : self.request_news_list,
-			"sell" : self.request_sell_stock
+			"sell" : self.request_sell_stock,
+			"send" : self.send_message
 		}
 		func = switcher.get(cmd_list[0],self.wrong_cmd)
 		func(cmd_list)
@@ -165,6 +166,12 @@ class Gui(QWidget):
 
 	def request_sell_stock(self,cmd_list):
 		msg_json = self.cli_protocol.request_stock_sell(cmd_list[1],int(cmd_list[2]))
+		self.queue_sent.put(msg_json)
+
+	def send_message(self, cmd_list):
+		msg_json = None
+		if cmd_list[1] == "global":
+			msg_json = self.cli_protocol.send_global_message(cmd_list[2])
 		self.queue_sent.put(msg_json)
 
 	def websocket_parameter_change(self,cmd_list):

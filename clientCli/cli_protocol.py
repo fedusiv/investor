@@ -79,3 +79,11 @@ class CliProtocol():
 		}
 		msg_json = self.formulate_message(body, MessageType.NEWS_BY_AMOUNT.value)
 		return msg_json
+
+	def send_global_message(self, text):
+		body = {
+			'type' : 1,
+			'text' : text
+		}
+		msg_json = self.formulate_message(body, MessageType.MESSAGING.value)
+		return msg_json

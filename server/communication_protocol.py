@@ -12,7 +12,7 @@ class MessageType(Enum):
     NEWS_BY_TIME = 7
     NEWS_BY_AMOUNT = 8
     SELL_SILVER_STOCK = 9
-
+    MESSAGING = 10
 
 # Class to parse and create required messages
 # This class used for server and client as well
@@ -72,7 +72,7 @@ class CommunicationProtocol():
         s_list = {}
         if stock_list is not None:
             s_list = stock_list
-        
+
         body = {
             "login" : login,
             "player_data":
@@ -119,4 +119,14 @@ class CommunicationProtocol():
             "result" : result
         }
         msg_json = CommunicationProtocol.formulate_message(body, MessageType.SELL_SILVER_STOCK.value)
+        return msg_json
+
+    @staticmethod
+    def create_global_message(player_name : str, time, text:str):
+        body = {
+            "player_name" : player_name,
+            "server_time" : time,
+            "text" : text
+        }
+        msg_json = CommunicationProtocol.formulate_message(body, MessageType.MESSAGING.value)
         return msg_json

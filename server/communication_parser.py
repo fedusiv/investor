@@ -1,4 +1,3 @@
-from client_data import ClientData
 from communication_protocol import CommunicationProtocol
 from communication_protocol import MessageType
 
@@ -11,6 +10,9 @@ class CommunitcationParserResult():
         self.result_type = result_type
         self.uuid = uuid
         self.result_type : MessageType
+
+    def init_body(self, msg):
+        self.msg_body = msg["body"]
 
     # For initialization client data
     # On login request it should store credentials, for futher parsing and validating
@@ -99,6 +101,12 @@ class CommunitcationParser():
         return result
 
     @staticmethod
+    def messaging(msg):
+        result = CommunitcationParserResult(MessageType.MESSAGING,uuid=msg["uuid"])
+        result.init_body(msg)
+        return result
+
+    @staticmethod
     def parse_clinet_message(msg):
         # message should be json
         msg = CommunicationProtocol.verify_msg(msg)
@@ -115,7 +123,8 @@ class CommunitcationParser():
             MessageType.BUY_STOCK.value : CommunitcationParser.stock_buy_request,
             MessageType.NEWS_BY_TIME.value : CommunitcationParser.news_bytime_request,
             MessageType.NEWS_BY_AMOUNT.value : CommunitcationParser.news_byamount_request,
-            MessageType.SELL_SILVER_STOCK.value : CommunitcationParser.sell_silver_stock
+            MessageType.SELL_SILVER_STOCK.value : CommunitcationParser.sell_silver_stock,
+            MessageType.MESSAGING.value : CommunitcationParser.messaging
         }
         # Verification is this admin message
 

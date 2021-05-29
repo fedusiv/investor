@@ -16,8 +16,8 @@ from communication_protocol import MessageType
 from communication_protocol import CommunicationProtocol
 from logic_handler import LogicHandler
 from client_operation_module import ClientOperation
-from client_data import ClientData
 from users_dao import UsersDao
+from message_module import MessagingModule, MessagingParserResult, MessagingTypes
 
 PORT = 3002
 KEEP_ALIVE_TIME = 2
@@ -81,7 +81,7 @@ class ClientHandler(tornado.websocket.WebSocketHandler):
     # Required this field for web gui
     def check_origin(self, origin):
         return True
-    
+
     def on_close(self):
         print("A client disconnected")
         self.client_handlers.remove_connected_client(self)
@@ -100,15 +100,23 @@ class ClientHandler(tornado.websocket.WebSocketHandler):
             return
         elif result.result_type == MessageType.LOGIN:
             self.on_logged(result)
+        # Verification that client is logged in
         elif self.logged_in is True:
-            # Make all operation if only client is logged in.
-            self.command_execution(result)
+            # Verification, that message received form required client. Checking uuid of sender
+            if self.client_data.uuid != result.uuid:
+                return # If not equal do not go further
+            # If messages so handle it here.
+            if result.result_type == MessageType.MESSAGING:
+                self.messaging_execution(result)
+            else:
+                # elso go to execution module
+                self.command_execution(result)
 
     def on_logged(self, result: CommunitcationParserResult):
         client_data = self.users_dao.get_user_by_login(result.login, result.password)
         if client_data is None:
             return
-        
+
         self.client_handlers.store_connected_client(self)
         # Client data should be obtain from data base
         self.client_data = copy.deepcopy(client_data)	# Copy and create new object of Client data
@@ -131,11 +139,25 @@ class ClientHandler(tornado.websocket.WebSocketHandler):
         self.write_message(msg)
 
     def command_execution(self,result_msg : CommunitcationParserResult):
-        # Verification, that message received form required client. Checking uuid of sender
-        if self.client_data.uuid != result_msg.uuid:
-            return	# If not equal do not go further
+
         # Send for further actions for client request
         self.client_operation.parse_command(result_msg)
+
+    def messaging_execution(self, result_msg : CommunitcationParserResult):
+        res : MessagingParserResult
+        res = MessagingModule.parse_message(result_msg)
+        if res.msg_type == MessagingTypes.NONE:
+            # Got error in parsing message. Do nothing
+            return
+        elif res.msg_type == MessagingTypes.GLOBAL:
+            sender_name = self.client_data.login
+            clients_list = self.client_handlers.list_connected_clients()
+            msg_json = CommunicationProtocol.create_global_message(sender_name,
+                                                                    self.logic_handler.server_time,
+                                                                    res.msg_text)
+            for client in clients_list:
+                client : ClientHandler
+                client.client_operation.ws.write_message(msg_json)
 
 # Singleton to store all handlers
 # And manipulate them
@@ -148,7 +170,7 @@ class ClientHandlers():
         if ClientHandlers.__instance == None:
             ClientHandlers()
         return ClientHandlers.__instance
-    
+
     def __init__(self):
         ClientHandlers.__instance = self
 
@@ -159,9 +181,12 @@ class ClientHandlers():
             # do nothing it's already there
             return
         self.__client_storage.append(client)
-    
+
     def remove_connected_client(self, client: ClientHandler):
         self.__client_storage.remove(client)
+
+    def list_connected_clients(self):
+        return self.__client_storage
 
     # Return the list of clients, that KEEP_ALIVE_TIME did not send any message
     # If error is bigger disconnect
@@ -189,7 +214,7 @@ def ServerStart():
     io_loop_instance = tornado.ioloop.IOLoop.current()
     server = Server(io_loop_instance)
     server.listen(PORT)
-    
+
     # After this line nothing will act, because it starts infinite priority loop
     print("Server is starting")
     io_loop_instance.start()

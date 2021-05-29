@@ -232,3 +232,35 @@ To client:
                     NO_ENOUGH_AMOUNT = 4
     }
 }
+
+MessageType:
+MESSAGING = 10
+clients sends message.
+
+To server:
+{
+    "type" : 10,
+    "body" :
+    {
+        "type" : int (
+                GLOBAL=1
+        )
+        "text" : string (message text)
+    },
+    "uuid" : str ( unique id of player )
+}
+
+When someone send a message. Server sends this messages as requires
+To client:
+{
+    "type": 10,
+    "body":
+    {
+        "type" : int (
+                GLOBAL = 1
+        )
+        "player_name" : string (player name who sent message),
+        "server_time" : float ( when it was sent)
+        "text" : string (message text)
+    }
+}
