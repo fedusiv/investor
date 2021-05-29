@@ -4,6 +4,7 @@ from tornado import gen
 
 from companies.companies_handler import CompaniesHandler
 from news.news_handler import NewsHandler
+from time_module import TimeModule
 import config
 
 
@@ -21,7 +22,7 @@ class LogicHandler():
         LogicHandler.__instance = self
         self.companies_handler = CompaniesHandler.Instance()
         self.news_handler = NewsHandler.Instance()
-
+        self.time_module = TimeModule.Instance()
         # Time counters for companies update
         self.last_company_news_update = time.time()
         self.last_company_cost_update = time.time()
@@ -31,7 +32,7 @@ class LogicHandler():
     #---------------------#
     @property
     def server_time(self):
-        return self.__server_time
+        return self.time_module.server_time
 
     #---------------------#
     #Logic part
@@ -39,24 +40,23 @@ class LogicHandler():
 
     # Main loop of logic handler!
     async def logic_loop(self):
-        self.__server_start_time = time.time()
+        self.time_module.start_mark()
         while True:
             # Calculate time
-            self.__server_time = time.time() - self.__server_start_time
-
-            self.news_handler.update_news(self.server_time)	# Call news main handler.
-            self.companies_handler.update_companies()	# Call companies main handler
-            self.companies_changing(self.news_handler.world_situation)	# Call changes of companies due to external affect
+            self.time_module.tick()
+            self.news_handler.update_news(self.server_time) # Call news main handler.
+            self.companies_handler.update_companies() # Call companies main handler
+            self.companies_changing(self.news_handler.world_situation) # Call changes of companies due to external affect
             await gen.sleep(config.LOOP_UPDATE_TIME)
 
     def companies_changing(self, world_situation):
-        cur_time = time.time()
-        if cur_time- self.last_company_news_update >= config.COMPANY_NEWS_UPDATE:
+        cur_time = self.server_time
+        if cur_time - self.last_company_news_update >= config.COMPANY_NEWS_UPDATE:
             self.last_company_news_update = cur_time
             # Send world situation from news handler for a commit a progress of company
             self.companies_handler.commit_company_progress(world_situation)
             return
-        
+
         if cur_time - self.last_company_cost_update >= config.COMPANY_COST_UPDATE:
             self.last_company_cost_update = cur_time
             self.companies_handler.recalculate_companies_stock_cost()
