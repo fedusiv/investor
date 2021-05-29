@@ -56,6 +56,7 @@ class NewsHandler():
 
             storage_element = NewsStorageElement(server_time=server_time, event=event)
             self.__news_storage.append(storage_element)
+            self.print_new_event(event)
         return event
 
     def generate_next_news_time_interval(self):

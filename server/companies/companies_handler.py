@@ -62,7 +62,7 @@ class CompaniesHandler():
         new_company = Company()
         new_company.generate_open_company_random_value()
         # Generate default set of stocks for open company
-        new_company.generate_stocks51(15)
+        new_company.generate_stocks51(config.OPEN_COMPANY_DEFAULT_AMOUNT_SILVER_STOCKS)
         element = CompanyStorageElement(uuid=new_company.uuid,company=new_company)
         self.__companies_storage.append(element)
 

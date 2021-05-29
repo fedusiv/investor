@@ -13,7 +13,7 @@ class CompanyType(Enum):
 class CompanyBusinessType(Enum):
     MILITARY = 1
     ENTERTAINMENT = 2
-    SCINCE = 3
+    SCIENCE = 3
     SOCIAL = 4
 
 # To report result about stock purchase

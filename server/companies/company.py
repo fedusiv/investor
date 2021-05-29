@@ -165,7 +165,7 @@ class Company():
     # Changing value rate of company based on world situation
     def change_value_due_worldsituation(self,situation : WorldSituation):
         value = -1
-        inf_levels = situation.required_influence_types(self.news_dependency)
+        inf_levels = situation.required_influence_types_level(self.news_dependency)
         # TODO: This realization is only for one level dependency. If there is multiply dependency parameters mechanism requires to be updated!
         for level in inf_levels:
             if level == InfluenceStage.LOW:

@@ -7,6 +7,27 @@
             {"theme" : "New weapon is on beta testing proceduere", "influence" : 1, "source": "Daily Prophet"},
             {"theme" : "Goverment increased financial support for local military companies", "influence" : 2, "source": "Daily Prophet"},
             {"theme" : "Army is starting operation in problematic region", "influence" : 3, "source": "Daily Prophet"}
+        ],
+        "entertainment":
+        [
+            {"theme" : "Sales fair of videogames has began", "influence" : 0, "source": "GameInformer"},
+            {"theme" : "Research result: More and more people play video games", "influence" : 1, "source": "GameInformer"},
+            {"theme" : "Goverment: Video and Game industries are literally our future", "influence" : 2, "source": "GameInformer"},
+            {"theme" : "Oil magnat announced of big investing processes into entertainment industry", "influence" : 3, "source": "GameInformer"}
+        ],
+        "science":
+        [
+            {"theme" : "Universities announced of increasing amount of students", "influence" : 0, "source": "TechJournal"},
+            {"theme" : "New transimmison technology is announced. Is it faster than 5G?", "influence" : 1, "source": "TechJournal"},
+            {"theme" : "Investors: Science copmanies can increase their values in short period. Future is for technology", "influence" : 2, "source": "TechJournal"},
+            {"theme" : "Grants for research processes are increased in values by 10 times from previous time", "influence" : 3, "source": "TechJournal"}
+        ],
+        "social":
+        [
+            {"theme" : "9 of 10 people use social network as news sources", "influence" : 0, "source": "DailyLife"},
+            {"theme" : "How to earn money from social media? 10 advices from business", "influence" : 1, "source": "DailyLife"},
+            {"theme" : "Advertisement's compnaies report, that from digital sources profit is bigger in 20 times, than analogue", "influence" : 2, "source": "DailyLife"},
+            {"theme" : "Experts: Current situation, that you can invest to any people/social related companies and recevied income x5. Never was before", "influence" : 3, "source": "DailyLife"}
         ]
     }
 }

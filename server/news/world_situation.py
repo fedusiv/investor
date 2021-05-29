@@ -23,17 +23,19 @@ class SituationElement():
         if self.__inf_level.value < inf.value:
             # New event has bigger influence level
             self.__inf_level = inf
-        self.__counter = config.NEWS_DAMPING_AMOUNT # Default value of changes period
+            self.__counter = config.NEWS_DAMPING_AMOUNT # Default value of changes period
+        else:
+            self.empty_update()
 
     # Damping influence operation
     def empty_update(self):
-        if self.type.value == 0:
+        if self.influence_level.value == 0:
             # Already low, operation is not required
             return
         self.__counter -= 1
         if self.__counter <= 0:
             # decrease influce level
-            self.__type = NewsTypes(self.__type.value - 1)
+            self.__inf_level = InfluenceStage(self.__inf_level.value - 1)
 
 class SituationStorage(TypedDict):
     war : SituationElement
@@ -64,17 +66,29 @@ class WorldSituation():
             element : SituationElement
             if element.type != cur_situation.type:
                 element.empty_update()
+        self.print_world_situation()
 
     # Return list of influnce levels only for required news types
-    def required_influence_types(self, interested_types: list):
+    def required_influence_types_level(self, interested_types: list):
         req = []
         for t in interested_types:
             t: NewsTypes
             cur = self.get_situation_by_type(t)
-            req.append(cur.influence_level())
+            req.append(cur.influence_level)
         return req
 
     def get_situation_by_type(self,t : NewsTypes) -> SituationElement:
         string = t.name.lower()
         s = self.__situation[string]
         return s
+
+    #############################
+    # Debug Server Methods
+    #############################
+
+    def print_world_situation(self):
+        print("World Situation")
+        for key in self.__situation:
+            element : SituationElement
+            element = self.__situation[key]
+            print("\t",key, " ",element.influence_level)

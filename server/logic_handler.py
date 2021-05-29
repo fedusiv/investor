@@ -46,14 +46,15 @@ class LogicHandler():
 
             self.news_handler.update_news(self.server_time)	# Call news main handler.
             self.companies_handler.update_companies()	# Call companies main handler
-            self.companies_changing(self.news_handler.world_situation.data)	# Call changes of companies due to external affect
+            self.companies_changing(self.news_handler.world_situation)	# Call changes of companies due to external affect
             await gen.sleep(config.LOOP_UPDATE_TIME)
 
-    def companies_changing(self, world_situation_data):
+    def companies_changing(self, world_situation):
         cur_time = time.time()
         if cur_time- self.last_company_news_update >= config.COMPANY_NEWS_UPDATE:
             self.last_company_news_update = cur_time
-            self.companies_handler.commit_company_progress(world_situation_data)
+            # Send world situation from news handler for a commit a progress of company
+            self.companies_handler.commit_company_progress(world_situation)
             return
         
         if cur_time - self.last_company_cost_update >= config.COMPANY_COST_UPDATE:
