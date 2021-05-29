@@ -87,3 +87,10 @@ class CliProtocol():
 		}
 		msg_json = self.formulate_message(body, MessageType.MESSAGING.value)
 		return msg_json
+
+	def request_silver_stock_history(self, c_uuid: str):
+		body = {
+			'uuid' : c_uuid,
+		}
+		msg_json = self.formulate_message(body, MessageType.COMPANY_SILVER_STOCK_HISTORY.value)
+		return msg_json

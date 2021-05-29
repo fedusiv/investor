@@ -2,6 +2,8 @@ import random
 import time
 from uuid import uuid4
 
+from botocore import history
+
 from companies.companies_types import CompanyType
 from companies.companies_types import CompanyBusinessType
 from companies.company_data import CompanyData
@@ -93,6 +95,9 @@ class Company():
         #   so means, need to increase default value rate for this influence level
         self.current_world_damping = 0
 
+        # History of silver stock changing prices
+        self.silver_stock_history = {}
+
     def generate_open_company_random_value(self):
         random.seed(time.time())
         random_cost = random.uniform(15000.0, 50000.0)
@@ -165,9 +170,24 @@ class Company():
         self.data.value += money
 
     # When company change it's value, better to recalculate stocks cost
-    def recalculate_stocks_cost(self):
+    def recalculate_stocks_cost(self, server_time = 0.0):
         for stock in self.stocks.values():
             stock.calculate_cost(self.value)
+        self.store_silver_stock_history(server_time)
+
+    # Stores the history of silver stocks changes
+    def store_silver_stock_history(self,time = 0.0):
+        if time == 0.0:
+            # Time is not set, no need to store in history
+            return
+        self.silver_stock_history[time] = self.silver_cost
+
+    def get_silver_stock_history(self):
+        history = []
+        for key in self.silver_stock_history.keys():
+            el = { key : self.silver_stock_history[key] }
+            history.append(el)
+        return history
 
     # Changing value rate of company based on world situation
     def change_value_due_worldsituation(self,situation : WorldSituation):
@@ -178,11 +198,11 @@ class Company():
         for level in inf_levels:
             cur_level = level
             if level == InfluenceStage.LOW:
-                rate = 0.01
+                rate = 0.03
             elif level == InfluenceStage.DEFAULT:
-                rate = 0.05
+                rate = 0.07
             elif level == InfluenceStage.CRITICAL:
-                rate = 0.1
+                rate = 0.15
 
         new_rate = self.value_rate_progression(rate, cur_level)
         self.set_rate_value(new_rate)
@@ -191,12 +211,19 @@ class Company():
     #   so in this case value rate should be increased
     def value_rate_progression(self, rate: float, inf_level : InfluenceStage) -> float:
         if self.influence_stage == inf_level:
-            # Current influence stage is equal to given influence stage.
-            self.current_world_damping += 1
-            if self.current_world_damping > config.NEWS_DAMPING_AMOUNT:
-                # if damping is bigger so rate should be increased
-                rate = rate * 1.5
-                self.current_world_damping = 0 # Clear counter
+            if self.influence_stage == InfluenceStage.NONE:
+                # Some kind of stagnation, let's make some smooth random value to fill changes anyway
+                random.seed(time.time())
+                rate = random.uniform(-0.011,0.011)
+                rate = round(rate,3)
+            else:
+            # Otherwise increasing rate for not NONE influence
+                # Current influence stage is equal to given influence stage.
+                self.current_world_damping += 1
+                if self.current_world_damping > config.NEWS_DAMPING_AMOUNT:
+                    # if damping is bigger so rate should be increased
+                    rate = rate * 1.5
+                    self.current_world_damping = 0 # Clear counter
         else:
             # if level is different. set current level to received influence stage
             self.influence_stage = inf_level
@@ -237,8 +264,10 @@ class Company():
         }
         return data
 
+    #############################
+    # Server debug methods filed
+    #############################
 
-    # Server debug method
     def print_company_data(self):
         print("Company name: ", self.name)
         print("\tuuid: ", self.uuid, "\tvalue: ", self.value)

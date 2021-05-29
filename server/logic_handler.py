@@ -54,12 +54,12 @@ class LogicHandler():
         if cur_time - self.last_company_news_update >= config.COMPANY_NEWS_UPDATE:
             self.last_company_news_update = cur_time
             # Send world situation from news handler for a commit a progress of company
-            self.companies_handler.commit_company_progress(world_situation)
+            self.companies_handler.commit_company_progress(world_situation, cur_time)
             return
 
         if cur_time - self.last_company_cost_update >= config.COMPANY_COST_UPDATE:
             self.last_company_cost_update = cur_time
-            self.companies_handler.recalculate_companies_stock_cost()
+            self.companies_handler.recalculate_companies_stock_cost(cur_time)
             return
 
     # Client request information about companies. Server return it
@@ -78,3 +78,6 @@ class LogicHandler():
 
     def request_news_list_byamount(self, amount: int):
         return self.news_handler.get_news_list_byamount(amount)
+
+    def request_siler_stock_history(self,company_uuid: str):
+        return self.companies_handler.get_silver_stocks_history()

@@ -109,6 +109,7 @@ To client:
                     NO_MORE_STOCKS = 3
                     NOT_ENOUGH_MONEY = 4
                     STOCK_COST_ERROR = 5
+                    STOCK_AMOUNT_ERROR = 6
     }
 }
 
@@ -262,5 +263,31 @@ To client:
         "player_name" : string (player name who sent message),
         "server_time" : float ( when it was sent)
         "text" : string (message text)
+    }
+}
+
+MessageType:
+COMPANY_SILVER_STOCK_HISTORY = 11
+Server send in format {time : stock_cost} for given company and only silver stocks
+
+To server:
+{
+    "type" : 5,
+    "body" :
+    {
+        "uuid" : str ( uuid of company )
+    },
+    "uuid" : str ( unique id of player )
+}
+
+To client:
+{
+    "type": 5,
+    "body":
+    {
+        "history" :
+        [
+            {time(float) : cost(float) }
+        ]
     }
 }

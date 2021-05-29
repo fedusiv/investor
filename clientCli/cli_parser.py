@@ -124,7 +124,8 @@ class Gui(QWidget):
 			"clear" : self.clear_console,
 			"news" : self.request_news_list,
 			"sell" : self.request_sell_stock,
-			"send" : self.send_message
+			"send" : self.send_message,
+			"history" : self.request_history
 		}
 		func = switcher.get(cmd_list[0],self.wrong_cmd)
 		func(cmd_list)
@@ -174,6 +175,13 @@ class Gui(QWidget):
 			msg_json = self.cli_protocol.send_global_message(cmd_list[2])
 		self.queue_sent.put(msg_json)
 
+	def request_history(self,cmd_list):
+		msg_json = None
+		if cmd_list[1] == "":
+			return
+		msg_json = self.cli_protocol.request_silver_stock_history(cmd_list[1])
+		self.queue_sent.put(msg_json)
+		
 	def websocket_parameter_change(self,cmd_list):
 		# Toggle to display ws raw message
 		if cmd_list[1] == "echo":

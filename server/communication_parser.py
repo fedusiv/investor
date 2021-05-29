@@ -38,6 +38,9 @@ class CommunitcationParserResult():
         self.company_uuid = body["uuid"]	# what company want to sell
         self.stock_amount = body["amount"]	# amount of stocks want to sell
 
+    # For history of 
+    def form_history_request(self,msg):
+        self.company_uuid = msg["body"]["uuid"]
 
     # Parsing parameters of news. by time and by amount
     def news_by_time(self,msg):
@@ -107,6 +110,12 @@ class CommunitcationParser():
         return result
 
     @staticmethod
+    def history_silver_stock(msg):
+        result = CommunitcationParserResult(MessageType.COMPANY_SILVER_STOCK_HISTORY,uuid=msg["uuid"])
+        result.form_history_request(msg)
+        return result
+
+    @staticmethod
     def parse_clinet_message(msg):
         # message should be json
         msg = CommunicationProtocol.verify_msg(msg)
@@ -124,7 +133,8 @@ class CommunitcationParser():
             MessageType.NEWS_BY_TIME.value : CommunitcationParser.news_bytime_request,
             MessageType.NEWS_BY_AMOUNT.value : CommunitcationParser.news_byamount_request,
             MessageType.SELL_SILVER_STOCK.value : CommunitcationParser.sell_silver_stock,
-            MessageType.MESSAGING.value : CommunitcationParser.messaging
+            MessageType.MESSAGING.value : CommunitcationParser.messaging,
+            MessageType.COMPANY_SILVER_STOCK_HISTORY.value : CommunitcationParser.history_silver_stock
         }
         # Verification is this admin message
 

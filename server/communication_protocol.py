@@ -1,6 +1,7 @@
 import json
-from enum import Enum
+from enum import Enum, unique
 
+@unique
 class MessageType(Enum):
     NONE = 0
     LOGIN = 1
@@ -13,6 +14,7 @@ class MessageType(Enum):
     NEWS_BY_AMOUNT = 8
     SELL_SILVER_STOCK = 9
     MESSAGING = 10
+    COMPANY_SILVER_STOCK_HISTORY = 11
 
 # Class to parse and create required messages
 # This class used for server and client as well
@@ -129,4 +131,12 @@ class CommunicationProtocol():
             "text" : text
         }
         msg_json = CommunicationProtocol.formulate_message(body, MessageType.MESSAGING.value)
+        return msg_json
+
+    @staticmethod
+    def create_history_silver_stock(history_list):
+        body = {
+            "history" : history_list
+        }
+        msg_json = CommunicationProtocol.formulate_message(body, MessageType.COMPANY_SILVER_STOCK_HISTORY.value)
         return msg_json

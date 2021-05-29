@@ -25,7 +25,8 @@ class ClientOperation():
             MessageType.BUY_STOCK : self.request_to_buy_stock,
             MessageType.NEWS_BY_TIME : self.request_for_news_list_bytime,
             MessageType.NEWS_BY_AMOUNT : self.request_for_news_list_byamount,
-            MessageType.SELL_SILVER_STOCK : self.request_to_sell_stock
+            MessageType.SELL_SILVER_STOCK : self.request_to_sell_stock,
+            MessageType.COMPANY_SILVER_STOCK_HISTORY : self.request_silver_stock_history
         }
         func = switcher.get(cmd.result_type)
         func(cmd)
@@ -69,4 +70,10 @@ class ClientOperation():
         news_list = self.logic_handler.request_news_list_byamount(cmd.news_amount)
         news_list_msg = CommunicationProtocol.create_news_list(news_list)
         self.ws.write_message(news_list_msg)
+
+    def request_silver_stock_history(self, cmd : CommunitcationParserResult):
+        history_list = self.logic_handler.companies_handler.get_silver_stocks_history(cmd.company_uuid)
+        history_list_msg = CommunicationProtocol.create_history_silver_stock(history_list)
+        self.ws.write_message(history_list_msg)
+
 

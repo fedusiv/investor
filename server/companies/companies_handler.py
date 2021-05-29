@@ -2,6 +2,8 @@ from enum import Enum
 from typing import List, TypedDict
 import math
 
+from botocore import history
+
 from companies.company import Company
 from companies.companies_types import CompanyType, StockSellResult
 from companies.companies_types import StockPurchaseResult
@@ -77,19 +79,19 @@ class CompaniesHandler():
         self.__companies_storage.append(element)
 
     # Recalculate stock's cost of companies
-    def recalculate_companies_stock_cost(self):
+    def recalculate_companies_stock_cost(self,server_time):
         for element in self.__companies_storage:
             element : CompanyStorageElement
-            element['company'].recalculate_stocks_cost()
+            element['company'].recalculate_stocks_cost(server_time)
 
     # Make analysis of situation and provide value changes
-    def commit_company_progress(self,data: WorldSituation):
+    def commit_company_progress(self,data: WorldSituation, server_time):
         for element in self.__companies_storage:
             element : CompanyStorageElement
             if element['company'].company_type is CompanyType.OPEN:
                 # Open companies depend on news and nothing more
                 element['company'].change_value_due_worldsituation(data)
-                element['company'].recalculate_stocks_cost()
+                element['company'].recalculate_stocks_cost(server_time)
             elif element['company'].company_type is CompanyType.CLOSED:
                 # TODO: Closed companies should be analyzed by different. They mostly depend on invested money
                 pass
@@ -116,6 +118,9 @@ class CompaniesHandler():
         company = self.company_by_uuid(uuid)
         if company == None:
             return StockPurchaseResult.NO_SUCH_COMPANY
+
+        if amount < 1:
+           return StockPurchaseResult.STOCK_AMOUNT_ERROR
 
         if company.silver_available_amount == 0:
             return StockPurchaseResult.NO_MORE_STOCKS
@@ -152,6 +157,9 @@ class CompaniesHandler():
         if company == None:
             return StockSellResult.NO_SUCH_COMPANY
 
+        if amount < 1:
+            return StockSellResult.NO_ENOUGH_AMOUNT
+
         available_amount = client_data.player_data.get_silver_amount_of_company(uuid)
         if available_amount == -1:
             # Player has not this company in his list
@@ -167,3 +175,12 @@ class CompaniesHandler():
         client_data.player_data.sell_silver_stocks(uuid,amount,full_cost)
         return StockSellResult.SUCCESS
 
+    def get_silver_stocks_history(self, c_uuid: str):
+        history = []
+        company : Company
+        company = self.company_by_uuid(c_uuid)
+        # No company return empty list
+        if company == None:
+            return history
+        history = company.get_silver_stock_history()
+        return history
