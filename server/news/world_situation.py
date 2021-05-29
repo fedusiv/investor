@@ -66,7 +66,6 @@ class WorldSituation():
             element : SituationElement
             if element.type != cur_situation.type:
                 element.empty_update()
-        self.print_world_situation()
 
     # Return list of influnce levels only for required news types
     def required_influence_types_level(self, interested_types: list):

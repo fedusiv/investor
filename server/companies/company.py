@@ -11,6 +11,7 @@ from stock.stock import Stock
 from stock.stock import StockType
 from companies.bussines_news_connection import BusinessNewsRelation
 from news.world_situation import WorldSituation
+import config
 
 # Operate with company
 class Company():
@@ -85,6 +86,12 @@ class Company():
         self.__gold_amount_full = 0 # Amount of gold stocks
         # Rise value, company if works will increase own value
         self.__value_rate = 1.0
+        # By default compane has zero influence stage level
+        self.influence_stage = InfluenceStage.NONE
+        # Counter for world damping news situation.
+        # If even after damping amount, company has same influence_stage level
+        #   so means, need to increase default value rate for this influence level
+        self.current_world_damping = 0
 
     def generate_open_company_random_value(self):
         random.seed(time.time())
@@ -148,9 +155,9 @@ class Company():
         # Recalculation after generation
         self.recalculate_stocks_cost()
 
-    # Update company value based
-    def update_value(self, value_rate : float):
-        self.__value_rate += value_rate
+    # Set company value rate as multiplier to current value
+    def set_rate_value(self, value_rate : float):
+        self.__value_rate = value_rate
         self.data.value = self.data.value * self.value_rate
 
     # Increase value of company, when money were invested to it
@@ -164,19 +171,38 @@ class Company():
 
     # Changing value rate of company based on world situation
     def change_value_due_worldsituation(self,situation : WorldSituation):
-        value = -1
+        rate = 0.0
+        cur_level = InfluenceStage.NONE
         inf_levels = situation.required_influence_types_level(self.news_dependency)
         # TODO: This realization is only for one level dependency. If there is multiply dependency parameters mechanism requires to be updated!
         for level in inf_levels:
+            cur_level = level
             if level == InfluenceStage.LOW:
-                value = 1
+                rate = 0.01
             elif level == InfluenceStage.DEFAULT:
-                value = 3
+                rate = 0.05
             elif level == InfluenceStage.CRITICAL:
-                value = 10
+                rate = 0.1
 
-        value = value / 100
-        self.update_value(value)
+        new_rate = self.value_rate_progression(rate, cur_level)
+        self.set_rate_value(new_rate)
+
+    # If copmany received same influence stage even after damping amount
+    #   so in this case value rate should be increased
+    def value_rate_progression(self, rate: float, inf_level : InfluenceStage) -> float:
+        if self.influence_stage == inf_level:
+            # Current influence stage is equal to given influence stage.
+            self.current_world_damping += 1
+            if self.current_world_damping > config.NEWS_DAMPING_AMOUNT:
+                # if damping is bigger so rate should be increased
+                rate = rate * 1.5
+                self.current_world_damping = 0 # Clear counter
+        else:
+            # if level is different. set current level to received influence stage
+            self.influence_stage = inf_level
+            self.current_world_damping = 0 # Clear counter
+        value = 1 + rate
+        return value
 
     # Companies handler calls this method.
     # Company return list of stock, that will be bought
