@@ -19,6 +19,6 @@ class CompanyNameGenerator():
             first_name = random.choice(data["FirstName"])
             random.seed(time.time())
             second_name = random.choice(data["SecondName"])
-        
+
         full_name = type_name + " of " + first_name + " " + second_name
         return full_name

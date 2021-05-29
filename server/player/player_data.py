@@ -89,6 +89,7 @@ class PlayerData():
     # Be aware this method awaits, that client has required amount of stocks. And even has this company in data
     def sell_silver_stocks(self, company_uuid: str, amount : int, cost : float):
         elem = None
+        index = -1
         for element in self.__stocks:
             element: StockStorageElement
             if element.company_uuid == company_uuid:
@@ -106,7 +107,8 @@ class PlayerData():
                     break
         if len(elem.stock_list) <= 0:
             # If there is no stock of this company left on player need to remove it from player data
-            del self.__stocks[index]
+            if index != -1:
+                del self.__stocks[index]
 
         # Increase money amount
         self.__money += cost

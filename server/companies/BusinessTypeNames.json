@@ -1,6 +1,6 @@
 {
-    "MILITARY" : ["Forge", "Archery", "Mercenaries"],
-    "FOOD" : ["Farm", "Plantation", "hennery", "Winerry"],
-    "SCINCE" : ["Bureau", "Labaratory", "Research center"],
-    "MINING" : ["Mine", "Artel", "Sawmill", "Quarry"]
+    "MILITARY" : ["AirForceInd", "DronesWic", "Hacknet"],
+    "ENTERTAINMENT" : ["Indie Game Studio", "Game's Publisher", "Video/Graphics outsources", "Gamedev HR company"],
+    "SCIENCE" : ["Research University", "Optical and Radio Labs", "TechSpies"],
+    "SOCIAL" : ["Social Network", "Messenger", "VideoConference", "Video Hosting"]
 }

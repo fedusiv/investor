@@ -1,125 +1,33 @@
 {
     "news":
-    [
-        {
-            "theme" : "Conflict on the Kingdom's borders",
-            "source" : "Kingdom's prophet",
-            "military" : 1,
-            "scince" : 0,
-            "mining" : 0,
-            "food" : -1
-        },
-        {
-            "theme" : "Kingdom's population is increasing",
-            "source" : "Kingdom's prophet",
-            "military" : 0,
-            "scince" : 0,
-            "mining" : 0,
-            "food" : 1
-        },
-        {
-            "theme" : "King said: Out kingdom requires import substitution",
-            "source" : "Kingdom's prophet",
-            "military" : 0,
-            "scince" : 1,
-            "mining" : -1,
-            "food" : 0
-        },
-        {
-            "theme" : "Horrible storm went through neighbour country",
-            "source" : "Kingdom's prophet",
-            "military" : 0,
-            "scince" : 0,
-            "mining" : 1,
-            "food" : 1
-        },
-        {
-            "theme" : "Farmers say, that food is rotten in the storage",
-            "source" : "Kingdom's prophet",
-            "military" : 0,
-            "scince" : 0,
-            "mining" : 0,
-            "food" : -1
-        },
-        {
-            "theme" : "More and more people are moving to the big cities",
-            "source" : "Kingdom's prophet",
-            "military" : 0,
-            "scince" : 1,
-            "mining" : 0,
-            "food" : -1
-        },
-        {
-            "theme" : "Mothers's society: Why our children need to serve King's willing?!",
-            "source" : "Kingdom's prophet",
-            "military" : -1,
-            "scince" : 0,
-            "mining" : -1,
-            "food" : 0
-        },
-        {
-            "theme" : "Ministers say: We need more workers!",
-            "source" : "Kingdom's prophet",
-            "military" : 0,
-            "scince" : 1,
-            "mining" : 1,
-            "food" : 0
-        },
-        {
-            "theme" : "University decreases amount of grants",
-            "source" : "Kingdom's prophet",
-            "military" : 0,
-            "scince" : -1,
-            "mining" : 1,
-            "food" : 0
-        },
-        {
-            "theme" : "People are unhappy of King's politic",
-            "source" : "Kingdom's prophet",
-            "military" : 1,
-            "scince" : -1,
-            "mining" : 0,
-            "food" : -1
-        },
-        {
-            "theme" : "New church will be build near Central Square",
-            "source" : "Kingdom's prophet",
-            "military" : 0,
-            "scince" : -2,
-            "mining" : 0,
-            "food" : 0
-        },
-        {
-            "theme" : "King forgets about road situation between villages",
-            "source" : "Kalmar's truth",
-            "military" : 0,
-            "scince" : 0,
-            "mining" : 0,
-            "food" : -1
-        },
-        {
-            "theme" : "Real situation with army. It's in a bad state",
-            "source" : "Kalmar's truth",
-            "military" : 0,
-            "scince" : 1,
-            "mining" : 0,
-            "food" : 0
-        },
-        {
-            "theme" : "There is delay in salary for miners",
-            "source" : "Kalmar's truth",
-            "military" : 0,
-            "scince" : 0,
-            "mining" : -1,
-            "food" : 0
-        },
-        {
-            "theme" : "Majority does not see future in self-development. Better to make easy money",
-            "source" : "Kalmar's truth",
-            "military" : 0,
-            "scince" : 0,
-            "mining" : 0,
-            "food" : 0
-        }
-    ]
+    {
+        "war":
+        [
+            {"theme" : "Annual recruitment to army has began", "influence" : 0, "source": "Daily Prophet"},
+            {"theme" : "New weapon is on beta testing proceduere", "influence" : 1, "source": "Daily Prophet"},
+            {"theme" : "Goverment increased financial support for local military companies", "influence" : 2, "source": "Daily Prophet"},
+            {"theme" : "Army is starting operation in problematic region", "influence" : 3, "source": "Daily Prophet"}
+        ],
+        "entertainment":
+        [
+            {"theme" : "Sales fair of videogames has began", "influence" : 0, "source": "GameInformer"},
+            {"theme" : "Research result: More and more people play video games", "influence" : 1, "source": "GameInformer"},
+            {"theme" : "Goverment: Video and Game industries are literally our future", "influence" : 2, "source": "GameInformer"},
+            {"theme" : "Oil magnat announced of big investing processes into entertainment industry", "influence" : 3, "source": "GameInformer"}
+        ],
+        "science":
+        [
+            {"theme" : "Universities announced of increasing amount of students", "influence" : 0, "source": "TechJournal"},
+            {"theme" : "New transimmison technology is announced. Is it faster than 5G?", "influence" : 1, "source": "TechJournal"},
+            {"theme" : "Investors: Science copmanies can increase their values in short period. Future is for technology", "influence" : 2, "source": "TechJournal"},
+            {"theme" : "Grants for research processes are increased in values by 10 times from previous time", "influence" : 3, "source": "TechJournal"}
+        ],
+        "social":
+        [
+            {"theme" : "9 of 10 people use social network as news sources", "influence" : 0, "source": "DailyLife"},
+            {"theme" : "How to earn money from social media? 10 advices from business", "influence" : 1, "source": "DailyLife"},
+            {"theme" : "Advertisement's compnaies report, that from digital sources profit is bigger in 20 times, than analogue", "influence" : 2, "source": "DailyLife"},
+            {"theme" : "Experts: Current situation, that you can invest to any people/social related companies and recevied income x5. Never was before", "influence" : 3, "source": "DailyLife"}
+        ]
+    }
 }

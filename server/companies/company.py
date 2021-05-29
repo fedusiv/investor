@@ -6,10 +6,11 @@ from companies.companies_types import CompanyType
 from companies.companies_types import CompanyBusinessType
 from companies.company_data import CompanyData
 from companies.company_name_generation import CompanyNameGenerator
-from news.world_situation_data import WorldSituationData
+from news.news_types import InfluenceStage
 from stock.stock import Stock
 from stock.stock import StockType
-from news.world_situation_data import WorldSituationData
+from companies.bussines_news_connection import BusinessNewsRelation
+from news.world_situation import WorldSituation
 
 # Operate with company
 class Company():
@@ -67,6 +68,7 @@ class Company():
         # Generate type
         random.seed(time.time())
         self.business_type : CompanyBusinessType = random.choice(list(CompanyBusinessType))
+        self.news_dependency = BusinessNewsRelation.business_news_relation(self.business_type)
         # Generate name
         self.data.name = CompanyNameGenerator.name_generate(self.business_type)
 
@@ -161,15 +163,19 @@ class Company():
             stock.calculate_cost(self.value)
 
     # Changing value rate of company based on world situation
-    def change_value_due_worldsituation(self,data : WorldSituationData):
-        value = 0
-        switcher = {
-            CompanyBusinessType.MILITARY : data.military_points,
-            CompanyBusinessType.FOOD : data.food_points,
-            CompanyBusinessType.SCINCE : data.scince_points,
-            CompanyBusinessType.MINING : data.mining_points
-        }
-        value = switcher.get(self.business_type) / 100
+    def change_value_due_worldsituation(self,situation : WorldSituation):
+        value = -1
+        inf_levels = situation.required_influence_types_level(self.news_dependency)
+        # TODO: This realization is only for one level dependency. If there is multiply dependency parameters mechanism requires to be updated!
+        for level in inf_levels:
+            if level == InfluenceStage.LOW:
+                value = 1
+            elif level == InfluenceStage.DEFAULT:
+                value = 3
+            elif level == InfluenceStage.CRITICAL:
+                value = 10
+
+        value = value / 100
         self.update_value(value)
 
     # Companies handler calls this method.
