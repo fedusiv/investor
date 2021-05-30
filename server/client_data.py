@@ -16,7 +16,10 @@ class ClientData():
     def __init__(self, login, password, admin: bool = False):
         self.login = login
         self.__password = password
-        # TODO: !!! Change it to database functionality
-        self.__uuid = "16af-54fg"
+        self.__uuid = ""
         self.player_data = PlayerData()
         self.admin = admin
+
+
+    def set_uuid(self,uuid:str):
+        self.__uuid = uuid

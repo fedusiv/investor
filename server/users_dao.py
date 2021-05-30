@@ -39,6 +39,8 @@ class UsersDao:
         try:
             if table_credentials["Item"]["password"] == password:
                 client_data =  ClientData(login, password)
+                uuid = table_credentials["Item"]["uuid"]
+                client_data.set_uuid(uuid)
                 # Checks if admin tryingto connect to server
                 if table_credentials["Item"]["admin"] == True:
                     client_data.admin = True
