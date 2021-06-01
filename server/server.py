@@ -114,24 +114,22 @@ class ClientHandler(tornado.websocket.WebSocketHandler):
 
     def on_logged(self, result: CommunitcationParserResult):
         client_data = self.users_dao.get_user_by_login(result.login, result.password)
-        if client_data is None:
-            return
-
-        self.client_handlers.store_connected_client(self)
-        # Client data should be obtain from data base
-        self.client_data = copy.deepcopy(client_data)	# Copy and create new object of Client data
-        # Give to operation module client data
-        self.client_operation.client_data = self.client_data
-        self.logged_in = True
-        # Admin request sent
-        if result.admin is True:
-            # If client data credentials has admin
-            if client_data.admin is True:
-                # Set connection as admin
-                self.is_admin = True
-        print("client connected. login : ", self.client_data.login, "\tuuid: " ,self.client_data.uuid, "\t as admin: ", self.is_admin)
+        if client_data.uuid != "" :
+            self.client_handlers.store_connected_client(self)
+            # Client data should be obtain from data base
+            self.client_data = copy.deepcopy(client_data)	# Copy and create new object of Client data
+            # Give to operation module client data
+            self.client_operation.client_data = self.client_data
+            self.logged_in = True
+            # Admin request sent
+            if result.admin is True:
+                # If client data credentials has admin
+                if client_data.admin is True:
+                    # Set connection as admin
+                    self.is_admin = True
+            print("client connected. login : ", self.client_data.login, "\tuuid: " ,self.client_data.uuid, "\t as admin: ", self.is_admin)
         # send message to client
-        msg = CommunicationProtocol.create_login_result_msg(True,self.client_data.uuid, admin=self.is_admin)
+        msg = CommunicationProtocol.create_login_result_msg(self.logged_in,client_data.uuid, msg = client_data.error_message, admin=self.is_admin)
         self.write_message(msg)
 
     def send_keep_alive(self):

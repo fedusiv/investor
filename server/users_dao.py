@@ -27,7 +27,7 @@ class UsersDao:
                 'password': credentials["body"]["password"]
             }
         )
-        return ClientData(credentials["body"]["login"], credentials["body"]["password"])
+        return ClientData()
 
     def get_user_by_login(self, login : str, password):
         table_credentials = self.table.get_item(
@@ -35,19 +35,19 @@ class UsersDao:
                 'login': login
             }
         )
-
+        client_data = ClientData()
         try:
             if table_credentials["Item"]["password"] == password:
-                client_data =  ClientData(login, password)
                 uuid = table_credentials["Item"]["uuid"]
-                client_data.set_uuid(uuid)
+                client_data.set_login_informataion(login,uuid)
                 # Checks if admin tryingto connect to server
                 if table_credentials["Item"]["admin"] == True:
-                    client_data.admin = True
-                return client_data
+                    client_data.set_admin_access()
             else:
-                return None
+                client_data.error_message = "Wrong credentials"
         except:
-            return None
+            client_data.error_message = "No such user"
+
+        return client_data
 
 
