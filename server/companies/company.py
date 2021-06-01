@@ -73,7 +73,7 @@ class Company():
         self.business_type : CompanyBusinessType = random.choice(list(CompanyBusinessType))
         self.news_dependency = BusinessNewsRelation.business_news_relation(self.business_type)
         # Generate name
-        self.data.name = CompanyNameGenerator.name_generate(self.business_type)
+        self.data.name = CompanyNameGenerator.name_generate()
 
         # Generate uniq id.
         # TODO : verify, that this is right solution

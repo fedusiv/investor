@@ -2,23 +2,26 @@ import json
 import random
 import time
 
-from companies.companies_types import CompanyBusinessType
-
 class CompanyNameGenerator():
 
     @staticmethod
-    def name_generate(b_type : CompanyBusinessType) -> str:
-        with open("companies/BusinessTypeNames.json") as type_names:
-            data = json.load(type_names)
-            names_list = data[b_type.name]
+    def name_generate() -> str:
+        name = ''
+        addon = ''
+        with open("companies/CompaniesBrandNames.json") as names:
+            data= json.load(names)
+            # Naming
+            first_elements = data["elements"]
             random.seed(time.time())
-            type_name = random.choice(names_list)
-        with open("companies/CompaniesOwnerNames.json") as names:
-            data = json.load(names)
-            random.seed(time.time())
-            first_name = random.choice(data["FirstName"])
-            random.seed(time.time())
-            second_name = random.choice(data["SecondName"])
+            first_amount = random.randint(2,4)
+            names_list = random.choices(first_elements,k = first_amount)
+            name = ''.join(names_list)
+            name = name.capitalize()
+            # Additional
+            if first_amount != 4:
+                add_elements = data["addons"]
+                random.seed(time.time())
+                addon = random.choice(add_elements)
 
-        full_name = type_name + " of " + first_name + " " + second_name
+        full_name = name + " " + addon
         return full_name
