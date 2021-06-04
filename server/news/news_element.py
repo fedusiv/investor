@@ -2,7 +2,7 @@ import json
 import time
 import random
 
-from news.news_types import InfluenceStage, NewsTypes
+from news.news_types import NewsTypes
 
 class NewsElement():
     def __init__(self, server_time: float):
@@ -19,8 +19,7 @@ class NewsElement():
             event = event_list[event_id]
             # Apply points
             self.news_type : NewsTypes = self.str_to_news_type(event_type)
-            point = event["influence"]
-            self.influence_level : InfluenceStage = InfluenceStage(point)
+            self.influence_level = event["influence"]
             # Apply description
             self.theme = event["theme"]
             self.source = event["source"]
@@ -32,7 +31,10 @@ class NewsElement():
             "war" : NewsTypes.WAR,
             "science" : NewsTypes.SCIENCE,
             "entertainment" : NewsTypes.ENTERTAINMENT,
-            "social" : NewsTypes.SOCIAL
+            "social" : NewsTypes.SOCIAL,
+            "hardware" : NewsTypes.HARDWARE,
+            "financial" : NewsTypes.FINANCIAL,
+            "graphics" : NewsTypes.GRAPHICS
         }
         cur_type = switcher.get(string,NewsTypes.NONE)
         return cur_type

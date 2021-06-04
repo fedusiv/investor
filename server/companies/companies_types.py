@@ -9,12 +9,20 @@ class CompanyType(Enum):
     OPEN = 1
     CLOSED = 2
 
+# This enum is written not in uppercase for easier output representation
 @unique
 class CompanyBusinessType(Enum):
-    MILITARY = 1
-    ENTERTAINMENT = 2
-    SCIENCE = 3
-    SOCIAL = 4
+    Military = 1
+    GameDev = 2
+    Science = 3
+    FinancialTech = 4
+    Social = 5
+    Automotive = 6
+    GraphicsVideo = 7
+    MobileApplication = 8
+    Security = 9
+    Outsource = 10
+
 
 # To report result about stock purchase
 @unique
