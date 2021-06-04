@@ -2,8 +2,6 @@ from enum import Enum
 from typing import List, TypedDict
 import math
 
-from botocore import history
-
 from companies.company import Company
 from companies.companies_types import CompanyType, StockSellResult
 from companies.companies_types import StockPurchaseResult

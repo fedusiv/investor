@@ -264,7 +264,8 @@ class Company():
         data = {
             'uuid' : self.uuid,
             'name' : self.name,
-            'cost' : cost
+            'cost' : cost,
+            'b_type' : self.business_type.name
         }
         return data
 
