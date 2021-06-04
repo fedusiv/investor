@@ -5,3 +5,5 @@ class CompanyData():
         self.name = name
         self.uuid = uuid
         self.value = value
+        # Stores the value of company at the beginning of cycle
+        self.cycle_start_value = value

@@ -80,4 +80,4 @@ class LogicHandler():
         return self.news_handler.get_news_list_byamount(amount)
 
     def request_siler_stock_history(self,company_uuid: str):
-        return self.companies_handler.get_silver_stocks_history()
+        return self.companies_handler.get_silver_stocks_history(company_uuid)

@@ -162,6 +162,9 @@ class Company():
     # Set company value rate as multiplier to current value
     def set_rate_value(self, value_rate : float):
         self.__value_rate = value_rate
+
+    # Increase company value based on current rate
+    def increase_value_by_rate(self):
         self.data.value = self.data.value * self.value_rate
 
     # Increase value of company, when money were invested to it
@@ -234,6 +237,20 @@ class Company():
         # Rate value always 
         value = 1 + rate
         return value
+
+    # Mechanism of changing company values
+    # Server keep track of values at the beginning of cycle and use value rate at the end
+    # Calculate the amount of money which company loose or earn in this cycle based on value with which is started
+    # This mechanism makes companies even to bad world situation if there was huge amount of money invested,
+    #   companies will anyway get some positive amount of value
+    def cycle_end_recalculation(self):
+        # Calculate the value, which depence only on news and world situation
+        fake_value = self.data.cycle_start_value * self.value_rate
+        difference = fake_value - self.data.cycle_start_value
+        self.increase_value(difference)
+        # And store the value for the new beginning of cycle
+        self.data.cycle_start_value = self.value
+
 
     # Companies handler calls this method.
     # Company return list of stock, that will be bought
