@@ -2,8 +2,6 @@ from enum import Enum
 from typing import List, TypedDict
 import math
 
-from botocore import history
-
 from companies.company import Company
 from companies.companies_types import CompanyType, StockSellResult
 from companies.companies_types import StockPurchaseResult
@@ -88,12 +86,14 @@ class CompaniesHandler():
     def commit_company_progress(self,data: WorldSituation, server_time):
         for element in self.__companies_storage:
             element : CompanyStorageElement
-            if element['company'].company_type is CompanyType.OPEN:
+            cur_compnay = element['company']
+            if cur_compnay.company_type is CompanyType.OPEN:
                 # Open companies depend on news and nothing more
-                element['company'].change_value_due_worldsituation(data)
-                element['company'].recalculate_stocks_cost(server_time)
-            elif element['company'].company_type is CompanyType.CLOSED:
-                # TODO: Closed companies should be analyzed by different. They mostly depend on invested money
+                cur_compnay.change_value_due_worldsituation(data) # change value rate
+                cur_compnay.cycle_end_recalculation() # calculate changes of company value only based on news and world situation
+                cur_compnay.recalculate_stocks_cost(server_time) # Apply new stock costs
+            elif cur_compnay.company_type is CompanyType.CLOSED:
+                # TODO: Closed companies should be analyzed by different logic. They mostly depend on invested money
                 pass
 
     # Return open companies in list for Open Exhange Market
@@ -146,7 +146,7 @@ class CompaniesHandler():
 
         # Increase company value by investoring money
         company.increase_value(full_cost)
-
+        company.recalculate_stocks_cost()
         return StockPurchaseResult.SUCCESS
 
     # Player tries to sell stock of open company
@@ -173,6 +173,10 @@ class CompaniesHandler():
 
         # Remove stocks from player and increase money
         client_data.player_data.sell_silver_stocks(uuid,amount,full_cost)
+        # Decrease the compnay value, because money were taken back
+        decrese_amount = -1 * full_cost
+        company.increase_value(decrese_amount)
+        company.recalculate_stocks_cost()
         return StockSellResult.SUCCESS
 
     def get_silver_stocks_history(self, c_uuid: str):

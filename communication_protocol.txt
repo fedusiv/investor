@@ -74,6 +74,7 @@ To client:
         [
             "uuid" : string_uniq_id,
             "name" : string_name,
+            "b_type" : string (company business type)
             "cost" : float ( cost of stock on a market)
         ]
     } 
@@ -146,7 +147,7 @@ To client:
                 ]
             }
         },
-        "server_time" : float (value what time currently on a server)
+        "server_time" : float,
     }
 }
 

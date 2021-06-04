@@ -44,6 +44,7 @@ class LogicHandler():
         while True:
             # Calculate time
             self.time_module.tick()
+
             self.news_handler.update_news(self.server_time) # Call news main handler.
             self.companies_handler.update_companies() # Call companies main handler
             self.companies_changing(self.news_handler.world_situation) # Call changes of companies due to external affect
@@ -80,4 +81,4 @@ class LogicHandler():
         return self.news_handler.get_news_list_byamount(amount)
 
     def request_siler_stock_history(self,company_uuid: str):
-        return self.companies_handler.get_silver_stocks_history()
+        return self.companies_handler.get_silver_stocks_history(company_uuid)

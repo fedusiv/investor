@@ -5,7 +5,7 @@ COMPANY_NEWS_UPDATE = 12
 # How often company recalculates self value, this is not related to news
 COMPANY_COST_UPDATE = 6
 # Maximum amount of open companies on the server
-MAX_OPEN_COMPANIES_AMOUNT = 20
+MAX_OPEN_COMPANIES_AMOUNT = 2
 # Maximum amount of closed compnaies on the server
 MAX_CLOSED_COMPANIES_AMOUNT = 10
 # News generation time invterval

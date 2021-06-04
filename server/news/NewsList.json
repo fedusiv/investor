@@ -3,31 +3,73 @@
     {
         "war":
         [
-            {"theme" : "Annual recruitment to army has began", "influence" : 0, "source": "Daily Prophet"},
-            {"theme" : "New weapon is on beta testing proceduere", "influence" : 1, "source": "Daily Prophet"},
-            {"theme" : "Goverment increased financial support for local military companies", "influence" : 2, "source": "Daily Prophet"},
-            {"theme" : "Army is starting operation in problematic region", "influence" : 3, "source": "Daily Prophet"}
+            { "influence" : -3, "theme" : "Goverment decided to decrease amount of invest money for military field", "source": "Daily Prophet"},
+            { "influence" : -2, "theme" : "Research result: not much investition is paid off in military", "source": "Daily Prophet"},
+            { "influence" : -1, "theme" : "Conflict on borders has ended", "source": "Daily Prophet"},
+            { "influence" : 0, "theme" : "Annual recruitment to army has began", "source": "Daily Prophet"},
+            { "influence" : 1, "theme" : "New weapon is on beta testing proceduere", "source": "Daily Prophet"},
+            { "influence" : 2, "theme" : "Goverment increased financial support for local military companies", "source": "Daily Prophet"},
+            { "influence" : 3, "theme" : "Army is starting operation in problematic region", "source": "Daily Prophet"}
         ],
         "entertainment":
         [
-            {"theme" : "Sales fair of videogames has began", "influence" : 0, "source": "GameInformer"},
-            {"theme" : "Research result: More and more people play video games", "influence" : 1, "source": "GameInformer"},
-            {"theme" : "Goverment: Video and Game industries are literally our future", "influence" : 2, "source": "GameInformer"},
-            {"theme" : "Oil magnat announced of big investing processes into entertainment industry", "influence" : 3, "source": "GameInformer"}
+            { "influence" : -3, "theme" : "Goverment wants to restrict of using gadget for kids until 18", "source": "GameInformer"},
+            { "influence" : -2, "theme" : "Investors thinks that entertainment field can be successfull only because of marketing. No real income", "source": "GameInformer"},
+            { "influence" : -1, "theme" : "Goverment: cruelty of youth is from video games", "source": "GameInformer"},
+            { "influence" : 0, "theme" : "Sales fair of videogames has began", "source": "GameInformer"},
+            { "influence" : 1, "theme" : "Research result: More and more people play video games", "source": "GameInformer"},
+            { "influence" : 2, "theme" : "Goverment: Video and Game industries are literally our future", "source": "GameInformer"},
+            { "influence" : 3, "theme" : "Oil magnat announced of big investing processes into entertainment industry", "source": "GameInformer"}
         ],
         "science":
         [
-            {"theme" : "Universities announced of increasing amount of students", "influence" : 0, "source": "TechJournal"},
-            {"theme" : "New transimmison technology is announced. Is it faster than 5G?", "influence" : 1, "source": "TechJournal"},
-            {"theme" : "Investors: Science copmanies can increase their values in short period. Future is for technology", "influence" : 2, "source": "TechJournal"},
-            {"theme" : "Grants for research processes are increased in values by 10 times from previous time", "influence" : 3, "source": "TechJournal"}
+            { "influence" : -3, "theme" : "Grants amount for research was decreased almost to 0", "source": "TechJournal"},
+            { "influence" : -2, "theme" : "Unfortunately science is about far far future, no real income in near 10 years", "source": "TechJournal"},
+            { "influence" : -1, "theme" : "Students do not want to work on research grants, better to write mobile apps and get quick money", "source": "TechJournal"},
+            { "influence" : 0, "theme" : "Universities announced of increasing amount of students", "source": "TechJournal"},
+            { "influence" : 1, "theme" : "New transimmison technology is announced. Is it faster than 5G?", "source": "TechJournal"},
+            { "influence" : 2, "theme" : "Investors: Science copmanies can increase their values in short period. Future is for technology", "source": "TechJournal"},
+            { "influence" : 3, "theme" : "Grants for research processes are increased in values by 10 times from previous time", "source": "TechJournal"}
         ],
         "social":
         [
-            {"theme" : "9 of 10 people use social network as news sources", "influence" : 0, "source": "DailyLife"},
-            {"theme" : "How to earn money from social media? 10 advices from business", "influence" : 1, "source": "DailyLife"},
-            {"theme" : "Advertisement's compnaies report, that from digital sources profit is bigger in 20 times, than analogue", "influence" : 2, "source": "DailyLife"},
-            {"theme" : "Experts: Current situation, that you can invest to any people/social related companies and recevied income x5. Never was before", "influence" : 3, "source": "DailyLife"}
+            { "influence" : -3, "theme" : "Goverment want to take full control of social networks. Is it end of social media business?", "source": "DailyLife"},
+            { "influence" : -2, "theme" : "Market of social network and media is overflowed", "source": "DailyLife"},
+            { "influence" : -1, "theme" : "Strange behavior: people spent less time on social networks", "source": "DailyLife"},
+            { "influence" : 0, "theme" : "9 of 10 people use social network as news sources", "source": "DailyLife"},
+            { "influence" : 1, "theme" : "How to earn money from social media? 10 advices from business", "source": "DailyLife"},
+            { "influence" : 2, "theme" : "Advertisement's compnaies report, that from digital sources profit is bigger in 20 times, than analogue", "source": "DailyLife"},
+            { "influence" : 3, "theme" : "Experts: Current situation, that you can invest to any people/social related companies and recevied income x5. Never was before", "source": "DailyLife"}
+        ],
+        "hardware":
+        [
+            { "influence" : -3, "theme" : "AMX Factory is damaged due to floodwaters. All semiconductors production is blocked", "source": "Hard&Soft"},
+            { "influence" : -2, "theme" : "Custom duties for all hardware components are increased everywhere. Is it new hadrware crysis?!", "source": "Hard&Soft"},
+            { "influence" : -1, "theme" : "Hardware enginner's salary is less than half of software engineer's. Is there any future for youth there?", "source": "Hard&Soft"},
+            { "influence" : 0, "theme" : "More and more technologies are obtained even to small tech companies", "source": "Hard&Soft"},
+            { "influence" : 1, "theme" : "Increasing salary for hardware enginners. Are we are waiting for new breakthrough?", "source": "Hard&Soft"},
+            { "influence" : 2, "theme" : "Market request for hardware components is increasing and increasing", "source": "Hard&Soft"},
+            { "influence" : 3, "theme" : "Hardware is underdog. Investors spent billions to hardware", "source": "Hard&Soft"}
+        ],
+        "financial":
+        [
+            { "influence" : -3, "theme" : "Crysis in bank technologies. Big banks do not want to improve their infrastructures", "source": "FinTech Io"},
+            { "influence" : -2, "theme" : "Bank technologies is just old crap shit. No one wants to invest into Cobol technologies", "source": "FinTech Io"},
+            { "influence" : -1, "theme" : "Security of banks fucked up again?!", "source": "FinTech Io"},
+            { "influence" : 0, "theme" : "Banks are slowly moving to mobile app. Bye bye 60+ customers", "source": "FinTech Io"},
+            { "influence" : 1, "theme" : "Central bank invested into university to prepare for them first-class developers", "source": "FinTech Io"},
+            { "influence" : 2, "theme" : "Banks eventually decided to remove old shit from their tech stack.", "source": "FinTech Io"},
+            { "influence" : 3, "theme" : "Central bank announced huge invest foundation for FinTech companies. Do not suck and find time to invest!", "source": "FinTech Io"}
+        ],
+        "graphics":
+        [
+            { "influence" : -3, "theme" : "We do not need any graphic art in future. Everything will be opensourced and maintained by hobby coders. Crysis?", "source": "VideoLifer"},
+            { "influence" : -2, "theme" : "Big market players forgot about Graphics tech", "source": "VideoLifer"},
+            { "influence" : -1, "theme" : "Why 2D artist is dead proffession? Or it is related to whole video & graphics industy?", "source": "VideoLifer"},
+            { "influence" : 0, "theme" : "Market's request for video engineers and 3D artist is not changed", "source": "VideoLifer"},
+            { "influence" : 1, "theme" : "Invest to your future: 3D and 2D art, it is impossible to earn money now without proper art support", "source": "VideoLifer"},
+            { "influence" : 2, "theme" : "More and more opensource 3D and video editor projects raise invest money", "source": "VideoLifer"},
+            { "influence" : 3, "theme" : "Augmented Reality is our future. Video and Graphics startup earn a billions of money", "source": "VideoLifer"}
         ]
     }
 }

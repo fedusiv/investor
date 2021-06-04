@@ -2,18 +2,16 @@ import random
 import time
 from uuid import uuid4
 
-from botocore import history
-
 from companies.companies_types import CompanyType
 from companies.companies_types import CompanyBusinessType
 from companies.company_data import CompanyData
 from companies.company_name_generation import CompanyNameGenerator
-from news.news_types import InfluenceStage
 from stock.stock import Stock
 from stock.stock import StockType
-from companies.bussines_news_connection import BusinessNewsRelation
+from companies.bussines_news_connection import BusinessNewsRelation, NewsDependency
 from news.world_situation import WorldSituation
 import config
+import utils
 
 # Operate with company
 class Company():
@@ -71,9 +69,9 @@ class Company():
         # Generate type
         random.seed(time.time())
         self.business_type : CompanyBusinessType = random.choice(list(CompanyBusinessType))
-        self.news_dependency = BusinessNewsRelation.business_news_relation(self.business_type)
+        self.news_dependency : NewsDependency = BusinessNewsRelation.business_news_relation(self.business_type)
         # Generate name
-        self.data.name = CompanyNameGenerator.name_generate(self.business_type)
+        self.data.name = CompanyNameGenerator.name_generate()
 
         # Generate uniq id.
         # TODO : verify, that this is right solution
@@ -88,8 +86,8 @@ class Company():
         self.__gold_amount_full = 0 # Amount of gold stocks
         # Rise value, company if works will increase own value
         self.__value_rate = 1.0
-        # By default compane has zero influence stage level
-        self.influence_stage = InfluenceStage.NONE
+        # By default compane has zero influence level
+        self.influence_level = 0
         # Counter for world damping news situation.
         # If even after damping amount, company has same influence_stage level
         #   so means, need to increase default value rate for this influence level
@@ -123,6 +121,7 @@ class Company():
         # Generate others
         value = (49 / amount) / 100
         for _unused in range(0,amount):
+            utils.unused(_unused)
             stock = Stock(self.uuid, StockType.SILVER, value)
             self.stocks[stock.uuid] = stock
             self.__silver_amount_full += 1
@@ -163,6 +162,9 @@ class Company():
     # Set company value rate as multiplier to current value
     def set_rate_value(self, value_rate : float):
         self.__value_rate = value_rate
+
+    # Increase company value based on current rate
+    def increase_value_by_rate(self):
         self.data.value = self.data.value * self.value_rate
 
     # Increase value of company, when money were invested to it
@@ -192,26 +194,30 @@ class Company():
     # Changing value rate of company based on world situation
     def change_value_due_worldsituation(self,situation : WorldSituation):
         rate = 0.0
-        cur_level = InfluenceStage.NONE
-        inf_levels = situation.required_influence_types_level(self.news_dependency)
-        # TODO: This realization is only for one level dependency. If there is multiply dependency parameters mechanism requires to be updated!
-        for level in inf_levels:
-            cur_level = level
-            if level == InfluenceStage.LOW:
-                rate = 0.03
-            elif level == InfluenceStage.DEFAULT:
-                rate = 0.07
-            elif level == InfluenceStage.CRITICAL:
-                rate = 0.15
+        inf_level = situation.required_influence_types_level(self.news_dependency)
 
-        new_rate = self.value_rate_progression(rate, cur_level)
+        # Depends on influence level of current world situation, choose rate for current update
+        # TODO: Need to move this table to some kind of config values, and do not keep it as hardcoded constant representation
+        rate_switcher = {
+            1 : 0.03,
+            2: 0.07,
+            3: 0.15,
+            4: 0.21,
+            5: 0.25,
+            6: 0.32
+        }
+        rate = rate_switcher.get(abs(inf_level), 0.0)
+        if inf_level < 0:
+            rate = -1 * rate
+
+        new_rate = self.value_rate_progression(rate, inf_level)
         self.set_rate_value(new_rate)
 
     # If copmany received same influence stage even after damping amount
     #   so in this case value rate should be increased
-    def value_rate_progression(self, rate: float, inf_level : InfluenceStage) -> float:
-        if self.influence_stage == inf_level:
-            if self.influence_stage == InfluenceStage.NONE:
+    def value_rate_progression(self, rate: float, inf_level : int) -> float:
+        if self.influence_level == inf_level:
+            if self.influence_level == 0:
                 # Some kind of stagnation, let's make some smooth random value to fill changes anyway
                 random.seed(time.time())
                 rate = random.uniform(-0.011,0.011)
@@ -222,14 +228,29 @@ class Company():
                 self.current_world_damping += 1
                 if self.current_world_damping > config.NEWS_DAMPING_AMOUNT:
                     # if damping is bigger so rate should be increased
-                    rate = rate * 1.5
+                    rate = rate * 1.75
                     self.current_world_damping = 0 # Clear counter
         else:
             # if level is different. set current level to received influence stage
-            self.influence_stage = inf_level
+            self.influence_level = inf_level
             self.current_world_damping = 0 # Clear counter
+        # Rate value always 
         value = 1 + rate
         return value
+
+    # Mechanism of changing company values
+    # Server keep track of values at the beginning of cycle and use value rate at the end
+    # Calculate the amount of money which company loose or earn in this cycle based on value with which is started
+    # This mechanism makes companies even to bad world situation if there was huge amount of money invested,
+    #   companies will anyway get some positive amount of value
+    def cycle_end_recalculation(self):
+        # Calculate the value, which depence only on news and world situation
+        fake_value = self.data.cycle_start_value * self.value_rate
+        difference = fake_value - self.data.cycle_start_value
+        self.increase_value(difference)
+        # And store the value for the new beginning of cycle
+        self.data.cycle_start_value = self.value
+
 
     # Companies handler calls this method.
     # Company return list of stock, that will be bought
@@ -260,7 +281,8 @@ class Company():
         data = {
             'uuid' : self.uuid,
             'name' : self.name,
-            'cost' : cost
+            'cost' : cost,
+            'b_type' : self.business_type.name
         }
         return data
 

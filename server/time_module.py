@@ -12,7 +12,7 @@ class TimeModule():
 
     def __init__(self):
         TimeModule.__instance = self
-        self.__server_time = 0
+        self.__server_run_time = 0
         self.__server_world_time = 0
         self.__server_start_time = 0
 
@@ -22,11 +22,11 @@ class TimeModule():
     # Return value, that
     @property
     def server_time(self):
-        return self.__server_time
+        return self.__server_world_time
 
     @property
-    def server_world_time(self):
-        return self.__server_world_time
+    def server_run_time(self):
+        return self.__server_run_time
 
     #---------------------#
     #Logic part
@@ -34,11 +34,11 @@ class TimeModule():
 
     # Fucntion mark the moment when it's called as start of server working time
     def start_mark(self):
-        self.__server_start_time = 0
+        self.__server_start_time = time.time()
         self.__server_world_time = time.time()
 
     # Tick operation
     def tick(self):
         cur_time = time.time()
         self.__server_world_time = cur_time
-        self.__server_time = cur_time - self.__server_start_time
+        self.__server_run_time = cur_time - self.__server_start_time
