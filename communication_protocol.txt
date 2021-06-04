@@ -147,7 +147,7 @@ To client:
                 ]
             }
         },
-        "server_time" : float (value what time currently on a server)
+        "server_time" : float,
     }
 }
 
