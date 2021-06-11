@@ -326,5 +326,10 @@ To client
     "body":
     {
         "result" : int (type of result)
+            SUCCESS = 1
+            NAME_SYNTAX_ERROR = 2
+            NAME_NOT_UNIQ = 3
+            B_TYPE_ERROR = 4
+            STOCKS_ERROR = 5
     }
 }
