@@ -16,3 +16,5 @@ PLAYER_DEFAULT_MONEY_AMOUNT = 3000
 NEWS_DAMPING_AMOUNT = 3
 # When open company generated need to spicy amount of silver stocks
 OPEN_COMPANY_DEFAULT_AMOUNT_SILVER_STOCKS = 60
+# Minimun amount of value of one stock to specify it, when create player company
+MINIMUN_STOCK_VALUE_TO_CREATE = 0.01

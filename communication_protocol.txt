@@ -134,16 +134,26 @@ To client:
         "player_data" : (send current player data)
         {
             "money" : float (current amount of money)
-            "stocks_silver" :
+            "stocks" :
             {
                 "amount" : int (amount of stocks in list)
                 "list : (list of stocks)
                 [
                     "uuid" : str (id of company)
                     "name" : str (name of company)
-                    "amount" : int (amount of silver sotkcs of one company)
-                    "cost" : float (cost of all stocks!)
-                    "value" : float (what part of all stocks it is. 0.012 means 1.2%, information is sum of all stocks)
+                    "silver" :
+                    {
+                        "amount" : int (amount of silver stocks of one company)
+                        "cost" : float (cost of all stocks!)
+                        "value" : float (what part of all stocks it is. 0.012 means 1.2%, information is sum of all stocks)
+                    }
+                    "gold" :
+                    {
+                        "amount" : int (amount of silver stocks of one company)
+                        "cost" : float (cost of all stocks!)
+                        "value" : float (what part of all stocks it is. 0.012 means 1.2%, information is sum of all stocks)
+                        "owner" : bool (represent player owns company or does not)
+                    }
                 ]
             }
         },
@@ -273,7 +283,7 @@ Server send in format {time : stock_cost} for given company and only silver stoc
 
 To server:
 {
-    "type" : 5,
+    "type" : 11,
     "body" :
     {
         "uuid" : str ( uuid of company )
@@ -283,12 +293,38 @@ To server:
 
 To client:
 {
-    "type": 5,
+    "type": 11,
     "body":
     {
         "history" :
         [
             {time(float) : cost(float) }
         ]
+    }   
+}
+
+
+MessageType:
+CREATE_PLAYER_COMPANY = 12
+Send request to server from player to create closed type of company
+To server:
+{
+    "type" : 12,
+    "body" :
+    {
+        "name" : str ( name of company )
+        "b_type" : int (business type of company. Look to class CompanyBusinessType() in compnaies_types.py)
+        "money" : float ( amount of money, which player invest to company when creates it)
+        "stocks" : [] ( list of float, represent in value from 0.01 - 1 how company is divided into stocks)
+    },
+    "uuid" : str ( unique id of player )
+}
+
+To client
+{
+    "type": 12,
+    "body":
+    {
+        "result" : int (type of result)
     }
 }

@@ -1,6 +1,6 @@
 from communication_protocol import CommunicationProtocol
 from communication_protocol import MessageType
-
+import utils
 
 class CommunitcationParserResult():
 
@@ -48,11 +48,19 @@ class CommunitcationParserResult():
     def news_by_amount(self,msg):
         self.news_amount = msg["body"]["amount"]
 
+    # Formulate request data to create 
+    def create_company_data(self, msg):
+        body = msg["body"]
+        self.new_company_name : str = body["name"]
+        self.b_type_int : int = body["b_type"]
+        self.money_invest : float = body["money"]
+        self.stocks_list = body["stocks"]
 
 class CommunitcationParser():
 
     @staticmethod
     def keep_alive_respond(msg):
+        utils.unused(msg)
         result = CommunitcationParserResult(MessageType.KEEP_ALIVE)
         return result
 
@@ -116,6 +124,12 @@ class CommunitcationParser():
         return result
 
     @staticmethod
+    def create_player_company(msg):
+        result = CommunitcationParserResult(MessageType.CREATE_PLAYER_COMPANY, uuid=msg["uuid"])
+        result.create_company_data(msg)
+        return result
+
+    @staticmethod
     def parse_clinet_message(msg):
         # message should be json
         msg = CommunicationProtocol.verify_msg(msg)
@@ -134,7 +148,8 @@ class CommunitcationParser():
             MessageType.NEWS_BY_AMOUNT.value : CommunitcationParser.news_byamount_request,
             MessageType.SELL_SILVER_STOCK.value : CommunitcationParser.sell_silver_stock,
             MessageType.MESSAGING.value : CommunitcationParser.messaging,
-            MessageType.COMPANY_SILVER_STOCK_HISTORY.value : CommunitcationParser.history_silver_stock
+            MessageType.COMPANY_SILVER_STOCK_HISTORY.value : CommunitcationParser.history_silver_stock,
+            MessageType.CREATE_PLAYER_COMPANY.value : CommunitcationParser.create_player_company
         }
         # Verification is this admin message
 

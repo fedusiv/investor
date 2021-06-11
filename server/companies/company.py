@@ -38,6 +38,7 @@ class Company():
             else:
                 return stock.cost
         # Something can happend and return value will be nothing need to return 0
+        # Or if company is CLOSED there is no silver stocks, so need to return 0
         return 0.0
 
     @property
@@ -56,6 +57,9 @@ class Company():
     def value_rate(self):
         return self.__value_rate
 
+    @property
+    def owner_info(self):
+        return self.__owner_name, self.__owner_uuid
 
     # Init generates default random Company 
     def __init__(self):
@@ -65,14 +69,6 @@ class Company():
 
         # Create data object
         self.data = CompanyData()
-
-        # Generate type
-        random.seed(time.time())
-        self.business_type : CompanyBusinessType = random.choice(list(CompanyBusinessType))
-        self.news_dependency : NewsDependency = BusinessNewsRelation.business_news_relation(self.business_type)
-        # Generate name
-        self.data.name = CompanyNameGenerator.name_generate()
-
         # Generate uniq id.
         # TODO : verify, that this is right solution
         self.data.uuid = str(uuid4())
@@ -95,6 +91,28 @@ class Company():
 
         # History of silver stock changing prices
         self.silver_stock_history = {}
+
+        # owner information
+        self.__owner_name = "" # empty name means server is owner
+        self.__owner_uuid = "a1" # a1 means server is owner of company
+
+    def set_company_name(self, name: str):
+        self.data.name = name
+
+    def generate_random_name(self):
+       # Generate name
+        self.data.name = CompanyNameGenerator.name_generate()
+
+    def apply_company_new_business_type(self, b_type: int):
+        self.business_type : CompanyBusinessType = CompanyBusinessType(b_type)
+        self.news_dependency : NewsDependency = BusinessNewsRelation.business_news_relation(self.business_type)
+
+    # Set to company random business type and apply news dependence
+    def generate_random_company_type(self):
+        # Generate type
+        random.seed(time.time())
+        self.business_type : CompanyBusinessType = random.choice(list(CompanyBusinessType))
+        self.news_dependency : NewsDependency = BusinessNewsRelation.business_news_relation(self.business_type)
 
     def generate_open_company_random_value(self):
         random.seed(time.time())
@@ -158,6 +176,26 @@ class Company():
         self.__gold_amount_full +=1
         # Recalculation after generation
         self.recalculate_stocks_cost()
+
+    # Create! gold stocks for the company
+    # stock_list - list of float value, which amount stock will have
+    def create_gold_stocks(self, stock_list : list, client_uuid : str):
+        stocks_created = [] # reference of created stocks to attach them to owner
+        # get maximum value of stock_list to set it as main stock. Flag, that represent who can manage company
+        max_value = max(stock_list)
+        max_stock_applied = False
+        for amount in stock_list:
+            stock = Stock(self.uuid, StockType.GOLD, amount)
+            if (amount == max_value) and (max_stock_applied is False):
+                # TODO: Create mechanism to check, that only one stock in company is main
+                # Set main stock
+                stock.set_as_main()
+            stock.buy_stock(client_uuid)
+            self.stocks[stock.uuid] = stock
+            self.__gold_amount_full += 1
+            stocks_created.append(stock)
+        self.recalculate_stocks_cost()
+        return stocks_created
 
     # Set company value rate as multiplier to current value
     def set_rate_value(self, value_rate : float):

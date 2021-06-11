@@ -1,6 +1,7 @@
 import time
 
 from tornado import gen
+from client_data import ClientData
 
 from companies.companies_handler import CompaniesHandler
 from news.news_handler import NewsHandler
@@ -58,6 +59,8 @@ class LogicHandler():
             self.companies_handler.commit_company_progress(world_situation, cur_time)
             return
 
+        # Probably unnecessary method, because company cost need to be updated each time after buying or selling it
+        # And recalculation appears there
         if cur_time - self.last_company_cost_update >= config.COMPANY_COST_UPDATE:
             self.last_company_cost_update = cur_time
             self.companies_handler.recalculate_companies_stock_cost(cur_time)
@@ -82,3 +85,10 @@ class LogicHandler():
 
     def request_siler_stock_history(self,company_uuid: str):
         return self.companies_handler.get_silver_stocks_history(company_uuid)
+
+    def request_to_create_closed_company(self, company_name:str, b_type: int, money: float, stocks: list, client_data: ClientData):
+        return self.companies_handler.create_closed_company(company_name=company_name,
+                                                            b_type=b_type,
+                                                            money=money,
+                                                            stocks=stocks,
+                                                            client_data=client_data)

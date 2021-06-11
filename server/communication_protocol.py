@@ -15,6 +15,7 @@ class MessageType(Enum):
     SELL_SILVER_STOCK = 9
     MESSAGING = 10
     COMPANY_SILVER_STOCK_HISTORY = 11
+    CREATE_PLAYER_COMPANY = 12
 
 # Class to parse and create required messages
 # This class used for server and client as well
@@ -139,4 +140,13 @@ class CommunicationProtocol():
             "history" : history_list
         }
         msg_json = CommunicationProtocol.formulate_message(body, MessageType.COMPANY_SILVER_STOCK_HISTORY.value)
+        return msg_json
+
+
+    @staticmethod
+    def create_company_result(result: int):
+        body = {
+            "result" : result
+        }
+        msg_json = CommunicationProtocol.formulate_message(body, MessageType.CREATE_PLAYER_COMPANY.value)
         return msg_json

@@ -1,12 +1,13 @@
-from enum import Enum
-from typing import List, TypedDict
+from typing import TypedDict
 import math
 
+
 from companies.company import Company
-from companies.companies_types import CompanyType, StockSellResult
+from companies.companies_types import CompanyBusinessType, CompanyCreateResult, CompanyType, StockSellResult
 from companies.companies_types import StockPurchaseResult
 from client_data import ClientData
 import config
+import utils
 from news.world_situation import WorldSituation
 
 # Storage class. I hope this will make some improvement to storage mechanism
@@ -31,6 +32,8 @@ class CompaniesHandler():
         # Company storage. List of CompanyStorageElement. Probably in the future maybe need to implement a custom class for storage
         # for easier operations with it
         self.__companies_storage = []
+        self.__amount_open_companies = 0
+        self.__amount_closed_companies = 0
 
     #---------------------#
     #Logic part
@@ -54,19 +57,22 @@ class CompaniesHandler():
 
     # Check current companies amount, if less create new
     def update_companies_amount(self):
-        while len(self.__companies_storage) < config.MAX_OPEN_COMPANIES_AMOUNT:
+        while self.__amount_open_companies < config.MAX_OPEN_COMPANIES_AMOUNT:
             self.generate_open_company()
 
     def generate_open_company(self):
         # Create companies
         new_company = Company()
-        new_company.generate_open_company_random_value()
+        new_company.generate_random_name() # Apply random name
+        new_company.generate_random_company_type() # Apply random business type
+        new_company.generate_open_company_random_value() # Set random value for company
         # Generate default set of stocks for open company
         new_company.generate_stocks51(config.OPEN_COMPANY_DEFAULT_AMOUNT_SILVER_STOCKS)
         element = CompanyStorageElement(uuid=new_company.uuid,company=new_company)
+        self.__amount_open_companies += 1
         self.__companies_storage.append(element)
 
-
+    # Kind a random generation process of closed company
     def generate_closed_company(self):
         # Create companies
         new_company = Company()
@@ -74,7 +80,41 @@ class CompaniesHandler():
         # Generate default set of stocks for closed company
         new_company.generate_closed_stocks()
         element = CompanyStorageElement(uuid=new_company.uuid,company=new_company)
+        self.__amount_closed_companies += 1
         self.__companies_storage.append(element)
+
+    # Player's request to create closed company
+    def create_closed_company(self, company_name:str, b_type: int, money: float, stocks: list, client_data: ClientData) -> CompanyCreateResult:
+        # Verify that name is ok, and there is no already same name
+        if not self.verify_syntax_new_company_name(company_name):
+            return CompanyCreateResult.NAME_SYNTAX_ERROR
+        if not self.verify_uniq_new_company_name(company_name):
+            return CompanyCreateResult.NAME_NOT_UNIQ
+        # Next verification about company type
+        if not self.verify_business_type_existance(b_type):
+            return CompanyCreateResult.B_TYPE_ERROR
+        # Verify stocks proper devision
+        for value in stocks:
+            if value < config.MINIMUN_STOCK_VALUE_TO_CREATE:
+                return CompanyCreateResult.STOCKS_ERROR
+        stocks_sum = sum(stocks)
+        if stocks_sum != 100:
+            return CompanyCreateResult.STOCKS_ERROR
+
+        # All verification steps are done. Here company can be created
+        new_company = Company()
+        # This is closed company, means only have private own stocks
+        new_company.company_type = CompanyType.CLOSED
+        new_company.set_company_name(company_name)
+        new_company.increase_value(money)
+        # Now let's create stocks for this company
+        created_stocks = new_company.create_gold_stocks(stocks,client_data.uuid)
+        element = CompanyStorageElement(uuid=new_company.uuid,company=new_company)
+        self.__companies_storage.append(element)
+        self.__amount_closed_companies += 1
+        # Apply to player
+        client_data.player_data.purchase_stock_confirm(new_company.uuid,company_name, created_stocks, money)
+        return CompanyCreateResult.SUCCESS
 
     # Recalculate stock's cost of companies
     def recalculate_companies_stock_cost(self,server_time):
@@ -188,3 +228,27 @@ class CompaniesHandler():
             return history
         history = company.get_silver_stock_history()
         return history
+
+    # Here will be description, that naming for companies is allowed
+    def verify_syntax_new_company_name(self, name:str):
+        # First check that company name has only two digits
+        digits = sum(c.isdigit() for c in name)
+        if digits > 2:
+            return False
+        return True
+
+    # Verify, that company name is unique in existing companies
+    def verify_uniq_new_company_name(self, name:str):
+        for element in self.__companies_storage:
+            element : CompanyStorageElement
+            if element['company'].name == name:
+                return False
+        return True
+
+    def verify_business_type_existance(self, b_type: int):
+        try:
+            c_b_t = CompanyBusinessType(b_type)
+            utils.unused(c_b_t)
+            return True
+        except:
+            return False

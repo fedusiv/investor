@@ -4,12 +4,13 @@
 import tornado.websocket
 
 from communication_parser import CommunitcationParserResult
-from companies.companies_types import StockSellResult
+from companies.companies_types import CompanyCreateResult, StockSellResult
 from logic_handler import LogicHandler
 from communication_protocol import MessageType
 from communication_protocol import CommunicationProtocol
 from client_data import ClientData
 from companies.companies_handler import StockPurchaseResult
+import utils
 
 class ClientOperation():
 
@@ -26,22 +27,26 @@ class ClientOperation():
             MessageType.NEWS_BY_TIME : self.request_for_news_list_bytime,
             MessageType.NEWS_BY_AMOUNT : self.request_for_news_list_byamount,
             MessageType.SELL_SILVER_STOCK : self.request_to_sell_stock,
-            MessageType.COMPANY_SILVER_STOCK_HISTORY : self.request_silver_stock_history
+            MessageType.COMPANY_SILVER_STOCK_HISTORY : self.request_silver_stock_history,
+            MessageType.CREATE_PLAYER_COMPANY : self.create_player_company_request
         }
         func = switcher.get(cmd.result_type)
         func(cmd)
 
     def wrong_command(self,cmd):
+        utils.unused(cmd)
         print("Wrong type")
 
     def request_open_companies_list(self,cmd):
+        utils.unused(cmd)
         c_list = self.logic_handler.companies_open_list_client()
         c_list_msg = CommunicationProtocol.create_companies_open_list(c_list)
         self.ws.write_message(c_list_msg)
 
     # Send to client, client's data
     def request_client_data(self,cmd):
-        s_list = self.client_data.player_data.get_all_silver_stocks_to_list()
+        utils.unused(cmd)
+        s_list = self.client_data.player_data.get_all_stocks_to_list()
         client_data_msg = CommunicationProtocol.create_client_data_msg(login= self.client_data.login,
                                                                         money=self.client_data.player_data.money,
                                                                         stock_list=s_list,
@@ -76,4 +81,13 @@ class ClientOperation():
         history_list_msg = CommunicationProtocol.create_history_silver_stock(history_list)
         self.ws.write_message(history_list_msg)
 
-
+    def create_player_company_request(self, cmd: CommunitcationParserResult):
+        result : CompanyCreateResult
+        result = self.logic_handler.request_to_create_closed_company(company_name=cmd.new_company_name,
+                                                                    b_type=cmd.b_type_int,
+                                                                    money=cmd.money_invest,
+                                                                    stocks=cmd.stocks_list,
+                                                                    client_data=self.client_data)
+       # Send result message
+        create_company_msg = CommunicationProtocol.create_company_result(result.value)
+        self.ws.write_message(create_company_msg)
