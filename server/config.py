@@ -18,3 +18,6 @@ NEWS_DAMPING_AMOUNT = 3
 OPEN_COMPANY_DEFAULT_AMOUNT_SILVER_STOCKS = 60
 # Minimun amount of value of one stock to specify it, when create player company
 MINIMUN_STOCK_VALUE_TO_CREATE = 0.01
+# Closed compnaies has less depence on global news and world situation. This amount of less dependency persent
+# Example rate 1.05, 50 persentage of rate will be 1.025 And 50% means 0.5
+CLOSED_COMPANY_RATE_DECREASE = 0.5

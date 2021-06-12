@@ -229,6 +229,13 @@ class Company():
             history.append(el)
         return history
 
+    # Closed companies aka player's company less depence on positive news and world situation
+    # Rate need to be decreased
+    def decrease_rate_for_closed_company(self):
+        rate = self.__value_rate - 1
+        new_rate = rate * config.CLOSED_COMPANY_RATE_DECREASE
+        self.set_rate_value(new_rate)
+
     # Changing value rate of company based on world situation
     def change_value_due_worldsituation(self,situation : WorldSituation):
         rate = 0.0

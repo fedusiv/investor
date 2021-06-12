@@ -133,7 +133,10 @@ class CompaniesHandler():
                 cur_compnay.cycle_end_recalculation() # calculate changes of company value only based on news and world situation
                 cur_compnay.recalculate_stocks_cost(server_time) # Apply new stock costs
             elif cur_compnay.company_type is CompanyType.CLOSED:
-                # TODO: Closed companies should be analyzed by different logic. They mostly depend on invested money
+                cur_compnay.change_value_due_worldsituation(data)
+                cur_compnay.decrease_rate_for_closed_company()
+                cur_compnay.cycle_end_recalculation()
+                # TODO: Here is should be method to change value due to invest situation
                 pass
 
     # Return open companies in list for Open Exhange Market
