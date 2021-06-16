@@ -1,7 +1,5 @@
 from uuid import uuid4
-from companies.bussines_news_connection import NewsDependency
 
-from news.world_situation import WorldSituation
 # Working plan is company value change mechanism
 # Owner sets how company can be extended and make some prognosis
 # Working plan is a information about it for a company
@@ -28,7 +26,7 @@ class CompanyWorkingPlan():
             lose_koef = pow(diff,1/period)
         else:
             earn_koef = pow(diff,1/period)
-            lose_koef = pow(diff,period)
+            lose_koef = diff * pow(period, 1/2)
         # Earn calculates based on request target
         self.earn_value = request_target * earn_koef * inf_value
         # Lose value calculates based on company current value
