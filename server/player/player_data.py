@@ -1,4 +1,3 @@
-from math import e
 from stock.stock import Stock, StockType
 import config
 
@@ -21,8 +20,22 @@ class PlayerData():
         self.__money = config.PLAYER_DEFAULT_MONEY_AMOUNT
         self.__stocks  = []
 
+    # Prepare data for info about money amount and stocks money value, that player has
+    def get_player_value_info(self):
+        stocks_sum = 0
+        for element in self.__stocks:
+            element : StockStorageElement
+            sil_sum = sum(x.cost for x in element.stock_list_silver)
+            gold_sum = sum(x.cost for x in element.stock_list_gold)
+            stocks_sum += sil_sum + gold_sum
+        data = {
+                "stocks" : stocks_sum,
+                "money" : self.money
+                }
+        return data
 
-    # As a short preview of all money and value that player has
+
+    # As a preview of all money and value that player has
     def get_all_stocks_to_list(self) -> list:
         stocks_list = []
         if len(self.__stocks) < 1:

@@ -93,6 +93,11 @@ class CommunitcationParser():
         return result
 
     @staticmethod
+    def short_info_request(msg):
+        result = CommunitcationParserResult(msg,MessageType.SHORT_INFO)
+        return result
+
+    @staticmethod
     def stock_buy_request(msg):
         result = CommunitcationParserResult(msg,MessageType.BUY_STOCK)
         result.form_stock_buy_request()
@@ -168,7 +173,8 @@ class CommunitcationParser():
             MessageType.COMPANY_SILVER_STOCK_HISTORY.value : CommunitcationParser.history_silver_stock,
             MessageType.CREATE_PLAYER_COMPANY.value : CommunitcationParser.create_player_company,
             MessageType.WORKING_PLAN_REQUEST.value : CommunitcationParser.request_working_plan,
-            MessageType.WORKING_PLAN_APPLY.value : CommunitcationParser.apply_working_plan
+            MessageType.WORKING_PLAN_APPLY.value : CommunitcationParser.apply_working_plan,
+            MessageType.SHORT_INFO.value : CommunitcationParser.short_info_request
         }
         # Verification is this admin message
 

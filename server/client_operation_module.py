@@ -23,6 +23,7 @@ class ClientOperation():
         switcher = {
             MessageType.COMPANIES_OPEN_LIST : self.request_open_companies_list,
             MessageType.CLIENT_DATA : self.request_client_data,
+            MessageType.SHORT_INFO : self.short_client_data,
             MessageType.BUY_STOCK : self.request_to_buy_stock,
             MessageType.NEWS_BY_TIME : self.request_for_news_list_bytime,
             MessageType.NEWS_BY_AMOUNT : self.request_for_news_list_byamount,
@@ -54,6 +55,18 @@ class ClientOperation():
                                                                         stock_list=s_list,
                                                                         server_time=self.logic_handler.server_time)
         self.ws.write_message(client_data_msg)
+
+
+    def short_client_data(self,cmd):
+        utils.unused(cmd)
+        player_data = self.client_data.player_data.get_player_value_info() # Money and stock's money
+        news_list = self.logic_handler.news_handler.get_news_list_byamount(3)
+        msg = CommunicationProtocol.prepare_short_info(self.client_data.login,
+                                                        player_data,
+                                                        self.logic_handler.server_time,
+                                                        self.logic_handler.game_cycle,
+                                                        news_list)
+        self.ws.write_message(msg)
 
     # Client send request to buy a stock
     def request_to_buy_stock(self,cmd : CommunitcationParserResult):

@@ -374,7 +374,7 @@ MessageType:
 WORKING_PLAN_APPLY = 14
 To server:
 {
-    "type" : 13,
+    "type" : 14,
     "body" :
     {
         "c_uuid" : str ( uuid of company )
@@ -391,6 +391,40 @@ To client:
         "result" : int  SUCCESS = 1
                         NO_SUCH_COMPANY = 2
                         REQUEST_PERIOD_TAKEN = 3
+    },
+    "uuid" : str ( unique id of player )
+}
+
+MessageType:
+SHORT_INFO = 15
+Short information about player
+To server:
+{
+    "type" : 15,
+    "body" :
+    {},
+    "uuid" : str ( unique id of player )
+}
+
+To client:
+{
+    "type" : 15,
+    "body" :
+    {
+        "login" : str (login name),
+        "money" : 
+        {
+            "stocks" : float (sum of cost of all stocks, that player has),
+            "money" : float ( amount of player's money)
+        }
+        "server_time" : float
+        "cycle" : int ( current game cycle)
+        "news" :
+        [
+            "theme" : str (String description of something, that happend),
+            "source" : str (Name of event source),
+            "server_time" : float ( when this news appeared, in seconds)
+        ]
     },
     "uuid" : str ( unique id of player )
 }

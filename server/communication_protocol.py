@@ -18,6 +18,7 @@ class MessageType(Enum):
     CREATE_PLAYER_COMPANY = 12
     WORKING_PLAN_REQUEST = 13
     WORKING_PLAN_APPLY = 14
+    SHORT_INFO = 15
 
 # Class to parse and create required messages
 # This class used for server and client as well
@@ -165,4 +166,16 @@ class CommunicationProtocol():
                 "result" : result
                 }
         msg_json = CommunicationProtocol.formulate_message(body,MessageType.WORKING_PLAN_APPLY.value)
+        return msg_json
+
+    @staticmethod
+    def prepare_short_info(login_name,player_money, server_time, cur_cycle, news_list):
+        body = {
+                "login" : login_name,
+                "money" : player_money,
+                "server_time" : server_time,
+                "cycle" : cur_cycle,
+                "news" : news_list
+            }
+        msg_json = CommunicationProtocol.formulate_message(body, MessageType.SHORT_INFO.value)
         return msg_json
