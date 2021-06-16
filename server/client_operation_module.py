@@ -4,7 +4,7 @@
 import tornado.websocket
 
 from communication_parser import CommunitcationParserResult
-from companies.companies_types import CompanyCreateResult, StockSellResult
+from companies.companies_types import CompanyCreateResult, CompanyWorkingRequestResult, StockSellResult
 from logic_handler import LogicHandler
 from communication_protocol import MessageType
 from communication_protocol import CommunicationProtocol
@@ -28,7 +28,8 @@ class ClientOperation():
             MessageType.NEWS_BY_AMOUNT : self.request_for_news_list_byamount,
             MessageType.SELL_SILVER_STOCK : self.request_to_sell_stock,
             MessageType.COMPANY_SILVER_STOCK_HISTORY : self.request_silver_stock_history,
-            MessageType.CREATE_PLAYER_COMPANY : self.create_player_company_request
+            MessageType.CREATE_PLAYER_COMPANY : self.create_player_company_request,
+            MessageType.WORKING_PLAN_REQUEST : self.request_working_plan_create
         }
         func = switcher.get(cmd.result_type)
         func(cmd)
@@ -91,3 +92,13 @@ class ClientOperation():
        # Send result message
         create_company_msg = CommunicationProtocol.create_company_result(result.value)
         self.ws.write_message(create_company_msg)
+
+    def request_working_plan_create(self, cmd : CommunitcationParserResult):
+        result = self.logic_handler.request_working_plan_create(c_uuid=cmd.company_uuid,
+                                                                    begin_cycle=cmd.begin_cycle,
+                                                                    end_cycle=cmd.end_cycle,
+                                                                    target=cmd.target_earn)
+        plan_request = CommunicationProtocol.working_plan_request_result(result)
+        self.ws.write_message(plan_request)
+
+

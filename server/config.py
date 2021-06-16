@@ -21,3 +21,5 @@ MINIMUN_STOCK_VALUE_TO_CREATE = 0.01
 # Closed compnaies has less depence on global news and world situation. This amount of less dependency persent
 # Example rate 1.05, 50 persentage of rate will be 1.025 And 50% means 0.5
 CLOSED_COMPANY_RATE_DECREASE = 0.5
+# Fine multiplicator based on life cycles of company
+WORKING_PLAN_FINE = 1000

@@ -3,9 +3,10 @@ import math
 
 
 from companies.company import Company
-from companies.companies_types import CompanyBusinessType, CompanyCreateResult, CompanyType, StockSellResult
+from companies.companies_types import CompanyBusinessType, CompanyCreateResult, CompanyType, CompanyWorkingRequestResult, StockSellResult
 from companies.companies_types import StockPurchaseResult
 from client_data import ClientData
+from companies.working_plan import CompanyWorkingPlan
 import config
 import utils
 from news.world_situation import WorldSituation
@@ -34,6 +35,8 @@ class CompaniesHandler():
         self.__companies_storage = []
         self.__amount_open_companies = 0
         self.__amount_closed_companies = 0
+        # Represent current game cycle
+        self.game_cycle = 0
 
     #---------------------#
     #Logic part
@@ -62,7 +65,7 @@ class CompaniesHandler():
 
     def generate_open_company(self):
         # Create companies
-        new_company = Company()
+        new_company = Company(self.game_cycle)
         new_company.generate_random_name() # Apply random name
         new_company.generate_random_company_type() # Apply random business type
         new_company.generate_open_company_random_value() # Set random value for company
@@ -75,7 +78,7 @@ class CompaniesHandler():
     # Kind a random generation process of closed company
     def generate_closed_company(self):
         # Create companies
-        new_company = Company()
+        new_company = Company(self.game_cycle)
         new_company.generate_closed_company_random_value()
         # Generate default set of stocks for closed company
         new_company.generate_closed_stocks()
@@ -102,7 +105,7 @@ class CompaniesHandler():
             return CompanyCreateResult.STOCKS_ERROR
 
         # All verification steps are done. Here company can be created
-        new_company = Company()
+        new_company = Company(self.game_cycle)
         # This is closed company, means only have private own stocks
         new_company.company_type = CompanyType.CLOSED
         new_company.set_company_name(company_name)
@@ -122,22 +125,23 @@ class CompaniesHandler():
             element : CompanyStorageElement
             element['company'].recalculate_stocks_cost(server_time)
 
+    # End function of cycle
     # Make analysis of situation and provide value changes
-    def commit_company_progress(self,data: WorldSituation, server_time):
+    def commit_company_progress(self,data: WorldSituation, server_time, game_cycle: int):
+        self.game_cycle = game_cycle
         for element in self.__companies_storage:
             element : CompanyStorageElement
             cur_compnay = element['company']
             if cur_compnay.company_type is CompanyType.OPEN:
                 # Open companies depend on news and nothing more
                 cur_compnay.change_value_due_worldsituation(data) # change value rate
-                cur_compnay.cycle_end_recalculation() # calculate changes of company value only based on news and world situation
+                cur_compnay.cycle_end_recalculation(game_cycle) # calculate changes of company value only based on news and world situation
                 cur_compnay.recalculate_stocks_cost(server_time) # Apply new stock costs
             elif cur_compnay.company_type is CompanyType.CLOSED:
                 cur_compnay.change_value_due_worldsituation(data)
                 cur_compnay.decrease_rate_for_closed_company()
-                cur_compnay.cycle_end_recalculation()
+                cur_compnay.cycle_end_recalculation(game_cycle)
                 # TODO: Here is should be method to change value due to invest situation
-                pass
 
     # Return open companies in list for Open Exhange Market
     def get_open_companies_to_list(self):
@@ -255,3 +259,34 @@ class CompaniesHandler():
             return True
         except:
             return False
+
+    # These method creates working request. Attach it to company.
+    # Output is commnication related format.
+    # Do not forget to sync it with communication protocol
+    def create_working_plan_request(self,c_uuid: str, begin_cycle: int, end_cycle: int, target: float, w_sit: WorldSituation):
+        body={
+                "result":0
+                }
+        company = self.company_by_uuid(c_uuid)
+        if company == None:
+            body={
+                    "result" : CompanyWorkingRequestResult.NO_SUCH_COMPANY.value
+                    }
+            return body
+        if not company.working_verify_cycles(begin_cycle,end_cycle):
+            body={
+                    "result" : CompanyWorkingRequestResult.REQUEST_PERIOD_TAKEN.value
+                    }
+        # Create working plan
+        plan = CompanyWorkingPlan(begin_cycle,end_cycle)
+        inf_level = w_sit.required_influence_types_level(company.news_dependency)
+        plan.request_setup(target,company.value,inf_level)
+        company.working_plan_append_pending(plan)
+        body={
+                "result" : CompanyWorkingRequestResult.SUCCESS.value,
+                "c_uuid" : company.uuid,
+                "w_uuid" : plan.plan_uuid,
+                "earn" : plan.earn_value,
+                "lose" : plan.lose_value
+                }
+        return body

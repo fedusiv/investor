@@ -27,7 +27,8 @@ class LogicHandler():
         # Time counters for companies update
         self.last_company_news_update = time.time()
         self.last_company_cost_update = time.time()
-
+        # Cycle init. Cycle is game mechanics to represent life time and some logic
+        self.game_cycle = 0
     #---------------------#
     #Properties part
     #---------------------#
@@ -55,8 +56,10 @@ class LogicHandler():
         cur_time = self.server_time
         if cur_time - self.last_company_news_update >= config.COMPANY_NEWS_UPDATE:
             self.last_company_news_update = cur_time
+            # Increase game cycle. It should be dome in only one place
+            self.game_cycle += 1
             # Send world situation from news handler for a commit a progress of company
-            self.companies_handler.commit_company_progress(world_situation, cur_time)
+            self.companies_handler.commit_company_progress(world_situation, cur_time, self.game_cycle)
             return
 
         # Probably unnecessary method, because company cost need to be updated each time after buying or selling it
@@ -92,3 +95,10 @@ class LogicHandler():
                                                             money=money,
                                                             stocks=stocks,
                                                             client_data=client_data)
+
+    def request_working_plan_create(self, c_uuid: str, begin_cycle: int, end_cycle: int, target:float):
+        return self.companies_handler.create_working_plan_request(c_uuid=c_uuid,
+                                                                begin_cycle=begin_cycle,
+                                                                end_cycle=end_cycle,
+                                                                target=target,
+                                                                w_sit=self.news_handler.world_situation)

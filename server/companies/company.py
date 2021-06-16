@@ -6,6 +6,7 @@ from companies.companies_types import CompanyType
 from companies.companies_types import CompanyBusinessType
 from companies.company_data import CompanyData
 from companies.company_name_generation import CompanyNameGenerator
+from companies.working_plan import CompanyWorkingPlan
 from stock.stock import Stock
 from stock.stock import StockType
 from companies.bussines_news_connection import BusinessNewsRelation, NewsDependency
@@ -62,7 +63,7 @@ class Company():
         return self.__owner_name, self.__owner_uuid
 
     # Init generates default random Company 
-    def __init__(self):
+    def __init__(self, start_cycle_count: int):
         # Dictionary for stocks. Storage.
         # {stock_uuid : stock_object}
         self.stocks = {}
@@ -95,6 +96,14 @@ class Company():
         # owner information
         self.__owner_name = "" # empty name means server is owner
         self.__owner_uuid = "a1" # a1 means server is owner of company
+
+        # Life cycle information. Represent how many logic cycles company exists
+        self.__life_cycle = 0
+        # On what game cycle company was created
+        self.__create_cycle = start_cycle_count
+
+        # Working plans list
+        self.__working_plans = []
 
     def set_company_name(self, name: str):
         self.data.name = name
@@ -201,10 +210,6 @@ class Company():
     def set_rate_value(self, value_rate : float):
         self.__value_rate = value_rate
 
-    # Increase company value based on current rate
-    def increase_value_by_rate(self):
-        self.data.value = self.data.value * self.value_rate
-
     # Increase value of company, when money were invested to it
     def increase_value(self, money: float):
         self.data.value += money
@@ -288,13 +293,48 @@ class Company():
     # Calculate the amount of money which company loose or earn in this cycle based on value with which is started
     # This mechanism makes companies even to bad world situation if there was huge amount of money invested,
     #   companies will anyway get some positive amount of value
-    def cycle_end_recalculation(self):
+    def cycle_end_recalculation(self, next_cycle: int):
         # Calculate the value, which depence only on news and world situation
         fake_value = self.data.cycle_start_value * self.value_rate
         difference = fake_value - self.data.cycle_start_value
         self.increase_value(difference)
+        # Process with working plan changes
+        self.working_plan_commit(next_cycle)
         # And store the value for the new beginning of cycle
         self.data.cycle_start_value = self.value
+        # Go to next cycle
+        self.__life_cycle = next_cycle - self.__create_cycle
+
+    # Commit process of company related to working plan
+    def working_plan_commit(self, next_cycle: int):
+        cur_cycle = next_cycle - 1
+        # Currently working plan is related only to closed companies
+        if self.company_type == CompanyType.OPEN:
+            return
+        for plan in self.__working_plans:
+            plan : CompanyWorkingPlan
+            # Additional verification, to operate only applied with working plan
+            if plan.applied is False:
+                continue
+            if plan.end_cycle == cur_cycle - 1:
+                # Now is end of working plan, apply changes
+                if self.data.value >= plan.end_value:
+                    self.increase_value(plan.earn_value)
+                else:
+                    self.increase_value(-1 * plan.lose_value)
+                # Working plan was applied, remove it from list
+                self.__working_plans.remove(plan)
+                # Only one working plan should be in a company in on period. Can exit now
+                return
+            else:
+                # Need to understand does company have any working plan, that is running now, and no need to fine it
+                if (plan.start_cycle <= cur_cycle) and (plan.end_cycle > cur_cycle):
+                    return
+        # Once received this line of code, means, that there is no working plan applied and running for company
+        # Apply fine for it
+        fine = 1 * config.WORKING_PLAN_FINE * self.__life_cycle
+        self.increase_value(fine)
+
 
 
     # Companies handler calls this method.
@@ -330,6 +370,50 @@ class Company():
             'b_type' : self.business_type.name
         }
         return data
+
+    # Just append working plan. Need tp store it somewhere
+    def working_plan_append_pending(self, working_plan: CompanyWorkingPlan):
+        self.__working_plans.append(working_plan)
+
+    # Apply working plan
+    def working_plan_apply(self, plan_uuid: str):
+        # Verify, that plan exists
+        cur_plan = None
+        for plan in self.__working_plans:
+            plan: CompanyWorkingPlan
+            if plan.applied:
+                continue
+            if plan.plan_uuid == plan_uuid:
+                cur_plan = plan
+                break
+        if cur_plan == None:
+            return False
+        if not self.working_verify_cycles(cur_plan.start_cycle,cur_plan.end_cycle) :
+            return False
+       # Apply working plan
+        cur_plan.applied = True
+        # Remove all pending plans
+        for plan in self.__working_plans:
+            plan: CompanyWorkingPlan
+            if plan.applied is False:
+                self.__working_plans.remove(plan)
+
+    # verify, that given cycles are avalible
+    def working_verify_cycles(self, begin_cycle: int, end_cycle: int):
+        taken_cycles = []
+        for plan in self.__working_plans:
+            plan : CompanyWorkingPlan
+            if plan.applied is False:
+                continue
+            # Fill taken cycles
+            taken_cycles.append(plan.start_cycle)
+            taken_cycles.append(plan.end_cycle)
+        # Check that required cycles are not taken
+        if begin_cycle in taken_cycles:
+            return False
+        if end_cycle in taken_cycles:
+            return False
+        return True
 
     #############################
     # Server debug methods filed

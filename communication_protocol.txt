@@ -117,6 +117,7 @@ To client:
 MessageType:
 CLIENT_DATA = 6
 client request from server all information, which client should know
+This is short information variant
 
 To server:
 {
@@ -332,4 +333,39 @@ To client
             B_TYPE_ERROR = 4
             STOCKS_ERROR = 5
     }
+}
+
+MessageType:
+WORKING_PLAN_REQUEST = 13
+Send request to server with parameters about to setup working plan.
+Answer is conditions, that server calculate for player
+
+To server:
+{
+    "type" : 13,
+    "body" :
+    {
+        "uuid" : str ( uuid of company )
+        "begin_cycle" : int
+        "end_cycle" : int
+        "target" : float (amount of money, that player want to earn)
+    },
+    "uuid" : str ( unique id of player )
+}
+
+To client:
+{
+    "type" : 13,
+    "body" :
+    {
+        "result" : int  SUCCESS = 1
+                        NO_SUCH_COMPANY = 2
+                        REQUEST_PERIOD_TAKEN = 3
+        if succes, data below exists
+        "c_uuid" : str ( uuid of company )
+        "w_uuid" : str (working plan uuid)
+        "earn" : float (amount of money, that company will earn)
+        "lose" : float (amount of money, that company will lose)
+    },
+    "uuid" : str ( unique id of player )
 }
