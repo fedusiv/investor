@@ -26,6 +26,9 @@ class Company():
     @property
     def value(self):
         return self.data.value
+    @property
+    def fund_value(self):
+        return self.data.fund_value
 
     @property
     def silver_cost(self) -> float:
@@ -83,6 +86,8 @@ class Company():
         self.__gold_amount_full = 0 # Amount of gold stocks
         # Rise value, company if works will increase own value
         self.__value_rate = 1.0
+        # Fund rate, what part of stocks income go to company value
+        self.__fund_rate = 0.0
         # By default compane has zero influence level
         self.influence_level = 0
         # Counter for world damping news situation.
@@ -212,7 +217,19 @@ class Company():
 
     # Increase value of company, when money were invested to it
     def increase_value(self, money: float):
+        if money >= 0:
+            # Positive operations proceed through the fund of company
+            fund_money = money * self.__fund_rate
+            # Place them to company's fund
+            self.data.fund_value += fund_money
+            # Decrease amount of all income
+            money -= fund_money
+        # Put money to company value
         self.data.value += money
+
+    # Change the value of company fund
+    def increase_fund_value(self,money: float):
+        self.data.fund_value += money
 
     # When company change it's value, better to recalculate stocks cost
     def recalculate_stocks_cost(self, server_time = 0.0):
@@ -319,8 +336,10 @@ class Company():
             if plan.end_cycle == cur_cycle - 1:
                 # Now is end of working plan, apply changes
                 if self.data.value >= plan.end_value:
-                    self.increase_value(plan.earn_value)
+                    # Additional earn goes to fund first
+                    self.increase_fund_value(plan.earn_value)
                 else:
+                    # if lose some money, it decrease company value, not fund
                     self.increase_value(-1 * plan.lose_value)
                 # Working plan was applied, remove it from list
                 self.__working_plans.remove(plan)
