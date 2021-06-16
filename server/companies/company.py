@@ -316,7 +316,10 @@ class Company():
         difference = fake_value - self.data.cycle_start_value
         self.increase_value(difference)
         # Process with working plan changes
-        self.working_plan_commit(next_cycle)
+        if self.company_type == CompanyType.CLOSED:
+            # Works with Closed companies
+            # Open companies changes values only based on news
+            self.working_plan_commit(next_cycle)
         # And store the value for the new beginning of cycle
         self.data.cycle_start_value = self.value
         # Go to next cycle
