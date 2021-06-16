@@ -290,3 +290,14 @@ class CompaniesHandler():
                 "lose" : plan.lose_value
                 }
         return body
+
+    def working_plan_apply(self, c_uuid: str, w_uuid: str):
+        company = self.company_by_uuid(c_uuid)
+        if company is None:
+            return CompanyWorkingRequestResult.NO_SUCH_COMPANY
+        res = company.working_plan_apply(w_uuid)
+        if res:
+            return CompanyWorkingRequestResult.SUCCESS
+        else:
+            return CompanyWorkingRequestResult.NO_SUCH_WORKING_PLAN
+

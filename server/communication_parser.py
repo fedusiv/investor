@@ -57,6 +57,10 @@ class CommunitcationParserResult():
         self.end_cycle = self.body["end_cycle"]
         self.target_earn = self.body["target"]
 
+    def working_plan_apply(self):
+        self.company_uuid = self.body["c_uuid"]
+        self.w_plan_uuid = self.body["w_uuid"]
+
 class CommunitcationParser():
 
     @staticmethod
@@ -135,6 +139,12 @@ class CommunitcationParser():
         result.create_company_data()
         return result
 
+    @staticmethod
+    def apply_working_plan(msg):
+        result = CommunitcationParserResult(msg, MessageType.WORKING_PLAN_APPLY)
+        result.working_plan_apply()
+        return result
+
 
     @staticmethod
     def parse_clinet_message(msg):
@@ -157,7 +167,8 @@ class CommunitcationParser():
             MessageType.MESSAGING.value : CommunitcationParser.messaging,
             MessageType.COMPANY_SILVER_STOCK_HISTORY.value : CommunitcationParser.history_silver_stock,
             MessageType.CREATE_PLAYER_COMPANY.value : CommunitcationParser.create_player_company,
-            MessageType.WORKING_PLAN_REQUEST.value : CommunitcationParser.request_working_plan
+            MessageType.WORKING_PLAN_REQUEST.value : CommunitcationParser.request_working_plan,
+            MessageType.WORKING_PLAN_APPLY.value : CommunitcationParser.apply_working_plan
         }
         # Verification is this admin message
 

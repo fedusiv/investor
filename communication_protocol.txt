@@ -369,3 +369,28 @@ To client:
     },
     "uuid" : str ( unique id of player )
 }
+
+MessageType:
+WORKING_PLAN_APPLY = 14
+To server:
+{
+    "type" : 13,
+    "body" :
+    {
+        "c_uuid" : str ( uuid of company )
+        "w_uuid" : str ( uuid of working plan)
+    },
+    "uuid" : str ( unique id of player )
+}
+
+To client:
+{
+    "type" : 14,
+    "body" :
+    {
+        "result" : int  SUCCESS = 1
+                        NO_SUCH_COMPANY = 2
+                        REQUEST_PERIOD_TAKEN = 3
+    },
+    "uuid" : str ( unique id of player )
+}

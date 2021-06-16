@@ -54,4 +54,5 @@ class CompanyWorkingRequestResult(Enum):
     SUCCESS = 1
     NO_SUCH_COMPANY = 2
     REQUEST_PERIOD_TAKEN = 3
+    NO_SUCH_WORKING_PLAN = 4
 

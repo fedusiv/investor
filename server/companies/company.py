@@ -397,6 +397,7 @@ class Company():
             plan: CompanyWorkingPlan
             if plan.applied is False:
                 self.__working_plans.remove(plan)
+        return True
 
     # verify, that given cycles are avalible
     def working_verify_cycles(self, begin_cycle: int, end_cycle: int):

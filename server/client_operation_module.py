@@ -29,7 +29,8 @@ class ClientOperation():
             MessageType.SELL_SILVER_STOCK : self.request_to_sell_stock,
             MessageType.COMPANY_SILVER_STOCK_HISTORY : self.request_silver_stock_history,
             MessageType.CREATE_PLAYER_COMPANY : self.create_player_company_request,
-            MessageType.WORKING_PLAN_REQUEST : self.request_working_plan_create
+            MessageType.WORKING_PLAN_REQUEST : self.request_working_plan_create,
+            MessageType.WORKING_PLAN_APPLY : self.apply_working_plan
         }
         func = switcher.get(cmd.result_type)
         func(cmd)
@@ -101,4 +102,8 @@ class ClientOperation():
         plan_request = CommunicationProtocol.working_plan_request_result(result)
         self.ws.write_message(plan_request)
 
-
+    def apply_working_plan(self, cmd : CommunitcationParserResult):
+        result : CompanyWorkingRequestResult
+        result = self.logic_handler.request_working_plan_apply(cmd.company_uuid, cmd.w_plan_uuid)
+        msg = CommunicationProtocol.working_plan_apply(result.value)
+        self.ws.write(msg)

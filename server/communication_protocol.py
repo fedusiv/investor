@@ -17,6 +17,7 @@ class MessageType(Enum):
     COMPANY_SILVER_STOCK_HISTORY = 11
     CREATE_PLAYER_COMPANY = 12
     WORKING_PLAN_REQUEST = 13
+    WORKING_PLAN_APPLY = 14
 
 # Class to parse and create required messages
 # This class used for server and client as well
@@ -156,4 +157,12 @@ class CommunicationProtocol():
     def working_plan_request_result(result):
         body = result
         msg_json = CommunicationProtocol.formulate_message(body, MessageType.WORKING_PLAN_REQUEST.value)
+        return msg_json
+
+    @staticmethod
+    def working_plan_apply(result: int):
+        body = {
+                "result" : result
+                }
+        msg_json = CommunicationProtocol.formulate_message(body,MessageType.WORKING_PLAN_APPLY.value)
         return msg_json

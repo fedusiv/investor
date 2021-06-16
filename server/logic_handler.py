@@ -102,3 +102,6 @@ class LogicHandler():
                                                                 end_cycle=end_cycle,
                                                                 target=target,
                                                                 w_sit=self.news_handler.world_situation)
+
+    def request_working_plan_apply(self, c_uuid: str, w_uuid: str):
+        return self.companies_handler.working_plan_apply(c_uuid, w_uuid)
