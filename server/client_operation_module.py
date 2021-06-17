@@ -140,13 +140,15 @@ class ClientOperation():
             self.ws.write_message(msg)
             return
         # Create plan object in investment Market
-        self.investment_market.create_and_post_investment_plan(server_time=self.logic_handler.server_time,
+        plan = self.investment_market.create_and_post_investment_plan(server_time=self.logic_handler.server_time,
                                                                 c_uuid=cmd.company_uuid,
                                                                 c_name=company.name,
                                                                 invest_value=cmd.invest_value,
                                                                 i_type=cmd.invest_type,
                                                                 payback_value=cmd.payback_value,
                                                                 cycle_period=cmd.invest_cycles)
+        # Append plan to pending list of investment plans
+        company.invest_plan_append(plan)
         # send result
         msg = CommunicationProtocol.invest_plan_create_and_post(InvestmentPlanCreateResult.SUCCESS.value)
         self.ws.write_message(msg)

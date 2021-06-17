@@ -8,6 +8,7 @@ from companies.companies_types import StockPurchaseResult
 from client_data import ClientData
 from companies.working_plan import CompanyWorkingPlan
 import config
+from investment.investment_plan import InvestmentPlan
 import utils
 from news.world_situation import WorldSituation
 
@@ -300,4 +301,5 @@ class CompaniesHandler():
             return CompanyWorkingRequestResult.SUCCESS
         else:
             return CompanyWorkingRequestResult.NO_SUCH_WORKING_PLAN
+
 

@@ -37,6 +37,8 @@ class InvestmentMarket():
         element = InvestmentMarketStorageElement(server_time=server_time,plan=plan)
         # Place it in a storage
         self._market_storage.append(element)
+        # Return plan to attach to a company
+        return plan
 
     # List of invesment market elements.
     # This method is related to communication protocol description. Please do not forget to sync with it

@@ -110,6 +110,10 @@ class Company():
         # Working plans list
         self.__working_plans = []
 
+        #Investment plans, which were requested by owner and await to be applied
+        self._investment_plans_pending = []
+        self._investment_plans_applied = []
+
     def set_company_name(self, name: str):
         self.data.name = name
 
@@ -437,6 +441,10 @@ class Company():
         if end_cycle in taken_cycles:
             return False
         return True
+
+    # Method add invest plan to list of pending plans
+    def invest_plan_append(self, plan):
+        self._investment_plans_pending.append(plan)
 
     #############################
     # Server debug methods filed
