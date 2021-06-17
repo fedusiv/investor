@@ -29,7 +29,7 @@ class ClientData():
     def set_login_informataion(self, login, uuid):
         self.__login = login
         self.__uuid = uuid
-        self.player_data = PlayerData()
+        self.player_data = PlayerData(uuid)
 
     def set_admin_access(self):
         self.__admin = True

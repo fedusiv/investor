@@ -1,3 +1,4 @@
+from investment.investment_plan import InvestmentPlan
 from stock.stock import Stock, StockType
 import config
 
@@ -16,9 +17,12 @@ class PlayerData():
     def money(self):
         return self.__money
 
-    def __init__(self):
+    def __init__(self, uuid):
+        self._uuid = uuid
         self.__money = config.PLAYER_DEFAULT_MONEY_AMOUNT
         self.__stocks  = []
+        # List of player's investment, it is InvestmentPlan list
+        self._investment_list = []
 
     # Prepare data for info about money amount and stocks money value, that player has
     def get_player_value_info(self):
@@ -151,3 +155,14 @@ class PlayerData():
         # Increase money amount
         self.__money += cost
 
+    # Player makes investment to a company
+    def make_investment(self, plan: InvestmentPlan, cur_cycle: int):
+        if self.money < plan.investment_value:
+            return False
+        # Otherwise decrese money amount
+        self.__money -= plan.investment_value
+        # Put investment to production from player perspective.
+        # In other place plan should be placed to production for company perspective
+        plan.set_to_production(self._uuid, cur_cycle)
+        self._investment_list.append(plan)
+        return True

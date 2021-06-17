@@ -9,6 +9,7 @@ from client_data import ClientData
 from companies.working_plan import CompanyWorkingPlan
 import config
 from investment.investment_plan import InvestmentPlan
+from investment.investment_types import InvestmentType
 import utils
 from news.world_situation import WorldSituation
 
@@ -302,4 +303,72 @@ class CompaniesHandler():
         else:
             return CompanyWorkingRequestResult.NO_SUCH_WORKING_PLAN
 
-
+    # get list with client and amount of money, which should be pay
+    # return dict:
+    #   "player_uuid" : contract.player_uuid,
+    #   "debt" : debt,
+    #   "contract" : contract
+    # list of this data
+    def get_expiring_investment_contracts_payment(self, cur_cycle: int):
+        payment_list = []
+        for element in self.__companies_storage:
+            element : CompanyStorageElement
+            company : Company = element['company']
+            # Do not process open companies
+            if company.company_type is CompanyType.OPEN:
+                continue
+            # Get list of expired contracts related to this company
+            i_list = company.investment_expiring_list(cur_cycle)
+            # If company does not have expiring companies do not proceed
+            if len(i_list) == 0:
+                continue
+            sum_debt = 0.0
+            investors_list = []
+            contract_list = [] # to remove them from company
+            for contract in i_list:
+                contract : InvestmentPlan
+                contract_list.append(contract)
+                debt = 0.0
+                if contract.invest_type == InvestmentType.PERCENTAGE:
+                    debt = contract.earn_value * contract.payback_value
+                elif contract.invest_type == InvestmentType.CONST:
+                    debt = contract.payback_value
+                # Let's store all required data about investors, to do not run through the the list again
+                investor_data = {
+                        "player_uuid" : contract.player_uuid,
+                        "debt" : debt,
+                        "contract" : contract
+                        }
+                investors_list.append(investor_data)
+            # Remove investment contracts from company
+            company.invesments_remove(contract_list)
+            # Calculate whole sum, that company need to payback to investors
+            sum_debt = sum(i_d["debt"] for i_d in investors_list)
+            # Check what amount of money will be return back
+            if company.fund_value >= sum_debt:
+                # decrease company fund and prepare list to be payed to investors
+                company.increase_fund_value(-1 * sum_debt)
+                payment_list.extend(investors_list)
+            elif company.fund_value + (company.value * config.INVESTMENT_COMPANY_VALUE_PAYBACK) >= sum_debt:
+                # Company can use whole fund value and some part of it's value to cover all debt obligation
+                value_paycheck = sum_debt - company.fund_value
+                company.increase_fund_value( -1 * (sum_debt-value_paycheck) )
+                company.increase_value( -1 * value_paycheck )
+                payment_list.extend(investors_list)
+            else:
+                # Most bad situation, company can not afford to itself full payback.
+                # Calculate what amount which player will receive
+                available_money = company.fund_value + company.value * config.INVESTMENT_COMPANY_VALUE_PAYBACK
+                # Recalculate amount of money for each investor, based, on it's part.
+                for investor in investors_list:
+                    base_debt = investor["debt"]
+                    base_debt_percentage = base_debt / sum_debt
+                    new_debt = available_money * base_debt_percentage
+                    investor["debt"] = new_debt
+                    # Decrease amount of money for company
+                    value_paycheck = sum_debt - company.fund_value
+                    company.increase_fund_value( -1 * (sum_debt-value_paycheck) )
+                    company.increase_value( -1 * value_paycheck )
+            # Add player uuid, debt amount and contract ref
+            payment_list.extend(investors_list)
+        return payment_list

@@ -366,8 +366,7 @@ To client:
         "w_uuid" : str (working plan uuid)
         "earn" : float (amount of money, that company will earn)
         "lose" : float (amount of money, that company will lose)
-    },
-    "uuid" : str ( unique id of player )
+    }
 }
 
 MessageType:
@@ -391,8 +390,7 @@ To client:
         "result" : int  SUCCESS = 1
                         NO_SUCH_COMPANY = 2
                         REQUEST_PERIOD_TAKEN = 3
-    },
-    "uuid" : str ( unique id of player )
+    }
 }
 
 MessageType:
@@ -425,8 +423,7 @@ To client:
             "source" : str (Name of event source),
             "server_time" : float ( when this news appeared, in seconds)
         ]
-    },
-    "uuid" : str ( unique id of player )
+    }
 }
 
 MessageType:
@@ -458,8 +455,7 @@ To client:
             SUCCESS = 1
             NO_SUCH_COMPANY = 2
             NOT_OWNER = 3
-    },
-    "uuid" : str ( unique id of player )
+    }
 }
 
 MessageType:
@@ -493,11 +489,28 @@ To client:
             "p_value" : float (what value should return)
             "cycle" : int (after what amount of cycles investment should be return)
         ]
-    },
-    "uuid" : str ( unique id of player )
+    }
 }
 
 MessageType:
 INVESTMENT_MAKE = 18
 Player sends request to make investment to a company
 
+To server:
+{
+    "type" : 18,
+    "body" :
+    {
+        "i_uuid" : str (investment plan uuid)
+    },
+    "uuid" : str ( unique id of player )
+}
+
+To client:
+{
+    "type" : 18,
+    "body" :
+    {
+        result:
+    }
+}

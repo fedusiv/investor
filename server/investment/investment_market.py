@@ -63,4 +63,18 @@ class InvestmentMarket():
                 }
         return body
 
+    # Player request to make investment
+    # Verify that insetment plan exists and return it further
+    def make_investment(self, i_uuid: str):
+        plan = None
+        for element in self._market_storage:
+            element : InvestmentMarketStorageElement
+            if element["plan"].invest_uuid == i_uuid:
+                plan = element["plan"]
+                # Set plan in process. No one can edit now.
+                plan.in_process = True
+                # Remove, this is no more in a market
+                self._market_storage.remove(plan)
+                return plan
+        return plan
 

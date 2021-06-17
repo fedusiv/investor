@@ -4,6 +4,9 @@ from tornado import gen
 from client_data import ClientData
 
 from companies.companies_handler import CompaniesHandler
+from companies.company import Company
+from investment.investment_plan import InvestmentPlan
+from investment.investment_types import InvestmentType
 from news.news_handler import NewsHandler
 from investment.investment_market import InvestmentMarket
 from time_module import TimeModule
@@ -31,6 +34,7 @@ class LogicHandler():
         self.last_company_cost_update = time.time()
         # Cycle init. Cycle is game mechanics to represent life time and some logic
         self.game_cycle = 0
+        self._cycle_ended = False
     #---------------------#
     #Properties part
     #---------------------#
@@ -56,13 +60,21 @@ class LogicHandler():
 
     def companies_changing(self, world_situation):
         cur_time = self.server_time
+
+        # This is end cycle operation
         if cur_time - self.last_company_news_update >= config.COMPANY_NEWS_UPDATE:
             self.last_company_news_update = cur_time
             # Increase game cycle. It should be dome in only one place
             self.game_cycle += 1
             # Send world situation from news handler for a commit a progress of company
             self.companies_handler.commit_company_progress(world_situation, cur_time, self.game_cycle)
+            self._cycle_ended = True
             return
+
+        # This is cycle begin operation
+        if self._cycle_ended:
+            self._cycle_ended = False
+            self.investment_processing()
 
         # Probably unnecessary method, because company cost need to be updated each time after buying or selling it
         # And recalculation appears there
@@ -70,6 +82,10 @@ class LogicHandler():
             self.last_company_cost_update = cur_time
             self.companies_handler.recalculate_companies_stock_cost(cur_time)
             return
+
+    def investment_processing(self):
+        investors_data_list = self.companies_handler.get_expiring_investment_contracts_payment(self.game_cycle)
+        # TODO: add player functionality. Apply investments for player
 
     # Client request information about companies. Server return it
     def companies_open_list_client(self) -> list:

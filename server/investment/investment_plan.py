@@ -8,6 +8,7 @@ class InvestmentPlan():
         # Investment plan is a contract between player and company
         self.company_uuid = c_uuid
         self.company_name = c_name
+        # Once investment plan has player_uuid means, invesment plan applied and it's working
         self.player_uuid = ""
         self.invest_type = i_type
         # What amount of money company should receive
@@ -23,3 +24,12 @@ class InvestmentPlan():
         # On what cycle invest plan should be destroyed and pay everything.
         # If zero invest plan will be destroyed on request
         self.end_cycle = 0
+        # Flag represent, that investment process has started and investment plan can not be changed
+        self.in_process = False
+
+    # Put investment plan to a production!
+    def set_to_production(self, player_uuid, cur_cycle: int):
+        self.player_uuid = player_uuid
+        # cycle period of investment plan, end cycle should be also 0. Because this investment works until requires
+        if self.cycle_period != 0:
+            self.end_cycle = cur_cycle + self.cycle_period

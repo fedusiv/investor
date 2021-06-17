@@ -12,3 +12,11 @@ class InvestmentPlanCreateResult(Enum):
     SUCCESS = 1
     NO_SUCH_COMPANY = 2
     NOT_OWNER = 3
+
+@unique
+class InvestmentMakeResult(Enum):
+    SUCCESS = 1
+    NO_SUCH_INVESTMENT_PLAN = 2
+    NO_SUCH_COMPANY = 3
+    NOT_ENOUGH_MONEY = 4
+    NO_PLAN_IN_COMPANY = 5

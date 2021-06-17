@@ -5,7 +5,7 @@ import tornado.websocket
 
 from communication_parser import CommunitcationParserResult
 from companies.companies_types import CompanyCreateResult, CompanyWorkingRequestResult, StockSellResult
-from investment.investment_types import InvestmentPlanCreateResult, InvestmentType
+from investment.investment_types import InvestmentMakeResult, InvestmentPlanCreateResult, InvestmentType
 from logic_handler import LogicHandler
 from communication_protocol import MessageType
 from communication_protocol import CommunicationProtocol
@@ -36,7 +36,8 @@ class ClientOperation():
             MessageType.WORKING_PLAN_REQUEST : self.request_working_plan_create,
             MessageType.WORKING_PLAN_APPLY : self.apply_working_plan,
             MessageType.INVEST_PLAN_CREATE : self.post_invest_plan,
-            MessageType.INVEST_MARKET_LIST : self.list_invest_market
+            MessageType.INVEST_MARKET_LIST : self.list_invest_market,
+            MessageType.INVEST_MAKE : self.investment_apply
         }
         func = switcher.get(cmd.result_type)
         func(cmd)
@@ -159,3 +160,37 @@ class ClientOperation():
         msg = CommunicationProtocol.invest_market_list(m_list)
         self.ws.write(msg)
 
+    # Player decided to make investment to a company. We can be only happy for that company.
+    # Let's proceed with this functionality
+    def investment_apply(self, cmd: CommunitcationParserResult):
+        # First let's check if investment plan exists
+        plan = self.investment_market.make_investment(cmd.investment_uuid)
+        if plan is None:
+            msg = CommunicationProtocol.investment_make_result(InvestmentMakeResult.NO_SUCH_INVESTMENT_PLAN.value)
+            self.ws.write_message(msg)
+            return
+        # Verify, that company still exists
+        company = self.logic_handler.companies_handler.company_by_uuid(plan.company_uuid)
+        if company is None:
+            msg = CommunicationProtocol.investment_make_result(InvestmentMakeResult.NO_SUCH_COMPANY.value)
+            self.ws.write_message(msg)
+            return
+        # Verify that company has this investment plan as pending
+        if company.invesment_plan_pending_existance_verify(plan) is False:
+            msg = CommunicationProtocol.investment_make_result(InvestmentMakeResult.NO_PLAN_IN_COMPANY.value)
+            self.ws.write_message(msg)
+            return
+        # After this applying functions go.
+
+        # Verify, that player has enough money and remove them from player
+        if self.client_data.player_data.make_investment(plan, self.logic_handler.game_cycle) is False:
+            msg = CommunicationProtocol.investment_make_result(InvestmentMakeResult.NOT_ENOUGH_MONEY.value)
+            self.ws.write_message(msg)
+            return
+        # Move investment to production state in company
+        company.investment_apply(plan)
+        # Set end cycle of investment plan
+
+        # Send positive result to client
+        msg = CommunicationProtocol.investment_make_result(InvestmentMakeResult.SUCCESS.value)
+        self.ws.write_message(msg)

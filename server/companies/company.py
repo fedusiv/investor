@@ -7,6 +7,7 @@ from companies.companies_types import CompanyBusinessType
 from companies.company_data import CompanyData
 from companies.company_name_generation import CompanyNameGenerator
 from companies.working_plan import CompanyWorkingPlan
+from investment.investment_plan import InvestmentPlan
 from stock.stock import Stock
 from stock.stock import StockType
 from companies.bussines_news_connection import BusinessNewsRelation, NewsDependency
@@ -221,6 +222,9 @@ class Company():
 
     # Increase value of company, when money were invested to it
     def increase_value(self, money: float):
+        # make changes in investments
+        # Investment does not care where money goes to fund or to company value.
+        self.investment_processing(money)
         if money >= 0:
             # Positive operations proceed through the fund of company
             fund_money = money * self.__fund_rate
@@ -329,7 +333,7 @@ class Company():
         # Go to next cycle
         self.__life_cycle = next_cycle - self.__create_cycle
 
-    # Commit process of company related to working plan
+     # Commit process of company related to working plan
     def working_plan_commit(self, next_cycle: int):
         cur_cycle = next_cycle - 1
         # Currently working plan is related only to closed companies
@@ -445,6 +449,43 @@ class Company():
     # Method add invest plan to list of pending plans
     def invest_plan_append(self, plan):
         self._investment_plans_pending.append(plan)
+
+    def invesment_plan_pending_existance_verify(self,plan):
+        for element in self._investment_plans_pending:
+            element: InvestmentPlan
+            if plan == element:
+                return True
+        return False
+
+    def investment_apply(self,plan: InvestmentPlan):
+        # Remove from pending list
+        self._investment_plans_pending.remove(plan)
+        # Add to applied list
+        self._investment_plans_applied.append(plan)
+        # Increase fund
+        self.increase_fund_value(plan.investment_value)
+
+    def investment_processing(self, money: float):
+        for element in self._investment_plans_applied:
+            element: InvestmentPlan
+            # Change amount of value, that company received since it was applied
+            element.earn_value += money
+
+    def investment_expiring_list(self, cur_cycle: int):
+        c_list = []
+        for contract in self._investment_plans_applied:
+            contract : InvestmentPlan
+            if contract.end_cycle == 0:
+                continue
+            elif contract.end_cycle <= cur_cycle:
+                c_list.append(contract)
+        return c_list
+
+    # Expired contracts need to be removed from applied investment contracts
+    def invesments_remove(self, contracts_list):
+        for contract in contracts_list:
+            if contract in self._investment_plans_applied:
+                self._investment_plans_applied.remove(contract)
 
     #############################
     # Server debug methods filed

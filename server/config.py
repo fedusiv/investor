@@ -26,3 +26,5 @@ MINIMUN_STOCK_VALUE_TO_CREATE = 0.01
 CLOSED_COMPANY_RATE_DECREASE = 0.5
 # Fine multiplicator based on life cycles of company
 WORKING_PLAN_FINE = 1000
+# What amount of company can go to payback
+INVESTMENT_COMPANY_VALUE_PAYBACK = 0.49

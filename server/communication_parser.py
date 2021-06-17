@@ -8,7 +8,11 @@ class CommunitcationParserResult():
     def __init__ (self,msg, result_type = MessageType.NONE, success = True):
         self.err = success
         self.result_type = result_type
-        self.uuid = msg["uuid"]
+        # Login, register messages does not have uuid
+        try:
+            self.uuid = msg["uuid"]
+        except:
+            self.uuid = ""
         self.result_type : MessageType
         self.body = msg["body"]
 
@@ -67,6 +71,9 @@ class CommunitcationParserResult():
         self.payback_value = self.body["p_value"]
         self.invest_type = self.body["type"]
         self.invest_cycles = self.body["cycle"]
+
+    def get_investment_plan_uuid(self):
+        self.investment_uuid = self.body["i_uuid"]
 
 class CommunitcationParser():
 
@@ -168,6 +175,11 @@ class CommunitcationParser():
         result = CommunitcationParserResult(msg, MessageType.INVEST_MARKET_LIST)
         return result
 
+    @staticmethod
+    def investment_make(msg):
+        result = CommunitcationParserResult(msg, MessageType.INVEST_MAKE)
+        result.get_investment_plan_uuid()
+        return result
 
     @staticmethod
     def parse_clinet_message(msg):
@@ -194,7 +206,8 @@ class CommunitcationParser():
             MessageType.WORKING_PLAN_APPLY.value : CommunitcationParser.apply_working_plan,
             MessageType.SHORT_INFO.value : CommunitcationParser.short_info_request,
             MessageType.INVEST_PLAN_CREATE.value : CommunitcationParser.create_invest_plan,
-            MessageType.INVEST_MARKET_LIST.value : CommunitcationParser.list_invest_market
+            MessageType.INVEST_MARKET_LIST.value : CommunitcationParser.list_invest_market,
+            MessageType.INVEST_MAKE.value : CommunitcationParser.investment_make
         }
         # Verification is this admin message
 
