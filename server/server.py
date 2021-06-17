@@ -8,8 +8,8 @@ import tornado.websocket
 import tornado.ioloop
 import tornado.options
 from tornado import gen
-from tornado.options import define, options
 
+from clients_handler import ClientsHandler
 from communication_parser import CommunitcationParser
 from communication_parser import CommunitcationParserResult
 from communication_protocol import MessageType
@@ -18,10 +18,9 @@ from logic_handler import LogicHandler
 from client_operation_module import ClientOperation
 from users_dao import UsersDao
 from message_module import MessagingModule, MessagingParserResult, MessagingTypes
+import utils
+import config
 
-PORT = 3002
-KEEP_ALIVE_TIME = 2
-KEEP_ALIVE_ERROR = 5
 
 class Server(tornado.web.Application):
 
@@ -29,7 +28,7 @@ class Server(tornado.web.Application):
         handlers = [(r"/", ClientHandler)]
         settings = dict(debug=True)
         tornado.web.Application.__init__(self, handlers, **settings)
-        self.clients = ClientHandlers.Instance()
+        self.clients = ClientsHandler.Instance()
         self.io_loop = io_loop
         # Rise invinite loop for keep alive checker
         self.io_loop.spawn_callback(self.keep_alive_loop)
@@ -70,7 +69,7 @@ class ClientHandler(tornado.websocket.WebSocketHandler):
     def open(self):
         print("A client connected to server. ", self.request.remote_ip)
         # When connection happen get clientHandlers instance
-        self.client_handlers = ClientHandlers.Instance()
+        self.client_handlers = ClientsHandler.Instance()
         # Get logic handler
         self.logic_handler = LogicHandler.Instance()
         # Create client operations module
@@ -80,6 +79,7 @@ class ClientHandler(tornado.websocket.WebSocketHandler):
 
     # Required this field for web gui
     def check_origin(self, origin):
+        utils.unused(origin)
         return True
 
     def on_close(self):
@@ -157,61 +157,10 @@ class ClientHandler(tornado.websocket.WebSocketHandler):
                 client : ClientHandler
                 client.client_operation.ws.write_message(msg_json)
 
-# Singleton to store all handlers
-# And manipulate them
-class ClientHandlers():
-    # Singleton part
-    __instance = None
-    @staticmethod
-
-    def Instance():
-        if ClientHandlers.__instance == None:
-            ClientHandlers()
-        return ClientHandlers.__instance
-
-    def __init__(self):
-        ClientHandlers.__instance = self
-
-    # Functionality part
-    __client_storage = []
-    def store_connected_client(self, client: ClientHandler):
-        if client in self.__client_storage:
-            # do nothing it's already there
-            return
-        self.__client_storage.append(client)
-
-    def remove_connected_client(self, client: ClientHandler):
-        self.__client_storage.remove(client)
-
-    def list_connected_clients(self):
-        return self.__client_storage
-
-    # Return the list of clients, that KEEP_ALIVE_TIME did not send any message
-    # If error is bigger disconnect
-    def list_probably_dead_clients(self):
-        silent_clients = []
-        for client in self.__client_storage:
-            if client.alive_error > KEEP_ALIVE_ERROR:
-                client.close()
-                # disconnect
-                continue
-            if client.alive_error > 0:
-                if time.time() - client.alive_last_msg_time > KEEP_ALIVE_TIME:
-                    # need to send message of keep_alive. Did not received after previous time
-                    client.alive_error +=1
-                    silent_clients.append(client)
-                continue
-            if client.alive_error == 0:
-                # check if client keep alive time is not less than KEEP_ALIVE_TIME
-                if time.time() - client.alive_time > KEEP_ALIVE_TIME:
-                    client.alive_error +=1
-                    silent_clients.append(client)
-        return silent_clients
-
 def ServerStart():
     io_loop_instance = tornado.ioloop.IOLoop.current()
     server = Server(io_loop_instance)
-    server.listen(PORT)
+    server.listen(config.PORT)
 
     # After this line nothing will act, because it starts infinite priority loop
     print("Server is starting")

@@ -1,3 +1,6 @@
+PORT = 3002
+KEEP_ALIVE_TIME = 2
+KEEP_ALIVE_ERROR = 5
 # logic loop will work 50 times in second
 LOOP_UPDATE_TIME = 0.02
 # How often companies applies situation happend by news and make some progress or regress
