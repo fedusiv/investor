@@ -428,3 +428,36 @@ To client:
     },
     "uuid" : str ( unique id of player )
 }
+
+MessageType:
+CREATE_REQUEST_PLAN = 16
+Company owner request to create investment plan for his company
+
+To server:
+{
+    "type" : 16,
+    "body" :
+    {
+        "c_uuid" : str (company uuid)
+        "i_value" : float (investment value, what company will receive)
+        "type" : int ( investment type)
+                        CONST = 1
+                        PERCENTAGE = 2
+        "p_value" : float (what value should return)
+        "cycle" : int (after what amount of cycles investment should be return)
+    },
+    "uuid" : str ( unique id of player )
+}
+
+To client:
+{
+    "type" : 16,
+    "body" :
+    {
+        "result" : int
+            SUCCESS = 1
+            NO_SUCH_COMPANY = 2
+            NOT_OWNER = 3
+    },
+    "uuid" : str ( unique id of player )
+}

@@ -61,6 +61,13 @@ class CommunitcationParserResult():
         self.company_uuid = self.body["c_uuid"]
         self.w_plan_uuid = self.body["w_uuid"]
 
+    def invest_plan_init(self):
+        self.company_uuid = self.body["c_uuid"]
+        self.invest_value = self.body["i_value"]
+        self.payback_value = self.body["p_value"]
+        self.invest_type = self.body["type"]
+        self.invest_cycles = self.body["cycle"]
+
 class CommunitcationParser():
 
     @staticmethod
@@ -150,6 +157,12 @@ class CommunitcationParser():
         result.working_plan_apply()
         return result
 
+    @staticmethod
+    def create_invest_plan(msg):
+        result = CommunitcationParserResult(msg, MessageType.INVEST_PLAN_CREATE)
+        result.invest_plan_init()
+        return result
+
 
     @staticmethod
     def parse_clinet_message(msg):
@@ -174,7 +187,8 @@ class CommunitcationParser():
             MessageType.CREATE_PLAYER_COMPANY.value : CommunitcationParser.create_player_company,
             MessageType.WORKING_PLAN_REQUEST.value : CommunitcationParser.request_working_plan,
             MessageType.WORKING_PLAN_APPLY.value : CommunitcationParser.apply_working_plan,
-            MessageType.SHORT_INFO.value : CommunitcationParser.short_info_request
+            MessageType.SHORT_INFO.value : CommunitcationParser.short_info_request,
+            MessageType.INVEST_PLAN_CREATE.value : CommunitcationParser.create_invest_plan
         }
         # Verification is this admin message
 

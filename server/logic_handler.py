@@ -5,6 +5,7 @@ from client_data import ClientData
 
 from companies.companies_handler import CompaniesHandler
 from news.news_handler import NewsHandler
+from investment.investment_market import InvestmentMarket
 from time_module import TimeModule
 import config
 
@@ -24,6 +25,7 @@ class LogicHandler():
         self.companies_handler = CompaniesHandler.Instance()
         self.news_handler = NewsHandler.Instance()
         self.time_module = TimeModule.Instance()
+        self.investment_market = InvestmentMarket.Instance()
         # Time counters for companies update
         self.last_company_news_update = time.time()
         self.last_company_cost_update = time.time()

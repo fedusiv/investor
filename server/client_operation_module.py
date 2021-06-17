@@ -5,11 +5,13 @@ import tornado.websocket
 
 from communication_parser import CommunitcationParserResult
 from companies.companies_types import CompanyCreateResult, CompanyWorkingRequestResult, StockSellResult
+from investment.investment_types import InvestmentPlanCreateResult, InvestmentType
 from logic_handler import LogicHandler
 from communication_protocol import MessageType
 from communication_protocol import CommunicationProtocol
 from client_data import ClientData
 from companies.companies_handler import StockPurchaseResult
+from investment.investment_market import InvestmentMarket
 import utils
 
 class ClientOperation():
@@ -18,6 +20,7 @@ class ClientOperation():
         self.ws = ws
         self.logic_handler = logic_handler
         self.client_data : ClientData
+        self.investment_market = InvestmentMarket.Instance()
 
     def parse_command(self,cmd : CommunitcationParserResult):
         switcher = {
@@ -31,7 +34,8 @@ class ClientOperation():
             MessageType.COMPANY_SILVER_STOCK_HISTORY : self.request_silver_stock_history,
             MessageType.CREATE_PLAYER_COMPANY : self.create_player_company_request,
             MessageType.WORKING_PLAN_REQUEST : self.request_working_plan_create,
-            MessageType.WORKING_PLAN_APPLY : self.apply_working_plan
+            MessageType.WORKING_PLAN_APPLY : self.apply_working_plan,
+            MessageType.INVEST_PLAN_CREATE : self.post_invest_plan
         }
         func = switcher.get(cmd.result_type)
         func(cmd)
@@ -120,3 +124,27 @@ class ClientOperation():
         result = self.logic_handler.request_working_plan_apply(cmd.company_uuid, cmd.w_plan_uuid)
         msg = CommunicationProtocol.working_plan_apply(result.value)
         self.ws.write(msg)
+
+    def post_invest_plan(self, cmd: CommunitcationParserResult):
+        # Verify, that company exists
+        company = self.logic_handler.companies_handler.company_by_uuid(cmd.company_uuid)
+        if company is None:
+            msg = CommunicationProtocol.invest_plan_create_and_post(InvestmentPlanCreateResult.NO_SUCH_COMPANY.value)
+            self.ws.write_message(msg)
+            return
+        # verify that player is owner
+        player_uuid = company.owner_info[1]
+        if player_uuid != self.client_data.uuid:
+            msg = CommunicationProtocol.invest_plan_create_and_post(InvestmentPlanCreateResult.NOT_OWNER.value)
+            self.ws.write_message(msg)
+            return
+        # Create plan object in investment Market
+        self.investment_market.create_and_post_investment_plan(server_time=self.logic_handler.server_time,
+                                                                c_uuid=cmd.company_uuid,
+                                                                invest_value=cmd.invest_value,
+                                                                i_type=cmd.invest_type,
+                                                                payback_value=cmd.payback_value,
+                                                                cycle_period=cmd.invest_cycles)
+        # send result
+        msg = CommunicationProtocol.invest_plan_create_and_post(InvestmentPlanCreateResult.SUCCESS.value)
+        self.ws.write_message(msg)
