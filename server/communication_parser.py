@@ -163,6 +163,11 @@ class CommunitcationParser():
         result.invest_plan_init()
         return result
 
+    @staticmethod
+    def list_invest_market(msg):
+        result = CommunitcationParserResult(msg, MessageType.INVEST_MARKET_LIST)
+        return result
+
 
     @staticmethod
     def parse_clinet_message(msg):
@@ -188,7 +193,8 @@ class CommunitcationParser():
             MessageType.WORKING_PLAN_REQUEST.value : CommunitcationParser.request_working_plan,
             MessageType.WORKING_PLAN_APPLY.value : CommunitcationParser.apply_working_plan,
             MessageType.SHORT_INFO.value : CommunitcationParser.short_info_request,
-            MessageType.INVEST_PLAN_CREATE.value : CommunitcationParser.create_invest_plan
+            MessageType.INVEST_PLAN_CREATE.value : CommunitcationParser.create_invest_plan,
+            MessageType.INVEST_MARKET_LIST.value : CommunitcationParser.list_invest_market
         }
         # Verification is this admin message
 

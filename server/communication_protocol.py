@@ -20,6 +20,7 @@ class MessageType(Enum):
     WORKING_PLAN_APPLY = 14
     SHORT_INFO = 15
     INVEST_PLAN_CREATE = 16
+    INVEST_MARKET_LIST = 17
 
 # Class to parse and create required messages
 # This class used for server and client as well
@@ -187,4 +188,9 @@ class CommunicationProtocol():
                 "result" : result
                 }
         msg_json = CommunicationProtocol.formulate_message(body,MessageType.INVEST_PLAN_CREATE.value)
+        return msg_json
+
+    @staticmethod
+    def invest_market_list(body):
+        msg_json = CommunicationProtocol.formulate_message(body,MessageType.INVEST_MARKET_LIST)
         return msg_json

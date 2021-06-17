@@ -27,14 +27,37 @@ class InvestmentMarket():
 
     def create_and_post_investment_plan(self, server_time: float,
                                         c_uuid: str,
+                                        c_name: str,
                                         invest_value: float,
                                         i_type: int,
                                         payback_value: float,
                                         cycle_period: int):
         # Create investment plan
-        plan = InvestmentPlan(c_uuid,InvestmentType(i_type),invest_value,payback_value,cycle_period)
+        plan = InvestmentPlan(c_uuid,c_name,InvestmentType(i_type),invest_value,payback_value,cycle_period)
         element = InvestmentMarketStorageElement(server_time=server_time,plan=plan)
         # Place it in a storage
         self._market_storage.append(element)
+
+    # List of invesment market elements.
+    # This method is related to communication protocol description. Please do not forget to sync with it
+    def list_of_investment_offers(self):
+        elements_list = []
+        for element in self._market_storage:
+            element : InvestmentMarketStorageElement
+            el = {
+                    "server_time" : element['server_time'],
+                    "c_uuid" : element['plan'].company_uuid,
+                    "c_name" : element['plan'].company_name,
+                    "i_value" : element['plan'].investment_value,
+                    "type" : element['plan'].invest_type.value,
+                    "p_value" : element['plan'].payback_value,
+                    "cycle" : element['plan'].cycle_period
+                    }
+            elements_list.append(el)
+        body = {
+                "amount" : len(elements_list),
+                "list" : elements_list
+                }
+        return body
 
 

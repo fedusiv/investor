@@ -430,7 +430,7 @@ To client:
 }
 
 MessageType:
-CREATE_REQUEST_PLAN = 16
+INVEST_PLAN_CREATE = 16
 Company owner request to create investment plan for his company
 
 To server:
@@ -458,6 +458,40 @@ To client:
             SUCCESS = 1
             NO_SUCH_COMPANY = 2
             NOT_OWNER = 3
+    },
+    "uuid" : str ( unique id of player )
+}
+
+MessageType:
+INVEST_MARKET_LIST = 17
+Send reques to get all list of ivnestment offers
+
+To server:
+{
+    "type" : 17,
+    "body" :
+    {},
+    "uuid" : str ( unique id of player )
+}
+
+To client:
+{
+    "type" : 17,
+    "body" :
+    {
+        "amount" : int (elements amount in list)
+        "list" :
+        [
+            "server_time" : float (when was posted)
+            "c_uuid" : str (company uuid)
+            "c_name" : company_name
+            "i_value" : float (investment value, what company will receive)
+            "type" : int ( investment type)
+                            CONST = 1
+                            PERCENTAGE = 2
+            "p_value" : float (what value should return)
+            "cycle" : int (after what amount of cycles investment should be return)
+        ]
     },
     "uuid" : str ( unique id of player )
 }

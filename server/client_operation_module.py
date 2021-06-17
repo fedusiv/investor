@@ -35,7 +35,8 @@ class ClientOperation():
             MessageType.CREATE_PLAYER_COMPANY : self.create_player_company_request,
             MessageType.WORKING_PLAN_REQUEST : self.request_working_plan_create,
             MessageType.WORKING_PLAN_APPLY : self.apply_working_plan,
-            MessageType.INVEST_PLAN_CREATE : self.post_invest_plan
+            MessageType.INVEST_PLAN_CREATE : self.post_invest_plan,
+            MessageType.INVEST_MARKET_LIST : self.list_invest_market
         }
         func = switcher.get(cmd.result_type)
         func(cmd)
@@ -141,6 +142,7 @@ class ClientOperation():
         # Create plan object in investment Market
         self.investment_market.create_and_post_investment_plan(server_time=self.logic_handler.server_time,
                                                                 c_uuid=cmd.company_uuid,
+                                                                c_name=company.name,
                                                                 invest_value=cmd.invest_value,
                                                                 i_type=cmd.invest_type,
                                                                 payback_value=cmd.payback_value,
@@ -148,3 +150,10 @@ class ClientOperation():
         # send result
         msg = CommunicationProtocol.invest_plan_create_and_post(InvestmentPlanCreateResult.SUCCESS.value)
         self.ws.write_message(msg)
+
+    def list_invest_market(self, cmd: CommunitcationParserResult):
+        utils.unused(cmd)
+        m_list = self.investment_market.list_of_investment_offers()
+        msg = CommunicationProtocol.invest_market_list(m_list)
+        self.ws.write(msg)
+

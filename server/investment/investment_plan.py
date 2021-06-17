@@ -3,10 +3,11 @@ from uuid import uuid4
 from investment.investment_types import InvestmentType
 
 class InvestmentPlan():
-    def __init__(self, c_uuid: str, i_type: InvestmentType, i_value: float, p_value: float, cycle_period: int):
+    def __init__(self, c_uuid: str, c_name: str, i_type: InvestmentType, i_value: float, p_value: float, cycle_period: int):
         self.invest_uuid = str(uuid4())
         # Investment plan is a contract between player and company
         self.company_uuid = c_uuid
+        self.company_name = c_name
         self.player_uuid = ""
         self.invest_type = i_type
         # What amount of money company should receive
