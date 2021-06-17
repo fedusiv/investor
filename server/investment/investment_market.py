@@ -48,6 +48,7 @@ class InvestmentMarket():
             element : InvestmentMarketStorageElement
             el = {
                     "server_time" : element['server_time'],
+                    "i_uuid" : element['plan'].invest_uuid,
                     "c_uuid" : element['plan'].company_uuid,
                     "c_name" : element['plan'].company_name,
                     "i_value" : element['plan'].investment_value,

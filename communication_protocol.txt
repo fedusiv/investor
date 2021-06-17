@@ -483,6 +483,7 @@ To client:
         "list" :
         [
             "server_time" : float (when was posted)
+            "i_uuid" : str (investment plan uuid)
             "c_uuid" : str (company uuid)
             "c_name" : company_name
             "i_value" : float (investment value, what company will receive)
@@ -495,3 +496,8 @@ To client:
     },
     "uuid" : str ( unique id of player )
 }
+
+MessageType:
+INVESTMENT_MAKE = 18
+Player sends request to make investment to a company
+
