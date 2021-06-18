@@ -9,16 +9,16 @@ from investment.investment_types import InvestmentMakeResult, InvestmentPlanCrea
 from logic_handler import LogicHandler
 from communication_protocol import MessageType
 from communication_protocol import CommunicationProtocol
-from client_data import ClientData
+from client.client_data import ClientData
 from companies.companies_handler import StockPurchaseResult
 from investment.investment_market import InvestmentMarket
 import utils
 
 class ClientOperation():
 
-    def __init__(self, ws : tornado.websocket.WebSocketHandler, logic_handler : LogicHandler):
+    def __init__(self, ws : tornado.websocket.WebSocketHandler):
         self.ws = ws
-        self.logic_handler = logic_handler
+        self.logic_handler = LogicHandler.Instance()
         self.client_data : ClientData
         self.investment_market = InvestmentMarket.Instance()
 
@@ -193,4 +193,16 @@ class ClientOperation():
 
         # Send positive result to client
         msg = CommunicationProtocol.investment_make_result(InvestmentMakeResult.SUCCESS.value)
+        self.ws.write_message(msg)
+
+    # Make player to receive invesetment
+    def receive_investment(self, debt: float, contract_uuid: str):
+        # Verify, that investment contract is still in player's active
+        contract = self.client_data.player_data.get_investment_contract_active(contract_uuid)
+        if contract is None:
+            return
+        # Close contract and give money to player
+        self.client_data.player_data.investment_close_contract(debt,contract)
+        # Notify player about this
+        msg = CommunicationProtocol.investment_receive(debt, contract.company_uuid, contract.company_name)
         self.ws.write_message(msg)

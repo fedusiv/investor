@@ -1,12 +1,10 @@
 import time
 
 from tornado import gen
-from client_data import ClientData
 
+from client.client_data import ClientData
+from client.clients_handler_callback_type import ClientsHandlerCallbackType
 from companies.companies_handler import CompaniesHandler
-from companies.company import Company
-from investment.investment_plan import InvestmentPlan
-from investment.investment_types import InvestmentType
 from news.news_handler import NewsHandler
 from investment.investment_market import InvestmentMarket
 from time_module import TimeModule
@@ -35,6 +33,10 @@ class LogicHandler():
         # Cycle init. Cycle is game mechanics to represent life time and some logic
         self.game_cycle = 0
         self._cycle_ended = False
+
+    # Connection between clients_handler and logic in opposite way is by callback
+    def set_clients_handler_callback(self,func):
+        self.clients_handler_callback = func
     #---------------------#
     #Properties part
     #---------------------#
@@ -85,18 +87,28 @@ class LogicHandler():
 
     def investment_processing(self):
         investors_data_list = self.companies_handler.get_expiring_investment_contracts_payment(self.game_cycle)
-        # TODO: add player functionality. Apply investments for player
+        # investors_data_list item representation, taken from function above
+        #"player_uuid" : contract.player_uuid
+        #"debt" : debt,
+        #"contract" : contract_uuid
+        # First need to send money to connected players
+        if self.clients_handler_callback is None:
+            print("Callback is none")
+            return
+        for item in investors_data_list:
+           self.clients_handler_callback(ClientsHandlerCallbackType.SEND_INVEST_MONEY,item)
+        # TODO: add to proceed with disconnected clients
 
     # Client request information about companies. Server return it
     def companies_open_list_client(self) -> list:
         return self.companies_handler.get_open_companies_to_list()
 
     # Client request to buy stock
-    def request_to_buy_stock(self,uuid:str, amount : int, cost : float, client_data):
-        return self.companies_handler.purchase_stock_of_comany(uuid,amount,cost,client_data)
+    def request_to_buy_stock(self,uuid:str, amount : int, cost : float, client_data: ClientData):
+        return self.companies_handler.purchase_stock_of_comany(uuid,amount,cost,client_data.player_data)
 
-    def request_to_sell_stock(self,uuid:str, amount: int, client_data):
-        return self.companies_handler.sell_stock_of_company(uuid,amount,client_data)
+    def request_to_sell_stock(self,uuid:str, amount: int, client_data: ClientData):
+        return self.companies_handler.sell_stock_of_company(uuid,amount,client_data.player_data)
 
     def request_news_list_bytime(self, time: float):
         return self.news_handler.get_news_list_bytime(time)
@@ -112,7 +124,7 @@ class LogicHandler():
                                                             b_type=b_type,
                                                             money=money,
                                                             stocks=stocks,
-                                                            client_data=client_data)
+                                                            player_data=client_data.player_data)
 
     def request_working_plan_create(self, c_uuid: str, begin_cycle: int, end_cycle: int, target:float):
         return self.companies_handler.create_working_plan_request(c_uuid=c_uuid,

@@ -84,7 +84,7 @@ Example:
 
 
 MessageType:
-BUY_STOCK = 5
+BUY_SILVER_STOCK = 5
 client requests to buy stock of company
 
 To server:
@@ -511,6 +511,25 @@ To client:
     "type" : 18,
     "body" :
     {
-        result:
+        result: int
+            SUCCESS = 1
+            NO_SUCH_INVESTMENT_PLAN = 2
+            NO_SUCH_COMPANY = 3
+            NOT_ENOUGH_MONEY = 4
+            NO_PLAN_IN_COMPANY = 5
+    }
+}
+
+MessageType:
+INVESTMENT_RECEIVE = 19
+Server sends message to a client, that client received money for a investment
+To client:
+{
+    "type" : 19,
+    "body" :
+    {
+        "money" : float ( final result of money),
+        "c_uuid" : str (company uuid)
+        "c_name" : str (company name)
     }
 }

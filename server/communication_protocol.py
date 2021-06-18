@@ -22,6 +22,7 @@ class MessageType(Enum):
     INVEST_PLAN_CREATE = 16
     INVEST_MARKET_LIST = 17
     INVEST_MAKE = 18
+    INVEST_RECEIVE = 19
 
 # Class to parse and create required messages
 # This class used for server and client as well
@@ -202,4 +203,14 @@ class CommunicationProtocol():
                 "result" : result
                 }
         msg_json = CommunicationProtocol.formulate_message(body,MessageType.INVEST_MAKE)
+        return msg_json
+
+    @staticmethod
+    def investment_receive(money: float, company_uuid: str, company_name: str):
+        body = {
+                "money" : money,
+                "c_uuid" : company_uuid,
+                "c_name" : company_name
+                }
+        msg_json = CommunicationProtocol.formulate_message(body, MessageType.INVEST_RECEIVE)
         return msg_json

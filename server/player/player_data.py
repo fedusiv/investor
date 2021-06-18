@@ -17,6 +17,10 @@ class PlayerData():
     def money(self):
         return self.__money
 
+    @property
+    def uuid(self):
+        return self._uuid
+
     def __init__(self, uuid):
         self._uuid = uuid
         self.__money = config.PLAYER_DEFAULT_MONEY_AMOUNT
@@ -166,3 +170,15 @@ class PlayerData():
         plan.set_to_production(self._uuid, cur_cycle)
         self._investment_list.append(plan)
         return True
+
+    def get_investment_contract_active(self, contract_uuid : str):
+        for c in self._investment_list:
+            c: InvestmentPlan
+            if c.invest_uuid == contract_uuid:
+                return c
+        return None
+
+    def investment_close_contract(self, money: float, contract : InvestmentPlan):
+        # Remove contract from active and add money
+        self._investment_list.remove(contract)
+        self.__money += money

@@ -1,7 +1,7 @@
 import uuid
 from decimal import Decimal
 import boto3
-from client_data import ClientData
+from client.client_data import ClientData
 from communication_protocol import MessageType
 
 # User Data Access Object

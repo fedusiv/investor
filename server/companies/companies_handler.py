@@ -5,7 +5,7 @@ import math
 from companies.company import Company
 from companies.companies_types import CompanyBusinessType, CompanyCreateResult, CompanyType, CompanyWorkingRequestResult, StockSellResult
 from companies.companies_types import StockPurchaseResult
-from client_data import ClientData
+from player.player_data import PlayerData
 from companies.working_plan import CompanyWorkingPlan
 import config
 from investment.investment_plan import InvestmentPlan
@@ -89,7 +89,7 @@ class CompaniesHandler():
         self.__companies_storage.append(element)
 
     # Player's request to create closed company
-    def create_closed_company(self, company_name:str, b_type: int, money: float, stocks: list, client_data: ClientData) -> CompanyCreateResult:
+    def create_closed_company(self, company_name:str, b_type: int, money: float, stocks: list, player_data: PlayerData) -> CompanyCreateResult:
         # Verify that name is ok, and there is no already same name
         if not self.verify_syntax_new_company_name(company_name):
             return CompanyCreateResult.NAME_SYNTAX_ERROR
@@ -113,12 +113,12 @@ class CompaniesHandler():
         new_company.set_company_name(company_name)
         new_company.increase_value(money)
         # Now let's create stocks for this company
-        created_stocks = new_company.create_gold_stocks(stocks,client_data.uuid)
+        created_stocks = new_company.create_gold_stocks(stocks,player_data.uuid)
         element = CompanyStorageElement(uuid=new_company.uuid,company=new_company)
         self.__companies_storage.append(element)
         self.__amount_closed_companies += 1
         # Apply to player
-        client_data.player_data.purchase_stock_confirm(new_company.uuid,company_name, created_stocks, money)
+        player_data.purchase_stock_confirm(new_company.uuid,company_name, created_stocks, money)
         return CompanyCreateResult.SUCCESS
 
     # Recalculate stock's cost of companies
@@ -161,7 +161,7 @@ class CompaniesHandler():
 
     # Client tries to buy silver stock(s) of company
     # uuid is company uuid, amount is amount of stock, cost is a cost of one stock, client data is client data
-    def purchase_stock_of_comany(self, uuid:str, amount : int, cost : float, client_data : ClientData) -> StockPurchaseResult:
+    def purchase_stock_of_comany(self, uuid:str, amount : int, cost : float, player_data : PlayerData) -> StockPurchaseResult:
         # First let's find a company
         company : Company
         company = self.company_by_uuid(uuid)
@@ -185,13 +185,13 @@ class CompaniesHandler():
 
         # Calculate cost
         full_cost = amount * company.silver_cost
-        if client_data.player_data.money < full_cost:
+        if player_data.money < full_cost:
             return StockPurchaseResult.NOT_ENOUGH_MONEY
 
         # Buy stock for user (client), get list of stocks, which will be attached to client
-        stock_list = company.purchase_silver_stock(amount,client_data.uuid)
+        stock_list = company.purchase_silver_stock(amount,player_data.uuid)
         # Attach stocks to client, and decrease amount of money
-        client_data.player_data.purchase_stock_confirm(uuid,company.name ,stock_list, full_cost)
+        player_data.purchase_stock_confirm(uuid,company.name ,stock_list, full_cost)
 
         # Increase company value by investoring money
         company.increase_value(full_cost)
@@ -199,7 +199,7 @@ class CompaniesHandler():
         return StockPurchaseResult.SUCCESS
 
     # Player tries to sell stock of open company
-    def sell_stock_of_company(self, uuid: str, amount:int, client_data : ClientData) -> StockSellResult:
+    def sell_stock_of_company(self, uuid: str, amount:int, player_data : PlayerData) -> StockSellResult:
         # First let's find a company
         company : Company
         company = self.company_by_uuid(uuid)
@@ -209,7 +209,7 @@ class CompaniesHandler():
         if amount < 1:
             return StockSellResult.NO_ENOUGH_AMOUNT
 
-        available_amount = client_data.player_data.get_silver_amount_of_company(uuid)
+        available_amount = player_data.get_silver_amount_of_company(uuid)
         if available_amount == -1:
             # Player has not this company in his list
             return StockSellResult.HAS_NO_COMPANY
@@ -221,7 +221,7 @@ class CompaniesHandler():
         full_cost = amount * company.silver_cost
 
         # Remove stocks from player and increase money
-        client_data.player_data.sell_silver_stocks(uuid,amount,full_cost)
+        player_data.sell_silver_stocks(uuid,amount,full_cost)
         # Decrease the compnay value, because money were taken back
         decrese_amount = -1 * full_cost
         company.increase_value(decrese_amount)
@@ -337,7 +337,7 @@ class CompaniesHandler():
                 investor_data = {
                         "player_uuid" : contract.player_uuid,
                         "debt" : debt,
-                        "contract" : contract
+                        "contract" : contract.invest_uuid
                         }
                 investors_list.append(investor_data)
             # Remove investment contracts from company
