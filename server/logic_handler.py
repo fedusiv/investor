@@ -135,3 +135,6 @@ class LogicHandler():
 
     def request_working_plan_apply(self, c_uuid: str, w_uuid: str):
         return self.companies_handler.working_plan_apply(c_uuid, w_uuid)
+
+    def request_companies_name_list(self):
+        return self.companies_handler.get_companies_id_to_list()

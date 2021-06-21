@@ -37,7 +37,8 @@ class ClientOperation():
             MessageType.WORKING_PLAN_APPLY : self.apply_working_plan,
             MessageType.INVEST_PLAN_CREATE : self.post_invest_plan,
             MessageType.INVEST_MARKET_LIST : self.list_invest_market,
-            MessageType.INVEST_MAKE : self.investment_apply
+            MessageType.INVEST_MAKE : self.investment_apply,
+            MessageType.COMPANIES_NAME_LIST : self.companies_name_list
         }
         func = switcher.get(cmd.result_type)
         func(cmd)
@@ -205,4 +206,10 @@ class ClientOperation():
         self.client_data.player_data.investment_close_contract(debt,contract)
         # Notify player about this
         msg = CommunicationProtocol.investment_receive(debt, contract.company_uuid, contract.company_name)
+        self.ws.write_message(msg)
+
+    def companies_name_list(self, cmd : CommunitcationParserResult):
+        utils.unused(cmd)
+        c_list = self.logic_handler.companies_handler.get_companies_id_to_list()
+        msg = CommunicationProtocol.create_companies_name_list(c_list)
         self.ws.write_message(msg)

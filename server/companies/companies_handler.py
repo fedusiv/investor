@@ -159,6 +159,15 @@ class CompaniesHandler():
 
         return c_open_list
 
+    # Prepare list of companies names and uuid for a client. To help in search
+    def get_companies_id_to_list(self):
+        c_list = []
+        for element in self.__companies_storage:
+            element: CompanyStorageElement
+            el = { "uuid" : element["uuid"] ,"name" : element["company"].name}
+            c_list.append(el)
+        return c_list
+
     # Client tries to buy silver stock(s) of company
     # uuid is company uuid, amount is amount of stock, cost is a cost of one stock, client data is client data
     def purchase_stock_of_comany(self, uuid:str, amount : int, cost : float, player_data : PlayerData) -> StockPurchaseResult:

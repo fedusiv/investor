@@ -182,6 +182,12 @@ class CommunitcationParser():
         return result
 
     @staticmethod
+    def companies_name_list_request(msg):
+        result = CommunitcationParserResult(msg,MessageType.COMPANIES_NAME_LIST)
+        return result
+
+
+    @staticmethod
     def parse_clinet_message(msg):
         # message should be json
         msg = CommunicationProtocol.verify_msg(msg)
@@ -207,7 +213,8 @@ class CommunitcationParser():
             MessageType.SHORT_INFO.value : CommunitcationParser.short_info_request,
             MessageType.INVEST_PLAN_CREATE.value : CommunitcationParser.create_invest_plan,
             MessageType.INVEST_MARKET_LIST.value : CommunitcationParser.list_invest_market,
-            MessageType.INVEST_MAKE.value : CommunitcationParser.investment_make
+            MessageType.INVEST_MAKE.value : CommunitcationParser.investment_make,
+            MessageType.COMPANIES_NAME_LIST.value : CommunitcationParser.companies_name_list_request
         }
         # Verification is this admin message
 

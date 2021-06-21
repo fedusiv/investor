@@ -533,3 +533,27 @@ To client:
         "c_name" : str (company name)
     }
 }
+
+MessageType:
+COMPANIES_NAME_LIST = 20
+To server:
+{
+    "type" : 20,
+    "body" :
+    {},
+    "uuid" : str ( unique id of player )
+}
+
+To client:
+{
+    "type" : 20,
+    "body" :
+    {
+        "companies" : list
+        [
+            "uuid" : str (uuid of company),
+            "name" : str (name of company)
+        ]
+    }
+}
+

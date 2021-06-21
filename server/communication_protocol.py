@@ -23,6 +23,7 @@ class MessageType(Enum):
     INVEST_MARKET_LIST = 17
     INVEST_MAKE = 18
     INVEST_RECEIVE = 19
+    COMPANIES_NAME_LIST = 20
 
 # Class to parse and create required messages
 # This class used for server and client as well
@@ -213,4 +214,12 @@ class CommunicationProtocol():
                 "c_name" : company_name
                 }
         msg_json = CommunicationProtocol.formulate_message(body, MessageType.INVEST_RECEIVE)
+        return msg_json
+
+    @staticmethod
+    def create_companies_name_list(c_list):
+        body = {
+                "companies" : c_list
+                }
+        msg_json = CommunicationProtocol.formulate_message(body, MessageType.COMPANIES_NAME_LIST)
         return msg_json
