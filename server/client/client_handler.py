@@ -53,7 +53,7 @@ class ClientHandler(tornado.websocket.WebSocketHandler):
 
     def on_close(self):
         print("A client disconnected")
-        self.client_handlers.remove_connected_client(self)
+        self.clients_handler.remove_connected_client(self)
 
     def on_message(self, message):
         # Got message, client alive. Store time for that
