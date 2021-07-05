@@ -1,5 +1,6 @@
 from investment.investment_plan import InvestmentPlan
 from stock.stock import Stock, StockType
+from stock.stock_handler import StockHandler
 import config
 
 # Store stocks by it affiliance to company
@@ -27,6 +28,8 @@ class PlayerData():
         self.__stocks  = []
         # List of player's investment, it is InvestmentPlan list
         self._investment_list = []
+
+        self.stock_handler = StockHandler.Instance()
 
     # Prepare data for info about money amount and stocks money value, that player has
     def get_player_value_info(self):
@@ -145,7 +148,7 @@ class PlayerData():
         for stock in list(elem.stock_list_silver):
             stock : Stock
             if stock.type == StockType.SILVER:
-                stock.sell_stock()# change stock type. Player stores only references to stocks.
+                self.stock_handler.sell_stock(stock)
                 elem.stock_list_silver.remove(stock)
                 amount-=1
                 if amount <= 0:

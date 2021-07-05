@@ -10,7 +10,7 @@ from companies.working_plan import CompanyWorkingPlan
 from investment.investment_plan import InvestmentPlan
 from stock.stock import Stock
 from stock.stock import StockType
-from stock.stock_builder import StockBuilder
+from stock.stock_handler import StockHandler
 from companies.bussines_news_connection import BusinessNewsRelation, NewsDependency
 from news.world_situation import WorldSituation
 import config
@@ -118,7 +118,7 @@ class Company():
 
         # To create stocks, better to use builder pattern, all stocks will be created from one place
         # and even for db it's convinient to operate from one place. If you do not agree, so make it bettter
-        self.stock_builder = StockBuilder.Instance()
+        self.stock_handler = StockHandler.Instance()
 
     def set_company_name(self, name: str):
         self.data.name = name
@@ -156,7 +156,7 @@ class Company():
         # Change type to open. This is kind of default stocks initialization
         self.company_type = CompanyType.OPEN
         # Create stocks
-        main_stock = self.stock_builder.create_stock(self.uuid, StockType.GOLD, 0.51)
+        main_stock = self.stock_handler.create_stock(self.uuid, StockType.GOLD, 0.51)
         main_stock.set_as_main()
         self.stocks[main_stock.uuid] = main_stock
         self.__gold_amount_full += 1
@@ -164,7 +164,7 @@ class Company():
         value = (49 / amount) / 100
         for _unused in range(0,amount):
             utils.unused(_unused)
-            stock = self.stock_builder.create_stock(self.uuid, StockType.SILVER, value)
+            stock = self.stock_handler.create_stock(self.uuid, StockType.SILVER, value)
             self.stocks[stock.uuid] = stock
             self.__silver_amount_full += 1
         # After generation need to calculate stock cost
@@ -175,7 +175,7 @@ class Company():
         # Set type to closed
         self.company_type = CompanyType.CLOSED
         # Generate main stock
-        main_stock = self.stock_builder.create_stock(self.uuid, StockType.GOLD, 0.51)
+        main_stock = self.stock_handler.create_stock(self.uuid, StockType.GOLD, 0.51)
         main_stock.set_as_main()
         self.stocks[main_stock.uuid] = main_stock
         self.__gold_amount_full +=1
@@ -190,12 +190,12 @@ class Company():
             cur_persentage = round(random.uniform(limit_a,limit_b))
             # Create stock
             persentage -= cur_persentage
-            stock = self.stock_builder.create_stock(self.uuid, StockType.GOLD, cur_persentage) # Create stock
+            stock = self.stock_handler.create_stock(self.uuid, StockType.GOLD, cur_persentage) # Create stock
             self.stocks[stock.uuid] = stock # Store
             self.__gold_amount_full +=1
 
         # Loop goes amount-1, that means one left to store all persentage that left
-        stock = self.stock_builder.create_stock(self.uuid, StockType.GOLD, persentage) # Create stock
+        stock = self.stock_handler.create_stock(self.uuid, StockType.GOLD, persentage) # Create stock
         self.stocks[stock.uuid] = stock
         self.__gold_amount_full +=1
         # Recalculation after generation
@@ -209,12 +209,11 @@ class Company():
         max_value = max(stock_list)
         max_stock_applied = False
         for amount in stock_list:
-            stock = self.stock_builder.create_stock(self.uuid, StockType.GOLD, amount)
+            stock = self.stock_handler.create_stock(self.uuid, StockType.GOLD, amount, client_uuid)
             if (amount == max_value) and (max_stock_applied is False):
                 # TODO: Create mechanism to check, that only one stock in company is main
                 # Set main stock
                 stock.set_as_main()
-            stock.buy_stock(client_uuid)
             self.stocks[stock.uuid] = stock
             self.__gold_amount_full += 1
             stocks_created.append(stock)
@@ -385,7 +384,7 @@ class Company():
                 continue	# already bought go next
             counter -= 1
             stock_list.append(stock)
-            stock.buy_stock(client_uuid)
+            self.stock_handler.buy_stock(stock,client_uuid)
             self.__silver_amount_bought += 1
 
             if counter <= 0:
