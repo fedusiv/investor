@@ -156,7 +156,11 @@ To client:
                         "owner" : bool (represent player owns company or does not)
                     }
                 ]
-            }
+            },
+            "companies" :
+            [
+                list of companies uuid
+            ]
         },
         "server_time" : float,
     }
@@ -557,3 +561,31 @@ To client:
     }
 }
 
+
+MessageType:
+MARKET_LIST = 21
+To server:
+{
+    "type" : 21,
+    "body" :
+    {},
+    "uuid" : str ( unique id of player )
+}
+
+To client:
+{
+    "type" : 21,
+    "body" :
+    {
+        "amount" : int (amount of elements),
+        "list" : [
+            {
+                time: float (time when stock was posted),
+                cost : float (cost of one stock),
+                p_uuid : str (player uuid),
+                c_uuid : str (company uuid, which this stock),
+                value : float (stock value)
+            }
+        ]
+    }
+}

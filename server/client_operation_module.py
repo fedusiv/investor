@@ -12,6 +12,7 @@ from communication_protocol import CommunicationProtocol
 from client.client_data import ClientData
 from companies.companies_handler import StockPurchaseResult
 from investment.investment_market import InvestmentMarket
+from stock.stock_market import StockMarket
 import utils
 
 class ClientOperation():
@@ -21,6 +22,7 @@ class ClientOperation():
         self.logic_handler = LogicHandler.Instance()
         self.client_data : ClientData
         self.investment_market = InvestmentMarket.Instance()
+        self.stock_market = StockMarket.Instance()
 
     def parse_command(self,cmd : CommunitcationParserResult):
         switcher = {
@@ -38,7 +40,8 @@ class ClientOperation():
             MessageType.INVEST_PLAN_CREATE : self.post_invest_plan,
             MessageType.INVEST_MARKET_LIST : self.list_invest_market,
             MessageType.INVEST_MAKE : self.investment_apply,
-            MessageType.COMPANIES_NAME_LIST : self.companies_name_list
+            MessageType.COMPANIES_NAME_LIST : self.companies_name_list,
+            MessageType.MARKET_LIST : self.market_elements_list
         }
         func = switcher.get(cmd.result_type)
         func(cmd)
@@ -57,9 +60,11 @@ class ClientOperation():
     def request_client_data(self,cmd):
         utils.unused(cmd)
         s_list = self.client_data.player_data.get_all_stocks_to_list()
+        c_list = self.client_data.player_data.get_all_own_companies()
         client_data_msg = CommunicationProtocol.create_client_data_msg(login= self.client_data.login,
                                                                         money=self.client_data.player_data.money,
                                                                         stock_list=s_list,
+                                                                        companies_list=c_list,
                                                                         server_time=self.logic_handler.server_time)
         self.ws.write_message(client_data_msg)
 
@@ -213,3 +218,11 @@ class ClientOperation():
         c_list = self.logic_handler.companies_handler.get_companies_id_to_list()
         msg = CommunicationProtocol.create_companies_name_list(c_list)
         self.ws.write_message(msg)
+
+
+    def market_elements_list(self, cmd: CommunitcationParserResult):
+        utils.unused(cmd)
+        body = self.stock_market.get_market_list()
+        msg = CommunicationProtocol.create_market_list(body)
+        self.ws.write_message(msg)
+

@@ -26,6 +26,7 @@ class PlayerData():
         self._uuid = uuid
         self.__money = config.PLAYER_DEFAULT_MONEY_AMOUNT
         self.__stocks  = []
+        self.__companies_own = []
         # List of player's investment, it is InvestmentPlan list
         self._investment_list = []
 
@@ -95,6 +96,10 @@ class PlayerData():
             stocks_list.append(company_info)
 
         return stocks_list
+
+
+    def get_all_own_companies(self) -> list:
+        return self.__companies_own
 
     # Get amount of silver stocks of certain company. Returns amount of stocks
     # If there is no such company in player data returns -1
@@ -185,3 +190,6 @@ class PlayerData():
         # Remove contract from active and add money
         self._investment_list.remove(contract)
         self.__money += money
+
+    def attach_company_owner_rights(self, c_uuid: str):
+        self.__companies_own.append(c_uuid)

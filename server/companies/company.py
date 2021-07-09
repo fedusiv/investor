@@ -123,6 +123,9 @@ class Company():
     def set_company_name(self, name: str):
         self.data.name = name
 
+    def set_company_owner(self, uuid: str):
+        self.__owner_uuid = uuid
+
     def generate_random_name(self):
        # Generate name
         self.data.name = CompanyNameGenerator.name_generate()

@@ -24,6 +24,7 @@ class MessageType(Enum):
     INVEST_MAKE = 18
     INVEST_RECEIVE = 19
     COMPANIES_NAME_LIST = 20
+    MARKET_LIST = 21
 
 # Class to parse and create required messages
 # This class used for server and client as well
@@ -79,7 +80,7 @@ class CommunicationProtocol():
 
     # To client, send client's data
     @staticmethod
-    def create_client_data_msg(login : str, money : float, stock_list, server_time: float):
+    def create_client_data_msg(login : str, money : float, stock_list, companies_list, server_time: float):
         s_list = {}
         if stock_list is not None:
             s_list = stock_list
@@ -93,7 +94,8 @@ class CommunicationProtocol():
                 {
                     "amount" : len(s_list),
                     "list" : s_list
-                }
+                },
+                "companies" : companies_list
             },
             "server_time" : server_time
         }
@@ -222,4 +224,10 @@ class CommunicationProtocol():
                 "companies" : c_list
                 }
         msg_json = CommunicationProtocol.formulate_message(body, MessageType.COMPANIES_NAME_LIST)
+        return msg_json
+
+
+    @staticmethod
+    def create_market_list(body):
+        msg_json = CommunicationProtocol.formulate_message(body, MessageType.MARKET_LIST)
         return msg_json

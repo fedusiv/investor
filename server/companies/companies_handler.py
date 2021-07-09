@@ -108,6 +108,8 @@ class CompaniesHandler():
 
         # All verification steps are done. Here company can be created
         new_company = Company(self.game_cycle)
+        # Set owner of a company current player, who created the company
+        new_company.set_company_owner(player_data.uuid)
         # This is closed company, means only have private own stocks
         new_company.company_type = CompanyType.CLOSED
         new_company.set_company_name(company_name)
