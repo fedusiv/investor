@@ -12,7 +12,7 @@ class MessagingParserResult():
             # additional verification
             self.msg_type = MessagingTypes.NONE
             return
-        body = res.msg_body
+        body = res.body
         self.msg_type = MessagingTypes(body["type"])
         self.sender_uuid = res.uuid
         self.msg_text = body["text"]

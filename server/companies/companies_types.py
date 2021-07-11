@@ -40,3 +40,19 @@ class StockSellResult(Enum):
     NO_SUCH_COMPANY = 2 # No such uuid of company on server
     HAS_NO_COMPANY = 3 # No such uuid of compnay in player data
     NO_ENOUGH_AMOUNT = 4
+
+@unique
+class CompanyCreateResult(Enum):
+    SUCCESS = 1
+    NAME_SYNTAX_ERROR = 2
+    NAME_NOT_UNIQ = 3
+    B_TYPE_ERROR = 4
+    STOCKS_ERROR = 5
+
+@unique
+class CompanyWorkingRequestResult(Enum):
+    SUCCESS = 1
+    NO_SUCH_COMPANY = 2
+    REQUEST_PERIOD_TAKEN = 3
+    NO_SUCH_WORKING_PLAN = 4
+

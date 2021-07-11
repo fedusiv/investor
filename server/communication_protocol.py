@@ -15,6 +15,17 @@ class MessageType(Enum):
     SELL_SILVER_STOCK = 9
     MESSAGING = 10
     COMPANY_SILVER_STOCK_HISTORY = 11
+    CREATE_PLAYER_COMPANY = 12
+    WORKING_PLAN_REQUEST = 13
+    WORKING_PLAN_APPLY = 14
+    SHORT_INFO = 15
+    INVEST_PLAN_CREATE = 16
+    INVEST_MARKET_LIST = 17
+    INVEST_MAKE = 18
+    INVEST_RECEIVE = 19
+    COMPANIES_NAME_LIST = 20
+    MARKET_LIST = 21
+    SELL_ON_STOCK_MARKET = 22
 
 # Class to parse and create required messages
 # This class used for server and client as well
@@ -70,7 +81,7 @@ class CommunicationProtocol():
 
     # To client, send client's data
     @staticmethod
-    def create_client_data_msg(login : str, money : float, stock_list, server_time: float):
+    def create_client_data_msg(login : str, money : float, stock_list, companies_list, server_time: float):
         s_list = {}
         if stock_list is not None:
             s_list = stock_list
@@ -84,7 +95,8 @@ class CommunicationProtocol():
                 {
                     "amount" : len(s_list),
                     "list" : s_list
-                }
+                },
+                "companies" : companies_list
             },
             "server_time" : server_time
         }
@@ -139,4 +151,84 @@ class CommunicationProtocol():
             "history" : history_list
         }
         msg_json = CommunicationProtocol.formulate_message(body, MessageType.COMPANY_SILVER_STOCK_HISTORY.value)
+        return msg_json
+
+
+    @staticmethod
+    def create_company_result(result: int):
+        body = {
+            "result" : result
+        }
+        msg_json = CommunicationProtocol.formulate_message(body, MessageType.CREATE_PLAYER_COMPANY.value)
+        return msg_json
+
+    @staticmethod
+    def working_plan_request_result(result):
+        body = result
+        msg_json = CommunicationProtocol.formulate_message(body, MessageType.WORKING_PLAN_REQUEST.value)
+        return msg_json
+
+    @staticmethod
+    def working_plan_apply(result: int):
+        body = {
+                "result" : result
+                }
+        msg_json = CommunicationProtocol.formulate_message(body,MessageType.WORKING_PLAN_APPLY.value)
+        return msg_json
+
+    @staticmethod
+    def prepare_short_info(login_name,player_money, server_time, cur_cycle, news_list):
+        body = {
+                "login" : login_name,
+                "money" : player_money,
+                "server_time" : server_time,
+                "cycle" : cur_cycle,
+                "news" : news_list
+            }
+        msg_json = CommunicationProtocol.formulate_message(body, MessageType.SHORT_INFO.value)
+        return msg_json
+
+    @staticmethod
+    def invest_plan_create_and_post(result: int):
+        body = {
+                "result" : result
+                }
+        msg_json = CommunicationProtocol.formulate_message(body,MessageType.INVEST_PLAN_CREATE.value)
+        return msg_json
+
+    @staticmethod
+    def invest_market_list(body):
+        msg_json = CommunicationProtocol.formulate_message(body,MessageType.INVEST_MARKET_LIST)
+        return msg_json
+
+    @staticmethod
+    def investment_make_result(result: int):
+        body = {
+                "result" : result
+                }
+        msg_json = CommunicationProtocol.formulate_message(body,MessageType.INVEST_MAKE)
+        return msg_json
+
+    @staticmethod
+    def investment_receive(money: float, company_uuid: str, company_name: str):
+        body = {
+                "money" : money,
+                "c_uuid" : company_uuid,
+                "c_name" : company_name
+                }
+        msg_json = CommunicationProtocol.formulate_message(body, MessageType.INVEST_RECEIVE)
+        return msg_json
+
+    @staticmethod
+    def create_companies_name_list(c_list):
+        body = {
+                "companies" : c_list
+                }
+        msg_json = CommunicationProtocol.formulate_message(body, MessageType.COMPANIES_NAME_LIST)
+        return msg_json
+
+
+    @staticmethod
+    def create_market_list(body):
+        msg_json = CommunicationProtocol.formulate_message(body, MessageType.MARKET_LIST)
         return msg_json

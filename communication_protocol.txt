@@ -84,7 +84,7 @@ Example:
 
 
 MessageType:
-BUY_STOCK = 5
+BUY_SILVER_STOCK = 5
 client requests to buy stock of company
 
 To server:
@@ -117,6 +117,7 @@ To client:
 MessageType:
 CLIENT_DATA = 6
 client request from server all information, which client should know
+This is short information variant
 
 To server:
 {
@@ -134,18 +135,32 @@ To client:
         "player_data" : (send current player data)
         {
             "money" : float (current amount of money)
-            "stocks_silver" :
+            "stocks" :
             {
                 "amount" : int (amount of stocks in list)
                 "list : (list of stocks)
                 [
                     "uuid" : str (id of company)
                     "name" : str (name of company)
-                    "amount" : int (amount of silver sotkcs of one company)
-                    "cost" : float (cost of all stocks!)
-                    "value" : float (what part of all stocks it is. 0.012 means 1.2%, information is sum of all stocks)
+                    "silver" :
+                    {
+                        "amount" : int (amount of silver stocks of one company)
+                        "cost" : float (cost of all stocks!)
+                        "value" : float (what part of all stocks it is. 0.012 means 1.2%, information is sum of all stocks)
+                    }
+                    "gold" :
+                    {
+                        "amount" : int (amount of silver stocks of one company)
+                        "cost" : float (cost of all stocks!)
+                        "value" : float (what part of all stocks it is. 0.012 means 1.2%, information is sum of all stocks)
+                        "owner" : bool (represent player owns company or does not)
+                    }
                 ]
-            }
+            },
+            "companies" :
+            [
+                list of companies uuid
+            ]
         },
         "server_time" : float,
     }
@@ -273,7 +288,7 @@ Server send in format {time : stock_cost} for given company and only silver stoc
 
 To server:
 {
-    "type" : 5,
+    "type" : 11,
     "body" :
     {
         "uuid" : str ( uuid of company )
@@ -283,12 +298,316 @@ To server:
 
 To client:
 {
-    "type": 5,
+    "type": 11,
     "body":
     {
         "history" :
         [
             {time(float) : cost(float) }
         ]
+    }   
+}
+
+
+MessageType:
+CREATE_PLAYER_COMPANY = 12
+Send request to server from player to create closed type of company
+To server:
+{
+    "type" : 12,
+    "body" :
+    {
+        "name" : str ( name of company )
+        "b_type" : int (business type of company. Look to class CompanyBusinessType() in compnaies_types.py)
+        "money" : float ( amount of money, which player invest to company when creates it)
+        "stocks" : [] ( list of float, represent in value from 0.01 - 1 how company is divided into stocks)
+    },
+    "uuid" : str ( unique id of player )
+}
+
+To client
+{
+    "type": 12,
+    "body":
+    {
+        "result" : int (type of result)
+            SUCCESS = 1
+            NAME_SYNTAX_ERROR = 2
+            NAME_NOT_UNIQ = 3
+            B_TYPE_ERROR = 4
+            STOCKS_ERROR = 5
+    }
+}
+
+MessageType:
+WORKING_PLAN_REQUEST = 13
+Send request to server with parameters about to setup working plan.
+Answer is conditions, that server calculate for player
+
+To server:
+{
+    "type" : 13,
+    "body" :
+    {
+        "uuid" : str ( uuid of company )
+        "begin_cycle" : int
+        "end_cycle" : int
+        "target" : float (amount of money, that player want to earn)
+    },
+    "uuid" : str ( unique id of player )
+}
+
+To client:
+{
+    "type" : 13,
+    "body" :
+    {
+        "result" : int  SUCCESS = 1
+                        NO_SUCH_COMPANY = 2
+                        REQUEST_PERIOD_TAKEN = 3
+        if succes, data below exists
+        "c_uuid" : str ( uuid of company )
+        "w_uuid" : str (working plan uuid)
+        "earn" : float (amount of money, that company will earn)
+        "lose" : float (amount of money, that company will lose)
+    }
+}
+
+MessageType:
+WORKING_PLAN_APPLY = 14
+To server:
+{
+    "type" : 14,
+    "body" :
+    {
+        "c_uuid" : str ( uuid of company )
+        "w_uuid" : str ( uuid of working plan)
+    },
+    "uuid" : str ( unique id of player )
+}
+
+To client:
+{
+    "type" : 14,
+    "body" :
+    {
+        "result" : int  SUCCESS = 1
+                        NO_SUCH_COMPANY = 2
+                        REQUEST_PERIOD_TAKEN = 3
+    }
+}
+
+MessageType:
+SHORT_INFO = 15
+Short information about player
+To server:
+{
+    "type" : 15,
+    "body" :
+    {},
+    "uuid" : str ( unique id of player )
+}
+
+To client:
+{
+    "type" : 15,
+    "body" :
+    {
+        "login" : str (login name),
+        "money" : 
+        {
+            "stocks" : float (sum of cost of all stocks, that player has),
+            "money" : float ( amount of player's money)
+        }
+        "server_time" : float
+        "cycle" : int ( current game cycle)
+        "news" :
+        [
+            "theme" : str (String description of something, that happend),
+            "source" : str (Name of event source),
+            "server_time" : float ( when this news appeared, in seconds)
+        ]
+    }
+}
+
+MessageType:
+INVEST_PLAN_CREATE = 16
+Company owner request to create investment plan for his company
+
+To server:
+{
+    "type" : 16,
+    "body" :
+    {
+        "c_uuid" : str (company uuid)
+        "i_value" : float (investment value, what company will receive)
+        "type" : int ( investment type)
+                        CONST = 1
+                        PERCENTAGE = 2
+        "p_value" : float (what value should return)
+        "cycle" : int (after what amount of cycles investment should be return)
+    },
+    "uuid" : str ( unique id of player )
+}
+
+To client:
+{
+    "type" : 16,
+    "body" :
+    {
+        "result" : int
+            SUCCESS = 1
+            NO_SUCH_COMPANY = 2
+            NOT_OWNER = 3
+    }
+}
+
+MessageType:
+INVEST_MARKET_LIST = 17
+Send reques to get all list of ivnestment offers
+
+To server:
+{
+    "type" : 17,
+    "body" :
+    {},
+    "uuid" : str ( unique id of player )
+}
+
+To client:
+{
+    "type" : 17,
+    "body" :
+    {
+        "amount" : int (elements amount in list)
+        "list" :
+        [
+            "server_time" : float (when was posted)
+            "i_uuid" : str (investment plan uuid)
+            "c_uuid" : str (company uuid)
+            "c_name" : company_name
+            "i_value" : float (investment value, what company will receive)
+            "type" : int ( investment type)
+                            CONST = 1
+                            PERCENTAGE = 2
+            "p_value" : float (what value should return)
+            "cycle" : int (after what amount of cycles investment should be return)
+        ]
+    }
+}
+
+MessageType:
+INVESTMENT_MAKE = 18
+Player sends request to make investment to a company
+
+To server:
+{
+    "type" : 18,
+    "body" :
+    {
+        "i_uuid" : str (investment plan uuid)
+    },
+    "uuid" : str ( unique id of player )
+}
+
+To client:
+{
+    "type" : 18,
+    "body" :
+    {
+        result: int
+            SUCCESS = 1
+            NO_SUCH_INVESTMENT_PLAN = 2
+            NO_SUCH_COMPANY = 3
+            NOT_ENOUGH_MONEY = 4
+            NO_PLAN_IN_COMPANY = 5
+    }
+}
+
+MessageType:
+INVESTMENT_RECEIVE = 19
+Server sends message to a client, that client received money for a investment
+To client:
+{
+    "type" : 19,
+    "body" :
+    {
+        "money" : float ( final result of money),
+        "c_uuid" : str (company uuid)
+        "c_name" : str (company name)
+    }
+}
+
+MessageType:
+COMPANIES_NAME_LIST = 20
+To server:
+{
+    "type" : 20,
+    "body" :
+    {},
+    "uuid" : str ( unique id of player )
+}
+
+To client:
+{
+    "type" : 20,
+    "body" :
+    {
+        "companies" : list
+        [
+            "uuid" : str (uuid of company),
+            "name" : str (name of company)
+        ]
+    }
+}
+
+
+MessageType:
+MARKET_LIST = 21
+To server:
+{
+    "type" : 21,
+    "body" :
+    {},
+    "uuid" : str ( unique id of player )
+}
+
+To client:
+{
+    "type" : 21,
+    "body" :
+    {
+        "amount" : int (amount of elements),
+        "list" : [
+            {
+                time: float (time when stock was posted),
+                cost : float (cost of one stock),
+                p_uuid : str (player uuid),
+                c_uuid : str (company uuid, which this stock),
+                value : float (stock value)
+            }
+        ]
+    }
+}
+
+MessageType:
+SELL_ON_STOCK_MARKET = 22
+To server:
+{
+    "type" : 22,
+    "body" :
+    {
+        "s_uuid" : str ( stock uuid data),
+        "cost" : float ( cost of this stock)
+    },
+    "uuid" : str ( unique id of player )
+}
+
+To client:
+{
+    "type" : 22,
+    "body" :
+    {
+        result
     }
 }

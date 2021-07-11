@@ -1,13 +1,6 @@
-import enum
 import uuid
 
-
-from enum import Enum
-
-class StockType(Enum):
-    SILVER = 1	# Silver level is common level of stock. It has cost: (value - all gold stocks)/ amount_of_silver
-    GOLD = 2	# Gold has it's own "custom" value. They usually can not be obtain from opensource
-
+from stock.stock_types import StockType
 # Stock entity
 # I suggest do not use here public variables. To be ensure, that it will somewhere by mistake changed
 class Stock():
@@ -33,6 +26,8 @@ class Stock():
     def cost(self):
         return self.__cost
 
+    # This property is used for SILVER type of stock
+    # GOLD stock usually by default has owner when created
     @property
     def bought(self):
         return self.__bought
@@ -46,7 +41,7 @@ class Stock():
         return self.__main
 
     # When inits it should return uuid of stock
-    # c_uuid - company id, wwhich stock belongs to
+    # c_uuid - company id, which stock belongs to
     # type - type of stock
     # value - what stock is a part of company value
     def __init__(self, c_uuid : str, type : StockType, value : float):
@@ -65,7 +60,7 @@ class Stock():
         # By default stock is not main
         self.__main = False
 
-    # Main stock means, that player who owns it, he owns company
+    # Main stock means, that player who owns it, he owns company and manage it. Or not server
     def set_as_main(self):
         self.__main = True
 

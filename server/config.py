@@ -1,3 +1,6 @@
+PORT = 3002
+KEEP_ALIVE_TIME = 2
+KEEP_ALIVE_ERROR = 5
 # logic loop will work 50 times in second
 LOOP_UPDATE_TIME = 0.02
 # How often companies applies situation happend by news and make some progress or regress
@@ -16,3 +19,12 @@ PLAYER_DEFAULT_MONEY_AMOUNT = 3000
 NEWS_DAMPING_AMOUNT = 3
 # When open company generated need to spicy amount of silver stocks
 OPEN_COMPANY_DEFAULT_AMOUNT_SILVER_STOCKS = 60
+# Minimun amount of value of one stock to specify it, when create player company
+MINIMUN_STOCK_VALUE_TO_CREATE = 0.01
+# Closed compnaies has less depence on global news and world situation. This amount of less dependency persent
+# Example rate 1.05, 50 persentage of rate will be 1.025 And 50% means 0.5
+CLOSED_COMPANY_RATE_DECREASE = 0.5
+# Fine multiplicator based on life cycles of company
+WORKING_PLAN_FINE = 1000
+# What amount of company can go to payback
+INVESTMENT_COMPANY_VALUE_PAYBACK = 0.49

@@ -1,6 +1,7 @@
-from math import e
-from typing import TypedDict
-from stock.stock import Stock, StockType
+from investment.investment_plan import InvestmentPlan
+from stock.stock import Stock
+from stock.stock_types import StockType
+from stock.stock_handler import StockHandler
 import config
 
 # Store stocks by it affiliance to company
@@ -8,7 +9,8 @@ class StockStorageElement():
     def __init__(self, company_uuid : str, company_name = "This is Error message"):
         self.company_uuid = company_uuid
         self.company_name = company_name
-        self.stock_list = []
+        self.stock_list_silver = []
+        self.stock_list_gold = []
 
 # Handle player data.
 class PlayerData():
@@ -17,38 +19,88 @@ class PlayerData():
     def money(self):
         return self.__money
 
-    def __init__(self):
+    @property
+    def uuid(self):
+        return self._uuid
+
+    def __init__(self, uuid):
+        self._uuid = uuid
         self.__money = config.PLAYER_DEFAULT_MONEY_AMOUNT
         self.__stocks  = []
+        self.__companies_own = []
+        # List of player's investment, it is InvestmentPlan list
+        self._investment_list = []
 
-    def get_all_silver_stocks_to_list(self) -> list:
+        self.stock_handler = StockHandler.Instance()
+
+    # Prepare data for info about money amount and stocks money value, that player has
+    def get_player_value_info(self):
+        stocks_sum = 0
+        for element in self.__stocks:
+            element : StockStorageElement
+            sil_sum = sum(x.cost for x in element.stock_list_silver)
+            gold_sum = sum(x.cost for x in element.stock_list_gold)
+            stocks_sum += sil_sum + gold_sum
+        data = {
+                "stocks" : stocks_sum,
+                "money" : self.money
+                }
+        return data
+
+
+    # As a preview of all money and value that player has
+    def get_all_stocks_to_list(self) -> list:
         stocks_list = []
         if len(self.__stocks) < 1:
             return stocks_list
 
         for element in self.__stocks:
             element: StockStorageElement
-            amount = len(element.stock_list)
-
-            # TODO: Optimize it please!
+            player_is_owner = False
+            amount_silver = len(element.stock_list_silver)
+            amount_gold = len(element.stock_list_gold)
+            # silver stocks
             stocks_cost = []
             stocks_value = []
-            for stock in element.stock_list:
+            for stock in element.stock_list_silver:
                 stocks_cost.append(stock.cost)
                 stocks_value.append(stock.value)
-            stock_cost_sum = sum(stocks_cost)
-            stocks_value_sum = sum(stocks_value)
+            silver_cost_sum = sum(stocks_cost)
+            silver_value_sum = sum(stocks_value)
+            # gold stocks
+            for stock in element.stock_list_gold:
+                stocks_cost.append(stock.cost)
+                stocks_value.append(stock.value)
+                if stock.is_main:
+                    player_is_owner = True
+            gold_cost_sum = sum(stocks_cost)
+            gold_value_sum = sum(stocks_value)
+
+            silver_body = {
+                    "amount" : amount_silver,
+                    "cost" : silver_cost_sum,
+                    "value" : silver_value_sum
+                }
+            gold_body = {
+                    "amount" : amount_gold,
+                    "cost" : gold_cost_sum,
+                    "value" : gold_value_sum,
+                    "owner" : player_is_owner
+                }
             # Info syntax is based on communication protocol txt
             company_info = {
                 'uuid' : element.company_uuid,
                 'name' : element.company_name,
-                'amount': amount,
-                'cost' : stock_cost_sum,
-                'value': stocks_value_sum
+                'silver': silver_body,
+                'gold' : gold_body
             }
             stocks_list.append(company_info)
 
         return stocks_list
+
+
+    def get_all_own_companies(self) -> list:
+        return self.__companies_own
 
     # Get amount of silver stocks of certain company. Returns amount of stocks
     # If there is no such company in player data returns -1
@@ -57,7 +109,7 @@ class PlayerData():
         for element in self.__stocks:
             element: StockStorageElement
             if element.company_uuid == company_uuid:
-                res = len(element.stock_list)
+                res = len(element.stock_list_silver)
                 break
         return res
 
@@ -73,7 +125,10 @@ class PlayerData():
 
         for stock in stock_list:
             stock : Stock
-            element.stock_list.append(stock)
+            if stock.type == StockType.SILVER:
+                element.stock_list_silver.append(stock)
+            else:
+                element.stock_list_gold.append(stock)
 
 
     def get_storage_element_by_uuid(self, company_uuid: str):
@@ -96,16 +151,16 @@ class PlayerData():
                 elem = element
                 index = self.__stocks.index(elem)
                 break
-        for stock in list(elem.stock_list):
+        for stock in list(elem.stock_list_silver):
             stock : Stock
             if stock.type == StockType.SILVER:
-                stock.sell_stock()	# change stock type. Player stores only references to stocks.
-                elem.stock_list.remove(stock)
+                self.stock_handler.sell_stock(stock)
+                elem.stock_list_silver.remove(stock)
                 amount-=1
                 if amount <= 0:
                     # Required amount of stock were removed from data
                     break
-        if len(elem.stock_list) <= 0:
+        if len(elem.stock_list_silver) <= 0:
             # If there is no stock of this company left on player need to remove it from player data
             if index != -1:
                 del self.__stocks[index]
@@ -113,3 +168,29 @@ class PlayerData():
         # Increase money amount
         self.__money += cost
 
+    # Player makes investment to a company
+    def make_investment(self, plan: InvestmentPlan, cur_cycle: int):
+        if self.money < plan.investment_value:
+            return False
+        # Otherwise decrese money amount
+        self.__money -= plan.investment_value
+        # Put investment to production from player perspective.
+        # In other place plan should be placed to production for company perspective
+        plan.set_to_production(self._uuid, cur_cycle)
+        self._investment_list.append(plan)
+        return True
+
+    def get_investment_contract_active(self, contract_uuid : str):
+        for c in self._investment_list:
+            c: InvestmentPlan
+            if c.invest_uuid == contract_uuid:
+                return c
+        return None
+
+    def investment_close_contract(self, money: float, contract : InvestmentPlan):
+        # Remove contract from active and add money
+        self._investment_list.remove(contract)
+        self.__money += money
+
+    def attach_company_owner_rights(self, c_uuid: str):
+        self.__companies_own.append(c_uuid)
