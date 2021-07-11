@@ -25,6 +25,7 @@ class MessageType(Enum):
     INVEST_RECEIVE = 19
     COMPANIES_NAME_LIST = 20
     MARKET_LIST = 21
+    SELL_ON_STOCK_MARKET = 22
 
 # Class to parse and create required messages
 # This class used for server and client as well

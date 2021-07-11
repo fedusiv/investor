@@ -1,5 +1,6 @@
 from investment.investment_plan import InvestmentPlan
-from stock.stock import Stock, StockType
+from stock.stock import Stock
+from stock.stock_types import StockType
 from stock.stock_handler import StockHandler
 import config
 

@@ -1,13 +1,6 @@
-import enum
 import uuid
 
-
-from enum import Enum
-
-class StockType(Enum):
-    SILVER = 1	# Silver level is common level of stock. It has cost: (value - all gold stocks)/ amount_of_silver
-    GOLD = 2	# Gold has it's own "custom" value. They usually can not be obtain from opensource
-
+from stock.stock_types import StockType
 # Stock entity
 # I suggest do not use here public variables. To be ensure, that it will somewhere by mistake changed
 class Stock():

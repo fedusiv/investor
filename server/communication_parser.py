@@ -33,7 +33,7 @@ class CommunitcationParserResult():
         self.stock_amount = self.body["amount"]	# amount of stocks want to buy
         self.stock_cost =   self.body["cost"]	# what price of one stock was
 
-    # To sell requested stock
+    # To sell requested silver stock(s)
     def form_stock_sell_request(self):
         self.company_uuid = self.body["uuid"]	# what company want to sell
         self.stock_amount = self.body["amount"]	# amount of stocks want to sell
@@ -74,6 +74,11 @@ class CommunitcationParserResult():
 
     def get_investment_plan_uuid(self):
         self.investment_uuid = self.body["i_uuid"]
+
+    # Sell whatever stock you want, but just only one. one unit I mean
+    def sell_stock_data(self):
+        self.stock_uuid = self.body["s_uuid"]
+        self.stock_cost = self.body["cost"]
 
 class CommunitcationParser():
 
@@ -191,6 +196,12 @@ class CommunitcationParser():
         result = CommunitcationParserResult(msg, MessageType.MARKET_LIST)
         return result
 
+    @staticmethod
+    def sell_stock_on_market(msg):
+        result = CommunitcationParserResult(msg, MessageType.SELL_ON_STOCK_MARKET)
+        result.sell_stock_data()
+        return result
+
 
     @staticmethod
     def parse_clinet_message(msg):
@@ -220,7 +231,8 @@ class CommunitcationParser():
             MessageType.INVEST_MARKET_LIST.value : CommunitcationParser.list_invest_market,
             MessageType.INVEST_MAKE.value : CommunitcationParser.investment_make,
             MessageType.COMPANIES_NAME_LIST.value : CommunitcationParser.companies_name_list_request,
-            MessageType.MARKET_LIST.value : CommunitcationParser.market_list
+            MessageType.MARKET_LIST.value : CommunitcationParser.market_list,
+            MessageType.SELL_ON_STOCK_MARKET.value : CommunitcationParser.sell_stock_on_market
         }
         # Verification is this admin message
 

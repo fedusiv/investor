@@ -9,7 +9,7 @@ from companies.company_name_generation import CompanyNameGenerator
 from companies.working_plan import CompanyWorkingPlan
 from investment.investment_plan import InvestmentPlan
 from stock.stock import Stock
-from stock.stock import StockType
+from stock.stock_types import StockType
 from stock.stock_handler import StockHandler
 from companies.bussines_news_connection import BusinessNewsRelation, NewsDependency
 from news.world_situation import WorldSituation

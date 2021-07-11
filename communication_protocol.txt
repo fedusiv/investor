@@ -589,3 +589,25 @@ To client:
         ]
     }
 }
+
+MessageType:
+SELL_ON_STOCK_MARKET = 22
+To server:
+{
+    "type" : 22,
+    "body" :
+    {
+        "s_uuid" : str ( stock uuid data),
+        "cost" : float ( cost of this stock)
+    },
+    "uuid" : str ( unique id of player )
+}
+
+To client:
+{
+    "type" : 22,
+    "body" :
+    {
+        result
+    }
+}

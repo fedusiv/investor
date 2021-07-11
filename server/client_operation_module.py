@@ -226,3 +226,5 @@ class ClientOperation():
         msg = CommunicationProtocol.create_market_list(body)
         self.ws.write_message(msg)
 
+    def sell_stock_on_market(self, cmd: CommunitcationParserResult):
+        pass

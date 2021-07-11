@@ -1,4 +1,5 @@
-from stock.stock import Stock, StockType
+from stock.stock import Stock
+from stock.stock_types import StockType
 
 class StockHandler():
     # Singleton part
