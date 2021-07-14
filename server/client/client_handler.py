@@ -14,6 +14,7 @@ from client_operation_module import ClientOperation
 from message_module import MessagingModule, MessagingParserResult, MessagingTypes
 from logic_handler import LogicHandler
 from users_dao import UsersDao
+from database.database import DataBase
 from client.clients_handler_callback_type import ClientsHandlerCallbackType
 import utils
 import config
@@ -45,6 +46,7 @@ class ClientHandler(tornado.websocket.WebSocketHandler):
         self.client_operation = ClientOperation(self)
         # Get access to users dao
         self.users_dao = UsersDao.Instance()
+        self.data_base = DataBase.Instance()
 
     # Required this field for web gui
     def check_origin(self, origin):
@@ -82,6 +84,7 @@ class ClientHandler(tornado.websocket.WebSocketHandler):
                 self.command_execution(result)
 
     def on_logged(self, result: CommunitcationParserResult):
+        self.data_base.login_user(result.login)
         client_data = self.users_dao.get_user_by_login(result.login, result.password)
         if client_data.uuid != "" :
             self.clients_handler.store_connected_client(self)

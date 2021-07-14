@@ -28,3 +28,5 @@ CLOSED_COMPANY_RATE_DECREASE = 0.5
 WORKING_PLAN_FINE = 1000
 # What amount of company can go to payback
 INVESTMENT_COMPANY_VALUE_PAYBACK = 0.49
+# Link to database and access password
+DATABASE_LINK = "postgresql://postgres:ilya@localhost:5432/investor"
