@@ -172,7 +172,7 @@ class CompaniesHandler():
 
     # Client tries to buy silver stock(s) of company
     # uuid is company uuid, amount is amount of stock, cost is a cost of one stock, client data is client data
-    def purchase_stock_of_comany(self, uuid:str, amount : int, cost : float, player_data : PlayerData) -> StockPurchaseResult:
+    def purchase_stock_of_comany(self, uuid:str, amount : int, player_data : PlayerData) -> StockPurchaseResult:
         # First let's find a company
         company : Company
         company = self.company_by_uuid(uuid)
@@ -188,11 +188,6 @@ class CompaniesHandler():
         if company.silver_available_amount < amount:
             # Can't buy requested amount of stocks. Set amount to available
             amount = company.silver_available_amount
-
-        # Better to compare a closed value to cost. Because no problem in error in 2 digits after comma.
-        close =  math.isclose(cost, company.silver_cost,rel_tol=1e-2)
-        if close is not True:
-            return StockPurchaseResult.STOCK_COST_ERROR
 
         # Calculate cost
         full_cost = amount * company.silver_cost

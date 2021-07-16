@@ -83,7 +83,7 @@ class ClientOperation():
     # Client send request to buy a stock
     def request_to_buy_stock(self,cmd : CommunitcationParserResult):
         result : StockPurchaseResult
-        result = self.logic_handler.request_to_buy_stock(cmd.company_uuid,cmd.stock_amount, cmd.stock_cost, self.client_data)
+        result = self.logic_handler.request_to_buy_stock(cmd.company_uuid,cmd.stock_amount, self.client_data)
         result_msg = CommunicationProtocol.create_purchase_result(result.value)
         self.ws.write_message(result_msg)
 

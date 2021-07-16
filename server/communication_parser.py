@@ -31,7 +31,6 @@ class CommunitcationParserResult():
     def form_stock_buy_request(self):
         self.company_uuid = self.body["uuid"]	# what company want to buy
         self.stock_amount = self.body["amount"]	# amount of stocks want to buy
-        self.stock_cost =   self.body["cost"]	# what price of one stock was
 
     # To sell requested silver stock(s)
     def form_stock_sell_request(self):

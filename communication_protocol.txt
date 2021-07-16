@@ -94,7 +94,6 @@ To server:
     {
         "uuid" : str ( uuid of company )
         "amount" : int ( amount of stocks)
-        "cost"	: float (cost of one stock)
     },
     "uuid" : str ( unique id of player )
 }
